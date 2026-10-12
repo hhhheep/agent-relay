@@ -47,3 +47,7 @@ Run `python scripts/extraction/check-publication.py` before staging. Run `python
 Agent Relay coordinates MCP tools, task routing, remote workers and artifact delivery, with shared writer, output-guard and background utilities. This repository preserves the independent extraction baseline before formal architecture normalization.
 
 The known initial cancellation failure, nine additional legacy workspace-configuration failures and two initial skips remain documented in `docs/extraction/VERIFICATION.md`. Online dependency reinstall, Linux-native rebuild and live cutover have not been verified. Local receipts and dependency environments are excluded from the repository.
+
+Private repository: https://github.com/hhhheep/agent-relay
+
+Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A clean GitHub clone reproduced all 941 baseline source files byte for byte; clone-owned offline dependencies passed the Harness 11-tool check, router/XATS build, and Writer/background tests. Online reinstall and Linux-native validation remain unverified.

@@ -69,3 +69,6 @@ Router tests 的執行位置為 `components/lifecycle`，loader 使用該元件�
 ## 私人 GitHub 基線發布（2026-10-12）
 
 本輪使用者已授權改名與上傳 GitHub；正式名稱為 Agent Relay。來源發布按可提交檔白名單及隱私檢查建立全新 Git 基線，保留上方已記錄測試／平台限制。現用入口、研究配置、憑證和狀態保持原位。先前「尚未提交／上傳」的描述是原始獨立階段的歷史狀態；實際 remote／commit／clone 核對回執另存 ignored `.verification`，不把本機路徑帶入來源。
+
+
+發布已完成：私人 repository `https://github.com/hhhheep/agent-relay`，來源基線 tag `extraction-baseline-2026-10-12`／commit `458b54db0326`。GitHub main 與 tag SHA 已核對；乾淨 clone 的 941 個基線檔逐位元相同。clone 自己的離線環境通過 904 檔來源映射、發布檢查、343 個内部連結檢查、Harness 11 工具自檢、router／XATS 構建和 Writer／Background 測試。此結果不涵蓋線上重新安裝、Linux-native 或 live 切換；既有取消／legacy 配置測試問題仍保留。

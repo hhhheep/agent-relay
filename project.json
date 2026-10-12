@@ -20,5 +20,6 @@
   },
   "display_name": "Agent Relay",
   "publication_privacy_checked": true,
-  "publication_visibility": "private"
+  "publication_visibility": "private",
+  "repository": "https://github.com/hhhheep/agent-relay"
 }
