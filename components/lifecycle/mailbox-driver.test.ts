@@ -6,7 +6,7 @@ import {connectStableInbox} from './stable-inbox.ts';import {runMailbox} from '.
 test('real Python mailbox and XATS driver deliver question and retain received answer across restart',async()=>{
  const root=mkdtempSync(join(tmpdir(),'mailbox-driver-')),token=randomBytes(32).toString('hex');
  const server=await startServer({dbPath:join(root,'xats.sqlite'),host:'127.0.0.1',port:0,token});let manager:any;
- const url=`http://127.0.0.1:${server.port}/mcp`,python=resolve('../../.venv/Scripts/python.exe');
+ const url=`http://127.0.0.1:${server.port}/mcp`,python=resolve(process.platform === 'win32' ? '../../.venv/Scripts/python.exe' : '../../.venv/bin/python');
  const binding={task_id:'task',work_unit_id:'unit',worker_id:'worker',origin_chat_id:'publisher-chat'},mailbox=join(root,'mailbox.sqlite');
  const run=(program:string)=>JSON.parse(execFileSync(python,['-c',program,mailbox,JSON.stringify(binding)],{encoding:'utf8',windowsHide:true}));
  try{

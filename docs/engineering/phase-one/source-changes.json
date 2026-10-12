@@ -65,6 +65,36 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "components/lifecycle/mailbox-artifact.test.ts",
+      "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
+      "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
+    },
+    {
+      "path": "components/lifecycle/mailbox-driver.test.ts",
+      "extraction_sha256": "60878f7f1ddbcdf577b687591f7e0f4e3ae83f6871dc128eea331fff24a96332",
+      "current_sha256": "5cb200cb1977c3b345dabfb96746ae3743469fd48a6140d0535c67ddf7ecf83e"
+    },
+    {
+      "path": "components/lifecycle/resume-controller.test.ts",
+      "extraction_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
+      "current_sha256": "657cf873513cd85d473416a00ca9033006da1831f52837355718242e955a33f2"
+    },
+    {
+      "path": "components/lifecycle/resume-scheduler.test.ts",
+      "extraction_sha256": "13951c67e6c13e016b50d28592ecab146856f8d9d36d074e8e7a403bcaf70e13",
+      "current_sha256": "28cd2c193a9768c6d056316f9ea9253435e9d6b7067043f0ac34d2fef397fcc6"
+    },
+    {
+      "path": "components/lifecycle/task-publisher.test.ts",
+      "extraction_sha256": "685dfbab860b71cbe8a65a13a9bef9c4341c7c97013a42ed565effb5b4b30c85",
+      "current_sha256": "acb6d1dfb8c34bfe5ab897f8eed37ed80a95b5b14f9da934339edbf1e0dca14b"
+    },
+    {
+      "path": "components/xats-routing-lab/upstream/pnpm-lock.yaml",
+      "extraction_sha256": "9e143de17a1eba8835ac8ffb8fe2779d39ac08edecc14bc1e07e58c7c000b61d",
+      "current_sha256": "9955dd09f1fcd1a7e9a900854a779836df39b4ba786b0056414d2ce8565e04ac"
+    },
+    {
       "path": "plugins/research-report-writer/package.json",
       "extraction_sha256": "bf6127de4f088d78ea0a097be965c1f23faa29d8a67ddd9111d660693156aed5",
       "current_sha256": "70809e5787047751f3109d0bd0e6776f32b096b2a06507e2d604311c25d61646"

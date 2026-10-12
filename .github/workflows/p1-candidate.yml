@@ -38,7 +38,9 @@ jobs:
       - name: Consumer tests (mock HTTP, no paid API)
         run: node --test packages/report-provider/tests/*.test.mjs plugins/research-report-writer/tests/*.test.mjs tools/research-background/tests.mjs
       - name: Frozen lifecycle build toolchain
-        run: npm ci --prefix components/lifecycle --ignore-scripts --no-audit --no-fund
+        run: |
+          npm ci --prefix components/lifecycle --ignore-scripts --no-audit --no-fund
+          npm ci --prefix components/goal-routing-integration --ignore-scripts --no-audit --no-fund
       - name: Source-only candidate build
         run: |
           .venv/Scripts/python.exe scripts/release/build_candidate.py

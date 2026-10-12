@@ -4,7 +4,7 @@ Status: P1 engineering candidate. Isolated Linux Worker installation and Harness
 
 ## Requirements and source
 
-Windows x64 client: Python 3.13, Node 24, Git, npm and pnpm (Writer lock format 9). Linux x64 Worker candidate: Python 3.13, Git, OpenSSH, bash, tmux; systemd user support when selecting systemd_transient jobs; external Codex CLI where worker dispatch is used. The exact Python pins have passed isolated Linux x64 / Python 3.13.16 installation and pip check; this does not verify the complete Linux component stack. Lifecycle/XATS requires Node 24 and a native better-sqlite3 build matching OS/arch/ABI; toolchain availability and Linux-native closure remain pending. Do not copy Windows native modules to Linux.
+Windows x64 client: Python 3.13, Node 24, Git, npm and pnpm 11.25. Linux x64 Worker candidate: Python 3.13, Git, OpenSSH, bash, tmux; systemd user support when selecting systemd_transient jobs; external Codex CLI where worker dispatch is used. The exact Python pins have passed isolated Linux x64 / Python 3.13.16 installation and pip check, including a fresh no-cache installation. Lifecycle/XATS requires Node 24 and a native better-sqlite3 build matching OS/arch/ABI. Linux x64 / Node 24.19.0 frozen installation, native rebuild and memory SQLite check now pass. Do not copy Windows native modules to Linux.
 
 Clone the private repository using your own GitHub authorization, checkout the reviewed engineering commit, and keep it separate from research state. Source baseline bf8db034ee0e72967296b916968dfe2460e35cbe is historical provenance, not a supported installed release.
 
@@ -23,6 +23,20 @@ Linux worker candidate:
 python3 checkout/scripts/release/install_dependencies.py --role linux-worker
 checkout/.venv/bin/python checkout/plugins/solution-agent-harness/scripts/server.py --check
 ```
+
+For optional Node components on Linux, run the following from the checkout root with Node 24 and pnpm 11.25 on PATH. Keep registry caches and state local to the test checkout when rehearsing a fresh installation:
+
+```sh
+npm ci --prefix packages/report-provider --ignore-scripts --no-audit --no-fund
+npm ci --prefix components/lifecycle --ignore-scripts --no-audit --no-fund
+npm ci --prefix components/goal-routing-integration --ignore-scripts --no-audit --no-fund
+pnpm --dir plugins/research-report-writer install --frozen-lockfile --ignore-scripts
+pnpm --dir components/xats-routing-lab/upstream install --frozen-lockfile --ignore-scripts
+npm rebuild --prefix components/xats-routing-lab/upstream better-sqlite3
+node scripts/extraction/build-local.mjs
+```
+
+The Python-only Linux Worker installer does not install these optional Node components. The Windows installer includes goal-routing dependencies alongside Lifecycle. Run Lifecycle/goal tests from `components/lifecycle`, with `PYTHONPATH` set to the absolute checkout root and the checkout's isolated `.venv` installed. All Python-backed fixtures choose the platform's venv executable.
 
 Worker bootstrap packaging is available via `python checkout/scripts/release/build_candidate.py`; outputs are ignored `dist/p1-candidate/`. Build on the Windows producer after installing lifecycle build dependencies. `research-report-writer.zip` is a standalone plugin distribution, bundling the shared Provider and SDK with dependency licenses. It runs without adjacent source packages/node_modules; use this generated artifact for plugin cache installation, rather than copying only the raw Writer source folder. Run `node scripts/release/check_writer_plugin.mjs` for real stdio tool-surface verification with no credentials. It runs publication and new provenance gates, invokes the existing bootstrap builder, and checks archive bytes. Client source package retains the compact repo layout, including core, shared provider, lifecycle and selected upstream source. It also carries the generated `plugins/solution-agent-harness/release_manifest.json` paired to the Worker; retain it when configuring the client plugin. Dependencies are installed again on the destination; local venv/node_modules are excluded. `candidate.json` carries commit/dirty flag, identity, artifact hashes and honest pending targets. A dirty build is a development candidate only.
 

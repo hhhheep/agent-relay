@@ -23,7 +23,7 @@ try:m.transport_body(body)
 except ValueError:pass
 else:raise AssertionError('must not silently drop large question')
 print(json.dumps({'verified':True,'ref':ref}))`;
-  const result=JSON.parse(execFileSync(resolve('../../.venv/Scripts/python.exe'),['-c',code,root,resolve('mailbox-rpc.py')],{encoding:'utf8',env:{...process.env,PYTHONPATH:resolve('../..')},windowsHide:true}));
+  const result=JSON.parse(execFileSync(resolve(process.platform === 'win32' ? '../../.venv/Scripts/python.exe' : '../../.venv/bin/python'),['-c',code,root,resolve('mailbox-rpc.py')],{encoding:'utf8',env:{...process.env,PYTHONPATH:resolve('../..')},windowsHide:true}));
   assert.equal(result.verified,true);
  }finally{rmSync(root,{recursive:true,force:true});}
 });

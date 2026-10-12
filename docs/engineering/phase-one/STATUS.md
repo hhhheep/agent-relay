@@ -11,7 +11,7 @@ Scope: authorized first restructuring in this independent repository. Stage: P1 
 | packages/report-provider | index.mjs + versioned JSON preset | Actual Writer/Background consumers; one SDK owner, environment/env-file precedence retained |
 | tools/research-background | service/cli/provider, Windows launcher | Required local mock behavior; no startup/schedule activation |
 | components/lifecycle + goal-routing-integration | existing manager/router/session/mailbox/RPC and builders | Required existing consumers; component working directory/PYTHONPATH documented |
-| components/xats-routing-lab/upstream | selected third-party source and native SQLite | Version/license retained; local build and memory smoke only; Linux native pending |
+| components/xats-routing-lab/upstream | selected third-party source and native SQLite | Version/license retained; Windows/Linux x64 native build and memory smoke passed |
 | plugins/research-token-guard | five existing Python CLI scripts and skill | Retained actual receipt/stage ledger owner; no new MCP |
 | root cli.py legacy orchestrator/continuation commands | remote_status/run_remote_materialized_execution and l72 staging/launch prototypes | Source retained. Outside the P1 managed Harness/plugin deployment acceptance surface; excluded original workspace/bootstrap/planner config remains externally required |
 
@@ -31,7 +31,7 @@ Detailed machine receipts stay ignored under .verification. Remote component evi
 - Writer 9 and Background 12 tests pass. Shared provider golden consumer tests: 2 pass, mock HTTP through the real SDK, no paid API.
 - Source-only clean client package: locked Provider npm, Writer frozen pnpm and lifecycle npm install; 23 Node consumer tests pass. Dependencies acquired from registries; Writer pnpm reports cache reuse for its three packages, not proof of cache-free download for every package.
 - Fresh Python 3.13 venv acquired exact Windows pins from public PyPI (mixed downloads/cache), pip check passes. Clean source package Harness self-check returns 11 canonical tools, profile unavailable as expected; release identity equals the built candidate. This is same-host isolated installation, not a new Windows computer/M2.
-- Router candidate build and XATS source build pass; native SQLite memory smoke passes using the repo dependency environment. Linux-native and newly downloaded XATS native closure remain NOT RUN.
+- Router candidate build and XATS source build pass on Windows and Linux. Fresh Linux registry dependency installation, native better-sqlite3 rebuild and memory SQLite smoke pass; see the clean Linux follow-up below.
 - Lifecycle/goal integration: 77 passed using component cwd and repo PYTHONPATH; no assertion changes.
 - Initial sandbox temporary-directory restrictions and incorrect lifecycle cwd/PYTHONPATH caused transient verification failures; record corrected final checks below rather than weakening tests.
 
@@ -46,7 +46,7 @@ Local builder dry-run/install, original-command recovery, cancellation/lease/CAS
 
 ## Next acceptance steps
 
-The declared Linux workplace now provides an authorized isolated test target. Retain the immutable old ZIP and paired Client manifest. Exact original/candidate/original Harness activation, update and rollback now pass in a private namespace. Retain this bounded acceptance method and complete wider required coverage. Complete remaining component/device coverage for M1–M3. Only then freeze P1 and advertise a supported release. No paid research execution or live cutover is included.
+The declared Linux workplace now provides an authorized fixed isolated test target. Exact original/candidate/original Harness activation, update and rollback pass in a private namespace. Linux Node component rebuild and direct-consumer coverage now also pass. Next, rebuild deliverable archives with the installation fixes, verify the archive-to-install path, and audit every M1–M4 required behavior against its actual receipt. Another physical Windows device is unavailable; same-host clean installation evidence must remain explicitly identified. Only then freeze supported acceptance scope. No paid research execution or live cutover is included.
 
 
 ## Final local component evidence
@@ -64,3 +64,13 @@ Historical design checker `build-plan-inventory.py --check` was executed and int
 The original absolute-root blocker is resolved without editing the old payload or weakening protocol checks. Linux namespace/private-systemd old/candidate/old stdio activation, supervised command recovery, unchanged configuration/state/receipts and SQLite-consistent backup passed. The rolled-back old release also recovered a candidate-release command. M2/M3 and the rolled-back M4 environment passed real artifact store/inspect/materialize plan and CAS commit. Linux core/legacy/install/namespace regression: 153 passed; Windows namespace boundary tests: 3 passed. Method and evidence: [WORKPLACE_ACCEPTANCE.md](WORKPLACE_ACCEPTANCE.md), [NAMESPACE_ACCEPTANCE.md](NAMESPACE_ACCEPTANCE.md). Whole-system P1 remains partial.
 
 Linux Token Guard suite also passed: **37 passed** (190 Linux tests across the two suites). Final checks confirmed all seven original hashes and the immutable old ZIP remained unchanged, with no acceptance transient units left running.
+
+## Clean Linux Node component follow-up
+
+The fixed test environment acquired official Node 24.19.0 Linux x64 bytes and verified SHASUMS256. Source came from the clean `f4a28c5` Git archive, followed by explicit source fixes. Empty npm/pnpm caches and a new source checkout were used; Python 3.13.16 dependencies were installed in a new venv with `--no-cache-dir`, and pip check passed. Node dependency setup used npm ci and pnpm 11.25 frozen install; no Windows native binaries were copied.
+
+Three missing installation inputs were found and repaired: XATS lockfile specifiers disagreed with the exact package.json pins; five Python-backed Lifecycle tests selected a Windows-only venv path; goal-routing's separately declared MCP SDK had no registry lock or dependency-install step. The SDK remains 1.29.0; the new goal lock records its full registry closure. Its first generated lock incorrectly inherited existing local junctions, which clean Linux testing caught. The final lock was regenerated from package.json in an empty directory, contains registry integrity entries and no local links, and installs 95 packages successfully. No package identity, test assertion or protocol gate was relaxed.
+
+Linux final results: **23 consumer tests and 77 Lifecycle/goal tests passed, zero failures/skips**. Router candidate build, target-native better-sqlite3 rebuild, SQLite create/insert/select memory check, XATS service bundle, standalone Writer build and actual stdio six-tool check from an unrelated cwd passed. Python-backed mailbox tests start temporary loopback XATS servers with synthetic state and test shutdown; no persistent service or research task was activated. Windows affected fixtures: 10 passed; isolated update/rollback regression: 1 passed.
+
+Private logs/summary JSON remain under `.verification/full-acceptance/`. Final Linux Lifecycle log SHA256: `16fec058cd943db8ea7ad5f6be406140107d1201e07f41f96bc4879a59b4eb8d`; consumers: `b04f8797e58cad2531c126841deb8e19823937e7fe1b7290465197f95c91925a`; native/XATS build: `17898e73b8e145b01d855df75c65886f4fd0c5fab5f85f426e469bd2cd3e03a6`; Writer stdio: `7e47c8c213a34ea38acee26df1461352557091ab64358b7f4ef06ac5000c791c`. Earlier failed attempts are retained and excluded from passed counts. These are actual component installation/runtime checks, not a substitute for archive installation or every deployment-matrix row.

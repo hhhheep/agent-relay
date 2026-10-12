@@ -86,7 +86,7 @@ test('publisher captures origin, requires remote binding, and never resubmits un
   await assert.rejects(publisher.submit(p.id,async()=>{calls++;}),/uncertain/);assert.equal(calls,1);
   publisher.reconcile(p.id,{task_id:'task',work_unit_id:'unit',command_id:'original-command',state:'running'});
   const contexts=publisher.resumeContexts(profile);assert.equal(contexts.length,1);
-  const key=execFileSync(resolve('../../.venv/Scripts/python.exe'),['-c',"from solution_agent.harness.publication_registry import key;print(key('task','unit'))"],{encoding:'utf8',windowsHide:true}).trim();
+  const key=execFileSync(resolve(process.platform === 'win32' ? '../../.venv/Scripts/python.exe' : '../../.venv/bin/python'),['-c',"from solution_agent.harness.publication_registry import key;print(key('task','unit'))"],{encoding:'utf8',windowsHide:true}).trim();
   assert.equal(contexts[0].context.mailbox,'/workplace/.solution-agent/help-mailboxes/'+key+'/queue.sqlite');
   assert.equal(contexts[0].context.previous_command_id,'original-command');assert.deepEqual(contexts[0].binding,p.binding);
   assert.throws(()=>publisher.resumeContexts({...profile,workplace:'/other'}),/migration_required/);

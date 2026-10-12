@@ -33,6 +33,8 @@ Report Writer 可以根據已整理的證據撰寫 Markdown；Background 管理�
 
 目前可以產生客戶端來源包、Worker 安裝包及獨立 Writer 插件包。安裝器會檢查包的雜湊和目標目錄，客戶端包帶有配對所需的 Harness release manifest。取消工作時的競態已修復；原先依賴私人研究目錄的九項測試已改用完整的合成測試資料並通過，保留原有行為檢查。
 
+乾淨安裝也補齊了之前遺漏的依賴：goal-routing 現在有完整的 registry 鎖檔並由客戶端安裝器安裝，XATS 鎖檔與精確版本一致。Linux 已實測重新下載依賴、重建 SQLite 原生模組、建置 Router／XATS，以及獨立 Writer 插件啟動。這讓新的測試目錄可以重建這些元件，不必借原開發目錄的依賴。
+
 ## 從來源開始
 
 Windows 開發與打包使用 Python 3.13、Node 24、Git、npm 與 pnpm 11.25。Linux Worker 使用 Python 3.13；SSH、tmux、systemd user 與 Codex CLI 的需求取決於選用的執行方式。XATS 的 SQLite 原生模組需要在目標 OS、架構與 Node ABI 下建置。
@@ -68,6 +70,6 @@ Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background �
 
 目前是 **P1 工程候選版**。已完成隔離 Linux Worker 安裝，以及 M1 新客戶端／舊 Worker、M2 新／新、M3 舊客戶端／新 Worker 的 Harness 跨端檢查。這些檢查使用同一台 Windows 的隔離環境，涵蓋 Harness 元件，完整四情境驗收仍未完成。
 
-M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。完整系統验收仍有其他元件與設備範圍待補；現用部署、GitHub 推送與 CI 執行尚未完成。
+M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。Linux 又已通過 23 項 Writer／Background／Provider 與 77 項 Lifecycle／goal 測試，包含合成 mailbox 與 XATS 的實際訊息往返。更新後安裝包及完整四情境覆蓋核對仍在進行；尚無另一台 Windows 實體設備的證據。現用部署未切換，GitHub 推送與 CI 執行尚未完成。
 
 具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。

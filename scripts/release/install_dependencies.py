@@ -25,7 +25,7 @@ def main():
     if args.role=='windows-client' and not args.python_only:
         version=subprocess.run([executable('node'),'--version'],capture_output=True,text=True,check=True).stdout.strip()
         if not version.startswith('v24.'): p.error('Node 24 is required for this candidate')
-        for relative in ['packages/report-provider','components/lifecycle']:
+        for relative in ['packages/report-provider','components/lifecycle','components/goal-routing-integration']:
             run([executable('npm'),'ci','--ignore-scripts','--no-audit','--no-fund'],ROOT/relative)
         run([executable('pnpm'),'install','--frozen-lockfile','--ignore-scripts'],ROOT/'plugins/research-report-writer')
         if args.with_xats:
