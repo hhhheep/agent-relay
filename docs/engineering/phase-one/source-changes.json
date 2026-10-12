@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "engineering_baseline": "bf8db034ee0e72967296b916968dfe2460e35cbe",
+  "historical_map_sha256": "edb3fb9875e91127426c51e61b13d68612c565436f201ebf22d88210c67b8e6b",
+  "decisions": "docs/engineering/phase-one/DECISIONS.md",
+  "changes": [
+    {
+      "path": "solution_agent/harness/codex_worker.py",
+      "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
+      "current_sha256": "1742d5c672f64b4f26bd3ab2dc049e2cc6e95299a6d427e4956ac7d974ac5444"
+    },
+    {
+      "path": "solution_agent/harness/remote_profile.py",
+      "extraction_sha256": "f5132f2557481251ce60a0e8e2e12f47b4cd1586f9979204e59584eb3ea70330",
+      "current_sha256": "8fe3cfcbce03aa0f379da1c0bbf0706e8046bcb7c047d71a432e0728f7fa4c3e"
+    },
+    {
+      "path": "solution_agent/harness/remote_terminal.py",
+      "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
+      "current_sha256": "c7ff68c5819ffbcba0d859985646e8ddb9087c7d7da2cb83ae3f5799cb0e3299"
+    },
+    {
+      "path": "solution_agent/harness/terminal_commands.py",
+      "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
+      "current_sha256": "95a33362743af407d5d5d38dad76f43802f3e533c80b10a2d0ed77768f354684"
+    },
+    {
+      "path": "tests/test_harness_bootstrap_release.py",
+      "extraction_sha256": "a8a845b6b4a39d708ee83fb19e3df8854635c039e15d77cbb3ddbac08914bdfe",
+      "current_sha256": "a437a03d41ed94e041bcb8b9f5e8b0549a643c8f73aebf2f23e9b0d8eb44c97a"
+    },
+    {
+      "path": "tests/test_harness_remote_profile.py",
+      "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
+      "current_sha256": "e36aee9d225a3e9c2bdc87d98250b45c2b15cdc864249b36235a9b8eb4a86250"
+    },
+    {
+      "path": "tests/test_terminal_commands.py",
+      "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
+      "current_sha256": "a1c3e47c3ad5fb4a5b25be887d3d25406ae00e836250ea54cfae69f88e148797"
+    },
+    {
+      "path": "scripts/harness/build_bootstrap_release.py",
+      "extraction_sha256": "2eeff1b2f062a8857200a4908070017b4b360081c0cd538f6af2e85d4511d984",
+      "current_sha256": "4fccad0b29f198525459025f19b4a28c37521440505d7de46884f4a3fc851510"
+    },
+    {
+      "path": "plugins/solution-agent-harness/.mcp.json",
+      "extraction_sha256": "3f9c84ae22b60205128ed5aaa5f7b9246f786df963f51490dc72c829fcadb99f",
+      "current_sha256": "96303f3282f18a2f0b698d830456f1b1e6ce2a2d15c495ef30fdffd9bca45edf"
+    },
+    {
+      "path": "plugins/solution-agent-harness/.codex-plugin/plugin.json",
+      "extraction_sha256": "f4f717069e553bbf01b7123509c00b41470ba0dce9003be91d5a9a632f59293f",
+      "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
+    },
+    {
+      "path": "plugins/research-report-writer/package.json",
+      "extraction_sha256": "bf6127de4f088d78ea0a097be965c1f23faa29d8a67ddd9111d660693156aed5",
+      "current_sha256": "70809e5787047751f3109d0bd0e6776f32b096b2a06507e2d604311c25d61646"
+    },
+    {
+      "path": "plugins/research-report-writer/pnpm-lock.yaml",
+      "extraction_sha256": "4537459544819b12dcb1c78933592c0021bc73e259c76aea0c5171f9a12f3cc2",
+      "current_sha256": "1d9e8c02ef1afa37014c73b348eb25b8d54da32aed0355f572c44118b4118222"
+    },
+    {
+      "path": "plugins/research-report-writer/.codex-plugin/plugin.json",
+      "extraction_sha256": "1152e594eb30cd33344c4c1ea4080b5f9871d7a197aee340a5ecaac53e726bde",
+      "current_sha256": "813ef1bc86c1fa442dbd53c4615bd1759f91de1d0fcd969d9728fba46a95bcd6"
+    },
+    {
+      "path": "plugins/research-report-writer/lib/core.mjs",
+      "extraction_sha256": "0689cca36fd8acf13c2ecfa84634eafc7ce11643bb5140502751510a09ce4dcd",
+      "current_sha256": "b37df521dc440ee4c20155afa52a02e64d004e8bdf43927fdd2ecf44ae2ee190"
+    },
+    {
+      "path": "plugins/research-report-writer/lib/provider.mjs",
+      "extraction_sha256": "86ab4d59eb76879b9b68840a5415096f36bb0dfc1cf7d6007c12231db1d160f2",
+      "current_sha256": "667bd8580d9f6b26d76dea09ce18fc1dd0830a032158d75f0673cdbabb6f7e51"
+    },
+    {
+      "path": "tools/research-background/service.mjs",
+      "extraction_sha256": "0976eaaad3bf0bb7f56bca018b84ab7b1953d9e54407d81551800b694d9639a7",
+      "current_sha256": "5b6028c1762902c05116cc6e7ca0daca12506d4c2aa1803eb9d40b9f1b484aed"
+    },
+    {
+      "path": "tools/research-background/provider.mjs",
+      "extraction_sha256": "0aaa7111fa94c115ba8089882aeef86629a0676a89f774741589dc0d8aed6313",
+      "current_sha256": "c3499e1f9369700ef5cd11abef5238a3d3931b64adc2629080c9c7f704e6f2c4"
+    }
+  ]
+}

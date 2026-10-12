@@ -651,12 +651,6 @@ class TerminalCommandRunner:
         status = self._read_status(command_id)
         if status.get("state") in _TERMINAL_STATES:
             return status
-        child_pid = status.get("child_pid")
-        child_marker = status.get("child_process_marker")
-        if not isinstance(child_pid, int) or not _process_exists(
-            child_pid, child_marker if isinstance(child_marker, str) else None
-        ):
-            return self.reconcile(command_id)
         atomic_write_json(
             directory / "cancel_request.json",
             {
@@ -665,6 +659,12 @@ class TerminalCommandRunner:
                 "requested_at": _utc_now(),
             },
         )
+        child_pid = status.get("child_pid")
+        child_marker = status.get("child_process_marker")
+        if not isinstance(child_pid, int) or not _process_exists(
+            child_pid, child_marker if isinstance(child_marker, str) else None
+        ):
+            return self.wait_result(command_id, 5000)
         try:
             if os.name == "posix":
                 os.killpg(child_pid, signal.SIGTERM)
@@ -985,6 +985,10 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
     shell_args.append(str(directory / "request.sh"))
     try:
         with (directory / "stdout.bin").open("wb") as stdout, (directory / "stderr.bin").open("wb") as stderr:
+            # A cancellation recorded before PID registration must not be lost.
+            if (directory / "cancel_request.json").is_file():
+                finalize(directory, 0, started, failure_reason="cancel_requested", forced_state="cancelled")
+                return
             child = subprocess.Popen(
                 shell_args,
                 cwd=str(request["cwd"]),
@@ -1015,7 +1019,26 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
             atomic_write_json(directory / "status.json", running)
             timeout_seconds = request.get("timeout_seconds")
             try:
-                exit_code = child.wait(timeout=float(timeout_seconds) if timeout_seconds is not None else None)
+                deadline = time.monotonic() + float(timeout_seconds) if timeout_seconds is not None else None
+                cancel_deadline = None
+                while True:
+                    if cancel_deadline is None and (directory / "cancel_request.json").is_file():
+                        try:
+                            if os.name == "posix":
+                                os.killpg(child.pid, signal.SIGTERM)
+                            else:
+                                child.terminate()
+                        except ProcessLookupError:
+                            pass
+                        # Bound shutdown using the existing timeout escalation below.
+                        cancel_deadline = time.monotonic() + 5
+                        deadline = min(deadline, cancel_deadline) if deadline is not None else cancel_deadline
+                    try:
+                        exit_code = child.wait(timeout=0.05)
+                        break
+                    except subprocess.TimeoutExpired:
+                        if deadline is not None and time.monotonic() >= deadline:
+                            raise
             except subprocess.TimeoutExpired:
                 try:
                     if os.name == "posix":
@@ -1042,7 +1065,7 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
                     directory,
                     exit_code,
                     started,
-                    failure_reason="timeout_exceeded",
+                    failure_reason="cancel_requested" if (directory / "cancel_request.json").is_file() else "timeout_exceeded",
                     forced_state="cancelled",
                 )
                 return

@@ -1,6 +1,6 @@
 {
   "name": "research-report-writer",
-  "version": "0.1.0+codex.20260928150832",
+  "version": "0.1.0+codex.p1.20261012",
   "description": "Draft one evidence-grounded research report from an approved compact packet with a fixed DeepSeek V4.1-Flash profile.",
   "author": {
     "name": "Local developer"

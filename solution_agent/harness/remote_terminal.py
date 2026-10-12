@@ -184,7 +184,8 @@ def load_terminal_profile(solution_root: Path) -> TerminalProfile:
             "a Codex process running inside a managed terminal cannot control the same terminal service",
             recoverable=False,
         )
-    config_path = solution_root / "config" / "harness_remote_deploy_profiles.yaml"
+    from solution_agent.harness.remote_profile import deployment_profiles_path
+    config_path = deployment_profiles_path(solution_root)
     try:
         payload = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     except (OSError, yaml.YAMLError) as exc:

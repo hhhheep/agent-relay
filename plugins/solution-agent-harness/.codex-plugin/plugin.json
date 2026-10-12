@@ -1,6 +1,6 @@
 {
   "name": "solution-agent-harness",
-  "version": "0.6.0+codex.routing.20261006",
+  "version": "0.6.0+codex.p1.20261012",
   "description": "Operate declared remote workplaces and bounded research stages with durable receipts and event-driven waiting.",
   "author": {
     "name": "Local developer"

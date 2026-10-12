@@ -1,6 +1,6 @@
 # Agent Relay 維護入口
 
-目前是獨立來源基線 + Design Ready 設計包，**尚未 Engineering Verified**。`project.json` 的 independent-extraction 狀態仍有效；原完整apps/packages布局是歷史候選，不是P1目標；兩端安裝、實際依賴鎖定、四情境驗收及後期updater/CI均未實作。MUST 先以實際檔案、Git commit 和驗證回執確認階段，不能把設計當成已存在能力。
+目前為P1 engineering candidate，已有實際Provider分拆、安裝/打包及取消修復；**尚未P1 Verified或Engineering Verified**。最新實作與驗證見[工程狀態](docs/engineering/phase-one/STATUS.md)與`project.json`；舊extraction與完整apps/packages布局是歷史基線/候選。Linux-native與四情境驗收仍未完成，MUST以實際Git/回執核對，不把本機合成驗證當跨端完成。
 
 最新使用者已授權第一期首次框架整理，見[FIRST_RESTRUCTURE_EXECUTION](docs/planning/normalization-20261012/FIRST_RESTRUCTURE_EXECUTION.md)。MAY在本獨立repo集中調整結構、模組、程式與打包接線；首次不受小步diff限制，不能只停在方案。工程自治逐批驗證，不逐批重新批准；仍不授權現用切換、破壞性state遷移或新的Worker研究政策。
 

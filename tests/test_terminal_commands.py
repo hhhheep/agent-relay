@@ -440,3 +440,18 @@ def test_ansi_is_sanitized_in_real_job(tmp_path: Path) -> None:
     assert result["state"] == "succeeded"
     assert result["stdout"]["preview"] == f"red{os.linesep}"
     assert result["stdout"]["control_sequences_removed"] == 2
+
+
+def test_cancel_before_launch_records_request_and_never_runs_child(tmp_path: Path) -> None:
+    command_runner = runner(tmp_path)
+    marker = tmp_path / "must-not-exist"
+    request = command_runner.prepare(f"from pathlib import Path; Path({str(marker)!r}).write_text('ran')")
+    command_id = request["command_id"]
+    command_runner.cancel(command_id)
+    directory = command_runner._directory(command_id)
+    assert json.loads((directory / "cancel_request.json").read_text())["command_id"] == command_id
+    run_execution(directory)
+    result = command_runner.read_result(command_id, 128)
+    assert result["state"] == "cancelled"
+    assert result["failure_reason"] == "cancel_requested"
+    assert not marker.exists()

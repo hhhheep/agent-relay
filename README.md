@@ -1,4 +1,10 @@
-# Agent Relay — independent source baseline
+# Agent Relay — P1 engineering candidate
+
+First restructuring is now implemented on the independent source, with the existing plugin/MCP identities and state contracts retained. This is a locally verified development candidate; Linux-native and Windows × Linux M1–M4 deployment acceptance are pending. No live installation was switched.
+
+Start with [installation/update/extension instructions](docs/engineering/phase-one/INSTALL.md), [engineering status and acceptance matrix](docs/engineering/phase-one/STATUS.md) and [authority/migration decisions](docs/engineering/phase-one/DECISIONS.md). Run `python scripts/release/build_candidate.py` for checked source-only client/Worker artifacts; dependencies are rebuilt at the destination. Shared provider authority is `packages/report-provider/`, consumed by Writer and Background.
+
+Historical extraction details follow; their test results and limitations describe the earlier baseline, not the new engineering candidate.
 
 This is a separate development project for the shared system: Python core/Harness MCP, lifecycle/router, XATS messaging/MCP upstream, remote-worker and artifact/Markdown delivery code, Writer MCP/provider, Token Guard, and background/Windows tooling. Existing services and plugin bindings remain on their original installation. See [the functional inventory](docs/extraction/ENTRYPOINTS.md) for each capability and its verification boundary.
 
@@ -58,6 +64,6 @@ Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A
 
 第一期保留現有主要目錄；原941完整遷移map/apps/packages布局只是候選分析，非搬檔指令。[主任务書](docs/planning/normalization-20261012/TASKBOOK.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)已分清P1範圍。功能擴展、更新自動化、研究工作台各按實際使用需求觸發，不自動全部做；第一期暫估9–15基礎/約12–19含餘量人日，非日曆承諾。
 
-已完成四輪架構/維護討論及使用者後續分期修訂；本次只形成設計，P1實作/四情境安裝/現用切換尚未執行。[歷史計劃索引](docs/planning/README.md)保留追溯。
+已完成四輪架構/維護討論及使用者後續分期修訂；最新P1實作與本機驗證見上方工程狀態。四情境跨端安裝及現用切換尚未執行。[歷史計劃索引](docs/planning/README.md)保留追溯。
 
 下一個agent必讀[根AGENTS](AGENTS.md)、[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。最小完整修復、唯一來源、原契約/state、必要驗證及交接仍須遵守；專案經驗留所屬project，不自動上升全域或其他repo。

@@ -1,20 +1,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module';
+import * as sharedProvider from '../../packages/report-provider/index.mjs';
+import { numericUsage } from '../../packages/report-provider/index.mjs';
 import { pathToFileURL } from 'node:url';
 
-// Reuse installed provider identity, endpoint validation and credential injection.
+// Shared package is the default; explicit legacy helper overrides remain supported.
 // Deliberately do not use draftWithProvider: its schema is report prose and it
 // parses before returning usage. No upstream files or model defaults are changed.
 export async function loadProvider(config) {
-  const installed = await import(pathToFileURL(config.provider_module).href);
+  const installed = config.provider_module
+    ? await import(pathToFileURL(config.provider_module).href) : sharedProvider;
   const env = { ...process.env, REPORT_WRITER_ENV_FILE: config.credential_env_file };
   const status = installed.providerStatus(env);
   if (!status.configured) throw new Error('PROVIDER_NOT_CONFIGURED');
   const providerConfig = installed.providerConfig(env); // secret remains in memory
-  const require = createRequire(config.provider_module);
-  const OpenAI = require('openai').default;
-  const client = new OpenAI({ apiKey: providerConfig.apiKey, baseURL: providerConfig.baseURL,
+  const client = await sharedProvider.createProviderClient(providerConfig, {
     maxRetries: 0, timeout: 120000 }); // queue owns finite retry policy
   return {
     status,
@@ -50,16 +50,10 @@ export async function loadProvider(config) {
         throw new Error(signal?.aborted ? 'INTERRUPTED' : 'API_REQUEST_FAILED');
       }
       const content = completion.choices?.[0]?.message?.content ?? '';
-      const numericOnly = value => {
-        if (typeof value === 'number' && Number.isFinite(value)) return value;
-        if (value && typeof value === 'object' && !Array.isArray(value))
-          return Object.fromEntries(Object.entries(value).filter(([k]) => /^[a-z_]+$/.test(k))
-            .map(([k,v]) => [k,numericOnly(v)]).filter(([,v]) => v !== undefined));
-      };
       // Save secret-safe usage and finish reason BEFORE parsing generated content.
       atomic(receipt, JSON.stringify({ ...meta, status: 'received_unparsed',
         finished_at: new Date().toISOString(), returned_model: completion.model ?? null,
-        response_id: completion.id ?? null, usage: numericOnly(completion.usage) ?? null,
+        response_id: completion.id ?? null, usage: numericUsage(completion.usage) ?? null,
         finish_reason: completion.choices?.[0]?.finish_reason ?? null }, null, 2));
       atomic(response, JSON.stringify({ content }));
       return content;

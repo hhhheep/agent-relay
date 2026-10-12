@@ -1,0 +1,44 @@
+name: P1 candidate checks
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: ["codex/phase-one-restructure"]
+permissions:
+  contents: read
+jobs:
+  windows-candidate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Isolated Python dependencies
+        run: python scripts/release/install_dependencies.py --role windows-client --python-only
+      - name: Candidate privacy and immutable extraction provenance
+        run: |
+          .venv/Scripts/python.exe scripts/extraction/check-publication.py
+          .venv/Scripts/python.exe scripts/release/provenance.py
+      - name: Core and synthetic update regression
+        run: .venv/Scripts/python.exe -m pytest tests/test_terminal_commands.py tests/test_harness_protocol_06.py tests/test_harness_release_identity.py tests/test_harness_artifact_apply.py tests/test_harness_task_capsule.py tests/test_harness_bootstrap_release.py tests/test_harness_remote_profile.py tests/test_harness_codex_worker.py tests/test_remote_terminal.py tests/test_p1_installation.py -q
+      - name: Shared Provider frozen dependencies
+        run: npm ci --prefix packages/report-provider --ignore-scripts --no-audit --no-fund
+      - name: Writer frozen dependencies
+        run: |
+          npx --yes pnpm@11.25.0 --dir plugins/research-report-writer install --frozen-lockfile --ignore-scripts
+      - name: Consumer tests (mock HTTP, no paid API)
+        run: node --test packages/report-provider/tests/*.test.mjs plugins/research-report-writer/tests/*.test.mjs tools/research-background/tests.mjs
+      - name: Frozen lifecycle build toolchain
+        run: npm ci --prefix components/lifecycle --ignore-scripts --no-audit --no-fund
+      - name: Source-only candidate build
+        run: |
+          .venv/Scripts/python.exe scripts/release/build_candidate.py
+          node scripts/release/check_writer_plugin.mjs
+# This workflow is necessary Windows engineering validation only.
+# Linux-native and M1-M4 remain explicit external acceptance gates.

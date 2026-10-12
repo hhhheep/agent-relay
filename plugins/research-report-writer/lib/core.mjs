@@ -1,3 +1,5 @@
+import { REPORT_PRESET } from "../../../packages/report-provider/index.mjs";
+export { safeProviderStatus } from "../../../packages/report-provider/index.mjs";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -39,8 +41,8 @@ export const DraftResponseSchema = z.object({
   unsupported_claims: z.array(z.string())
 });
 
-export const REPORT_WRITER_MODEL = "deepseek-v4-flash-0731";
-export const REPORT_WRITER_MODEL_FAMILY = "DeepSeek V4-Flash-0731";
+export const REPORT_WRITER_MODEL = REPORT_PRESET.model;
+export const REPORT_WRITER_MODEL_FAMILY = REPORT_PRESET.model_family;
 
 export function sha256Buffer(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
@@ -98,22 +100,4 @@ export function loadEvidencePacket(filePath) {
   const ids = packet.claims.map((claim) => claim.claim_id);
   if (new Set(ids).size !== ids.length) throw new Error("claim_id values must be unique");
   return { ...loaded, packet, sha256: sha256Buffer(Buffer.from(loaded.text, "utf8")) };
-}
-
-export function safeProviderStatus(env = process.env) {
-  const hasApiKey = Boolean(env.DASHSCOPE_API_KEY);
-  const hasBaseURL = Boolean(env.BAILIAN_BASE_URL);
-  return {
-    provider: "bailian",
-    provider_name: "bailian_openai_compatible",
-    configured: hasApiKey && hasBaseURL,
-    has_api_key: hasApiKey,
-    has_base_url: hasBaseURL,
-    has_model: true,
-    model: REPORT_WRITER_MODEL,
-    model_family: REPORT_WRITER_MODEL_FAMILY,
-    api_style: "openai_compatible_chat",
-    thinking_mode: "disabled",
-    fixed_profile: true
-  };
 }

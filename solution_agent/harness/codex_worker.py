@@ -17,7 +17,7 @@ if __package__ in {None, ""}:
 import yaml
 
 from solution_agent.execution_port.io_utils import atomic_write_json
-from solution_agent.harness.remote_profile import load_remote_deploy_profile
+from solution_agent.harness.remote_profile import load_remote_deploy_profile, deployment_profiles_path
 from solution_agent.orchestrator.prompt import build_worker_prompt
 from solution_agent.orchestrator.schema import TaskBook, worker_result_from_dict
 
@@ -34,7 +34,7 @@ def worker_packet(root: Path, profile_id: str, task_id: str, work_unit_id: str,
         raise ValueError("worker_task exceeds 64 KiB; send a compact task with pinned artifact references")
     if phase not in {"prepare_code", "execute_run", "full"}:
         raise ValueError("unsupported worker_phase")
-    profile = load_remote_deploy_profile(root / "config/harness_remote_deploy_profiles.yaml", profile_id)
+    profile = load_remote_deploy_profile(deployment_profiles_path(root), profile_id)
     if Path(profile.solution_agent_root).resolve() != root.resolve():
         raise ValueError("worker profile runtime root mismatch")
     key = _digest({"task_id": task_id, "work_unit_id": work_unit_id})

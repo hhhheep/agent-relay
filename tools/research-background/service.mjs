@@ -21,7 +21,7 @@ export function readConfig(file) {
   const c = JSON.parse(fs.readFileSync(file, 'utf8'));
   c.vault = fs.realpathSync(path.resolve(base, c.vault));
   c.state = path.resolve(base, c.state);
-  c.provider_module = path.resolve(base, c.provider_module);
+  if (c.provider_module) c.provider_module = path.resolve(base, c.provider_module);
   c.credential_env_file = path.resolve(base, c.credential_env_file);
   for (const key of ['output']) {
     if (!c[key] || path.isAbsolute(c[key]) || c[key].split(/[\\/]/).includes('..'))

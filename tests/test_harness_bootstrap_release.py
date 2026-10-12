@@ -34,7 +34,7 @@ def test_bootstrap_release_build_dry_run_and_initial_install(tmp_path: Path) -> 
     assert built["manifest"]["release_id"] == build_runtime_identity(ROOT).release_id
     assert "plugins/solution-agent-harness/.mcp.json" in paths
     assert "plugins/solution-agent-harness/skills/solution-agent-harness/references/feedback.md" in paths
-    assert "config/harness_remote_deploy_profiles.yaml" in paths
+    assert "config/harness_remote_deploy_profiles.example.json" in paths
     assert "config/research_md_sync.example.yaml" in paths
     assert "solution_agent/harness/md_sync.py" in paths
     assert "scripts/harness/run_research_md_sync_plan.py" in paths

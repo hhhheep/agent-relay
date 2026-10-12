@@ -109,3 +109,15 @@ def test_remote_profile_rejects_duplicate_child_window_names() -> None:
     }
     with pytest.raises(ValueError, match="distinct tmux window"):
         parse_remote_deploy_profile("bad", value)
+
+
+def test_external_profiles_file_override_and_legacy_fallback(tmp_path, monkeypatch):
+    from solution_agent.harness.remote_profile import deployment_profiles_path, load_remote_deploy_profile
+    import json
+    path = tmp_path / "profiles.json"
+    path.write_text(json.dumps({"schema_version":1,"profiles":{"TEST":_profile()}}),encoding="utf-8")
+    monkeypatch.setenv("SOLUTION_AGENT_PROFILES_FILE",str(path))
+    assert deployment_profiles_path(tmp_path / "checkout") == path
+    assert load_remote_deploy_profile(deployment_profiles_path(tmp_path),"TEST").name == "TEST"
+    monkeypatch.delenv("SOLUTION_AGENT_PROFILES_FILE")
+    assert deployment_profiles_path(tmp_path) == tmp_path / "config/harness_remote_deploy_profiles.yaml"

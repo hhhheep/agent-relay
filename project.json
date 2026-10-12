@@ -1,6 +1,6 @@
 {
   "name": "agent-relay",
-  "stage": "independent-extraction",
+  "stage": "phase-one-engineering-candidate",
   "runtime": {
     "python": "3.13.12",
     "node": "24.19.0",
@@ -9,17 +9,25 @@
   "live_installation": false,
   "formal_modularization": false,
   "source_map": "docs/extraction/source-map.json",
-  "build": "scripts/extraction/rebuild.ps1",
-  "verify": "scripts/extraction/verify-source.py",
+  "build": "scripts/release/build_candidate.py",
+  "verify": "scripts/release/provenance.py",
   "local_git_initialized": true,
   "source_baseline_committed": true,
-  "verification": "docs/extraction/VERIFICATION.md",
+  "verification": "docs/engineering/phase-one/STATUS.md",
   "known_test_failures": {
-    "initial_core": 1,
+    "initial_core": 0,
     "additional_legacy_workspace_configuration": 9
   },
   "display_name": "Agent Relay",
   "publication_privacy_checked": true,
   "publication_visibility": "private",
-  "repository": "https://github.com/hhhheep/agent-relay"
+  "repository": "https://github.com/hhhheep/agent-relay",
+  "phase_one_verified": false,
+  "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
+  "deployment_matrix": {
+    "M1": "NOT RUN",
+    "M2": "NOT RUN",
+    "M3": "NOT RUN",
+    "M4": "NOT RUN"
+  }
 }

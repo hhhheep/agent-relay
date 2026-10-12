@@ -26,6 +26,8 @@ TOP_LEVEL_FILES = {
     "requirements.txt",
     "requirements-harness.txt",
     "requirements-optional.txt",
+    "requirements-extraction-windows.txt",
+    "requirements-worker-linux.txt",
 }
 TREE_ROOTS = {
     "solution_agent",
@@ -33,8 +35,10 @@ TREE_ROOTS = {
     "plugins/solution-agent-harness",
 }
 EXPLICIT_FILES = {
-    "config/harness_remote_deploy_profiles.yaml",
+    "config/harness_remote_deploy_profiles.example.json",
     "config/research_md_sync.example.yaml",
+    "scripts/release/install_dependencies.py",
+    "docs/engineering/phase-one/INSTALL.md",
     "docs/HARNESS_V2_DEPLOYMENT.md",
     "docs/HARNESS_V2_BOOTSTRAP_INSTALL.md",
     "docs/HARNESS_V2_ACCEPTANCE.md",
