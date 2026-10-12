@@ -16,7 +16,8 @@
   "verification": "docs/engineering/phase-one/STATUS.md",
   "known_test_failures": {
     "initial_core": 0,
-    "additional_legacy_workspace_configuration": 9
+    "additional_legacy_workspace_configuration": 0,
+    "historical_legacy_workspace_configuration": 9
   },
   "display_name": "Agent Relay",
   "publication_privacy_checked": true,
@@ -25,9 +26,16 @@
   "phase_one_verified": false,
   "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
   "deployment_matrix": {
-    "M1": "NOT RUN",
-    "M2": "NOT RUN",
-    "M3": "NOT RUN",
-    "M4": "NOT RUN"
+    "M1": "PARTIAL: Harness cross-end passed; same-host Windows isolation",
+    "M2": "PARTIAL: fresh dependencies and Harness cross-end passed",
+    "M3": "PARTIAL: isolated binding switch and synthetic history preservation passed",
+    "M4": "BLOCKED: original old release requires its hash-bound absolute deployment root"
+  },
+  "workplace_acceptance": {
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
+    "linux_worker": "isolated Linux x64 / Python 3.13.16 / pinned dependencies and stdio verified",
+    "candidate_release_id": "harness-0.6-4e69022edc545f89",
+    "candidate_source_root_sha256": "4e69022edc545f89b24c206c9a260e9be719752088901f00deeb937e521b27b2",
+    "whole_system_verified": false
   }
 }

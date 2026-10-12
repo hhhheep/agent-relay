@@ -15,9 +15,9 @@ Scope: authorized first restructuring in this independent repository. Stage: P1 
 | plugins/research-token-guard | five existing Python CLI scripts and skill | Retained actual receipt/stage ledger owner; no new MCP |
 | root cli.py legacy orchestrator/continuation commands | remote_status/run_remote_materialized_execution and l72 staging/launch prototypes | Source retained. Outside the P1 managed Harness/plugin deployment acceptance surface; excluded original workspace/bootstrap/planner config remains externally required |
 
-The last row is a deployment boundary, not a claim that all legacy source is broken or removed. Evidence: cli.py imports solution_agent.cli, which imports orchestrator/continuation; current managed dispatch is solution_agent/harness/codex_worker.py through terminal_exec. Historical source inventory explicitly did not copy research workspace policies. The three failing legacy remote bootstrap/materializer tests require workspace/bootstrap/conda settings, while six l72 tests read .solution/continuation/planner_policy.yaml from their synthetic workspace. Reproduction: 40 passed / 9 failed. Tests remain intact; no assertions lowered or live configuration imported. Do not use these legacy commands as supported P1 remote dispatch or claim they pass.
+The last row is a deployment boundary, not a claim that all legacy source is broken or removed. The original 40 passed / 9 failed reproduction depended on research checkout inputs that extraction intentionally excluded. The follow-up repairs those test fixtures: temporary synthetic conda profiles/bootstrap inputs and an explicit bounded-probe staging policy. Original assertions remain intact; no private policies are shipped or runtime defaults introduced. The two legacy suites plus missing-bootstrap-policy regressions now pass: 55 passed. This verifies their tested behavior, not authorization or readiness to dispatch a real research project through the legacy CLI.
 
-Windows x64 / Python 3.13 / Node 24 client is locally exercised. Linux x64 Worker is a candidate target with pending native installation. Source extraction is not a supported deployed old release. Old install ZIP/manifest/hash and isolated Linux host are needed for full deployment acceptance; no special separate "isolation package" is required. The original local-to-remote install artifacts can be installed unchanged in isolated directories/targets. The preparation chat located the preferred old Harness installation package at the user's request. It is the original local-to-remote installation artifact, not a new isolation package.
+Windows x64 / Python 3.13 / Node 24 client is exercised in isolated same-host environments. At the user's explicit authorization, an isolated test directory was created in the declared Linux workplace. Python 3.13.16 and exact Worker pins install there; dependency integrity and real Windows-to-Linux Harness stdio checks pass. The original old install artifact is available, but its unchanged hash-bound configuration prevents activation at another absolute runtime root. Detailed scope and private receipt hashes are summarized in WORKPLACE_ACCEPTANCE.md; whole-system P1 remains unverified.
 
 ## Implemented engineering
 
@@ -25,7 +25,7 @@ Compact real-consumer layout, Provider authority migration, fixed preset and saf
 
 ## Verified and pending
 
-Detailed machine receipts stay ignored under .verification. Public summaries are engineering evidence, not remote acceptance.
+Detailed machine receipts stay ignored under .verification. Remote component evidence is distinguished from whole-system acceptance below.
 
 - Core cancellation, protocol, identity, artifact apply, TaskCapsule, bootstrap/install, profiles, Codex worker and remote-terminal synthetic tests: 90 passed / 2 existing Windows POSIX-only skips before the final configuration regression. Additional config/bootstrap check: 11 passed.
 - Writer 9 and Background 12 tests pass. Shared provider golden consumer tests: 2 pass, mock HTTP through the real SDK, no paid API.
@@ -37,16 +37,16 @@ Detailed machine receipts stay ignored under .verification. Public summaries are
 
 | Scenario | Result | Missing evidence |
 | --- | --- | --- |
-| M1 new client / existing Worker | NOT RUN | isolated client + authorized existing Worker copy + matching install artifacts |
-| M2 new client / new Worker | NOT RUN | isolated Linux target and true two-end configuration/identity/dispatch/receipt test |
-| M3 existing client / new Worker | NOT RUN | isolated client configuration/state copy, new Linux target, binding-switch evidence |
-| M4 existing client / existing Worker update | NOT RUN | actual isolated Windows × Linux deployments; old Harness artifact and local component update/rollback evidence are now available |
+| M1 new client / existing Worker | PARTIAL; Harness cross-end passed | Same Windows host isolated client, not another physical Windows device; complete required component coverage pending |
+| M2 new client / new Worker | PARTIAL; fresh dependencies and Harness cross-end passed | Full required component/runtime coverage and independent Windows device pending |
+| M3 existing client / new Worker | PARTIAL; binding switch and preservation passed | Isolated old-client configuration/history exercise, not live-client activation |
+| M4 existing client / existing Worker update | BLOCKED at original isolated activation | Old profile is identity-hashed and requires original absolute runtime root; no live update performed |
 
 Local builder dry-run/install, original-command recovery, cancellation/lease/CAS tests cannot stand in for these rows. Unknown peer remains blocked by unchanged verify_pair. No arbitrary old/new software-version interoperability is promised.
 
 ## Next acceptance steps
 
-The old Harness install artifact is identified and locally rehearsed; retain its immutable ZIP and paired Client manifest for target testing. Obtain an explicitly authorized isolated Linux target. Repeat local installation documentation on the declared targets, run each M row including preserved original IDs/receipts/configuration, consistent SQLite backup and backward-read/rollback. Resolve any target-native or required-consumer failures. Only then freeze P1 layout and advertise a supported release. No paid resources or live cutover are included.
+The declared Linux workplace now provides an authorized isolated test target. Retain the immutable old ZIP and paired Client manifest. Resolve how to activate that exact old release in a genuine isolated environment despite its hash-bound absolute root, then complete M4 both-end activation/update/rollback. Complete remaining component/device coverage for M1–M3. Only then freeze P1 and advertise a supported release. No paid research execution or live cutover is included.
 
 
 ## Final local component evidence

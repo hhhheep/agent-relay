@@ -28,7 +28,10 @@ jobs:
       - name: Core and synthetic update regression
         run: .venv/Scripts/python.exe -m pytest tests/test_terminal_commands.py tests/test_harness_protocol_06.py tests/test_harness_release_identity.py tests/test_harness_artifact_apply.py tests/test_harness_task_capsule.py tests/test_harness_bootstrap_release.py tests/test_harness_remote_profile.py tests/test_harness_codex_worker.py tests/test_remote_terminal.py tests/test_p1_installation.py -q
       - name: Shared Provider frozen dependencies
+        # Legacy suites use explicit synthetic workspace inputs; no private policies.
         run: npm ci --prefix packages/report-provider --ignore-scripts --no-audit --no-fund
+      - name: Legacy synthetic workspace regression
+        run: .venv/Scripts/python.exe -m pytest tests/test_remote_status_worker_agnostic.py tests/test_continuation_three_agent_flow.py tests/test_workflow_profile.py -q
       - name: Writer frozen dependencies
         run: |
           npx --yes pnpm@11.25.0 --dir plugins/research-report-writer install --frozen-lockfile --ignore-scripts

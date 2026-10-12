@@ -25,6 +25,11 @@
       "current_sha256": "95a33362743af407d5d5d38dad76f43802f3e533c80b10a2d0ed77768f354684"
     },
     {
+      "path": "tests/test_continuation_three_agent_flow.py",
+      "extraction_sha256": "00a76956faf5e7b73e56fd4708c5b4aa94ee4146396da6357a39de75497d3218",
+      "current_sha256": "59f6c16208c529c62aa81213279842cffbf06ef6586dadc342353c079ba50c10"
+    },
+    {
       "path": "tests/test_harness_bootstrap_release.py",
       "extraction_sha256": "a8a845b6b4a39d708ee83fb19e3df8854635c039e15d77cbb3ddbac08914bdfe",
       "current_sha256": "f60755d86676f0ebe92fb9bedfe730b44cb29fd99c5ca97e6dc2fd6c4b2c187d"
@@ -33,6 +38,11 @@
       "path": "tests/test_harness_remote_profile.py",
       "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
       "current_sha256": "e36aee9d225a3e9c2bdc87d98250b45c2b15cdc864249b36235a9b8eb4a86250"
+    },
+    {
+      "path": "tests/test_remote_status_worker_agnostic.py",
+      "extraction_sha256": "03894493c7071493375fa9f4a0aad54673766bea332fd4d64b33e7483d615f31",
+      "current_sha256": "b975c06491f846ca2acd8f69b4fd7848817aa4645a86fbf75099a04f487a87e9"
     },
     {
       "path": "tests/test_terminal_commands.py",

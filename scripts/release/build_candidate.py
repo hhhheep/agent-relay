@@ -27,10 +27,20 @@ def main():
         for path in sorted((out/'research-report-writer').rglob('*')):
             if path.is_file(): archive.write(path,path.relative_to(out/'research-report-writer').as_posix())
     client=out/'windows-client-source.zip'
+    client_manifest_name='plugins/solution-agent-harness/release_manifest.json'
+    if client_manifest_name in client_names: raise RuntimeError('Client release manifest must be generated, not authored')
+    # The Worker archive's payload digest identifies archive contents. The
+    # launcher compares runtime source identity, exactly as its route() expects.
+    client_manifest={key:worker['manifest'][key] for key in
+                     ['protocol_version','release_id','source_root_sha256','mcp_schema_sha256']}
+    client_manifest['worker_archive_sha256']=worker['sha256']
+    client_manifest_bytes=(json.dumps(client_manifest,indent=2)+'\n').encode('utf-8')
     with zipfile.ZipFile(client,'w',zipfile.ZIP_DEFLATED) as archive:
         for name in client_names: archive.write(ROOT/name,name)
+        archive.writestr(client_manifest_name,client_manifest_bytes)
     with zipfile.ZipFile(client) as archive:
-        if archive.namelist()!=client_names: raise RuntimeError('Client inventory mismatch')
+        if archive.namelist()!=client_names+[client_manifest_name]: raise RuntimeError('Client inventory mismatch')
+        if archive.read(client_manifest_name)!=client_manifest_bytes: raise RuntimeError('Client manifest byte mismatch')
         for name in client_names:
             if archive.read(name)!=(ROOT/name).read_bytes(): raise RuntimeError('Client byte mismatch')
     commit=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True,check=True).stdout.strip()
@@ -43,8 +53,16 @@ def main():
         'targets':{'windows-x64-client':'LOCAL_VALIDATION_ONLY','linux-x64-worker':'NOT_RUN'},
         'matrix':{key:'NOT_RUN' for key in ['M1','M2','M3','M4']},
         'harness_identity':{key:worker['manifest'][key] for key in ['protocol_version','release_id','source_root_sha256','mcp_schema_sha256']},
-        'artifacts':artifacts,'client_files':len(client_names),'worker_files':worker['files'],
+        'artifacts':artifacts,'client_files':len(client_names)+1,'worker_files':worker['files'],
         'source_changes_sha256':hashlib.sha256((ROOT/'docs/engineering/phase-one/source-changes.json').read_bytes()).hexdigest()}
+    project=json.loads((ROOT/'project.json').read_text(encoding='utf-8'))
+    acceptance=project.get('workplace_acceptance',{})
+    if (acceptance.get('candidate_release_id')==worker['manifest']['release_id'] and
+        acceptance.get('candidate_source_root_sha256')==worker['manifest']['source_root_sha256']):
+        manifest['targets']['linux-x64-worker']='ISOLATED_INSTALL_AND_HARNESS_STDIO_VERIFIED'
+        manifest['matrix']=project['deployment_matrix']
+        manifest['prior_component_acceptance']=acceptance
+    # A previous component receipt never upgrades this artifact to P1 Verified.
     (out/'candidate.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(manifest))
 if __name__=='__main__': main()

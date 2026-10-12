@@ -1,6 +1,6 @@
 # Agent Relay — P1 engineering candidate
 
-First restructuring is now implemented on the independent source, with the existing plugin/MCP identities and state contracts retained. This is a locally verified development candidate; Linux-native and Windows × Linux M1–M4 deployment acceptance are pending. No live installation was switched.
+First restructuring is implemented on the independent source, with existing plugin/MCP identities and state contracts retained. Isolated Linux Worker installation and Windows × Linux Harness checks now pass for M1–M3; whole-system acceptance remains partial and original-package M4 activation is blocked by its hash-bound deployment root. See [workplace evidence](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md). No live installation was switched.
 
 Start with [installation/update/extension instructions](docs/engineering/phase-one/INSTALL.md), [engineering status and acceptance matrix](docs/engineering/phase-one/STATUS.md) and [authority/migration decisions](docs/engineering/phase-one/DECISIONS.md). Run `python scripts/release/build_candidate.py` for checked source-only client/Worker artifacts; dependencies are rebuilt at the destination. Shared provider authority is `packages/report-provider/`, consumed by Writer and Background.
 
