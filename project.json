@@ -54,7 +54,7 @@
     "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
     "windows_native": "PASSED: 255 packages freshly downloaded, SQLite/XATS memory build, 77 Lifecycle/goal",
     "router_harness_adapter": "PASSED: real SDK connection to isolated Worker and original command recovery",
-    "whole_system": "PARTIAL: native Codex App bridge deployment and Writer remote business adapter not exercised end-to-end",
+    "whole_system": "ISOLATED_ACCEPTANCE_COMPLETE; live activation, native App send and paid report generation NOT RUN",
     "tested_artifacts": {
       "harness-worker.zip": "17a4c55043b46bd8234d4f275b1a04ae67adcfe4d94d3f3855d82020f3227b17",
       "windows-client-source.zip": "02f3261f8885687f56f274ab8b9e0d5ed2427c315360f318bbbd280c3ff4ba74",
@@ -63,10 +63,13 @@
       "research-report-writer.zip": "fb7476770e3a523bbae3bc39ce64ef5a9e11ea6f689f73b47c3cb33c53b9bf26"
     },
     "unverified": [
-      "NativeAppPort against a declared genuine native App stdio server",
-      "Writer remote business adapter over its own SSH route",
-      "Another physical Windows computer; same-host clean installation is the actual tested target",
-      "GitHub Actions execution; workflow is configured only"
-    ]
+      "Native App send: no test destination explicitly authorized",
+      "Paid report generation: outside engineering acceptance; mock Provider consumer tests passed",
+      "Another physical Windows computer: unavailable; same-host clean installation was tested",
+      "GitHub Actions execution: configured only; no push",
+      "Live deployment and research work: outside authorized isolation scope"
+    ],
+    "native_app_bridge": "PASSED: production NativeAppPort with installed official stdio server, trusted current caller/pipe, exact identity and read destination; no send",
+    "writer_remote_adapter": "PASSED: standalone MCP to actual SSH remote validation; synthetic evidence SHA256 verified and outside-root rejected; no credentials/model call"
   }
 }

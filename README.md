@@ -72,6 +72,6 @@ Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background �
 
 Harness 的 M1–M4 隔離跨端驗收已通過：新客戶端連舊 Worker、兩端全新安裝、既有客戶端新增 Worker binding，以及舊版 → 候選版 → 舊版更新／回退。回退保留十三份配置、歷史與結果檔案，兩版完成的命令仍可用原 ID 查回；artifact 審核與 CAS 提交也有實際回執。舊包固定路徑的問題已透過 Linux 私有 namespace 解決，原包內容與身份保持一致。
 
-Windows 證據來自同一台電腦的全新隔離安裝，Linux 使用固定且標註為測試用的 workplace 目錄。Codex 原生 App 接線與 Writer 自己的遠端業務 adapter 尚未完成完整實機驗證，因此整套系統仍未宣稱 P1 Verified。现用部署未切換，GitHub 推送與 Actions 執行尚未完成。路由沿用 Codex 原生查詢與既有 ID；沒有新增 transport owner 執行鎖。
+Windows 證據來自同一台電腦的全新隔離安裝，Linux 使用固定且標註為測試用的 workplace 目錄。Codex 原生 App 的身份核對與讀取已用官方入口實測；Writer 也已用自己的 SSH adapter 完成遠端證據驗證。跨 chat 發訊息及付費模型撰寫未在這次工程驗收中執行，整套系統仍以工程候選版交付。現用部署未切換，GitHub 推送與 Actions 執行尚未完成。路由沿用 Codex 原生查詢與既有 ID；沒有新增 transport owner 執行鎖。
 
 具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。

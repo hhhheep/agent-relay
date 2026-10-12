@@ -1,6 +1,6 @@
 # Current P1 acceptance — 2026-10-12
 
-Stage: **P1 engineering candidate**. Current Harness M1–M4 isolated acceptance passed; whole-system P1 is still partial. Live plugins, hooks, deployment, research state and schedules were not changed. This page supersedes the chronological [earlier rounds](ACCEPTANCE_HISTORY.md).
+Stage: **P1 engineering candidate**. Current Harness M1–M4 isolated acceptance passed; the authorized isolated acceptance is complete. This does not promote untested live activation or paid execution to P1 Verified. Live plugins, hooks, deployment, research state and schedules were not changed. This page supersedes the chronological [earlier rounds](ACCEPTANCE_HISTORY.md).
 
 ## Requirements and evidence
 
@@ -17,6 +17,8 @@ Stage: **P1 engineering candidate**. Current Harness M1–M4 isolated acceptance
 | M3 existing client / clean Worker | PASSED, isolated Harness | package-M3.local.json; additive binding; original profile/receipt/SQLite history hashes unchanged |
 | M4 supported old / current / old | PASSED, isolated Harness | Current forward/reverse hash-bound plans, four recovery receipts, 13 preserved hashes, SQLite-consistent backup and zero transient units |
 | Real Router Harness adapter | PASSED against isolated Worker using installed SDK | router-harness-real.local.json; original M2 command recovered without resubmission |
+| Native Codex App bridge | PASSED: production NativeAppPort with official installed stdio server, trusted caller/pipe, exact identity and thread read | native-app-real.local.json; no send or pipe discovery |
+| Writer remote business adapter | PASSED: standalone MCP and own real SSH route, synthetic evidence SHA256 and outside-root rejection | writer-remote-real.local.json; no credentials/model call |
 | S5 documentation, privacy, provenance, extension | Installation/update steps, unique owners and real Writer/Background Provider consumers documented; publication/provenance gates required before packaging | [Install](INSTALL.md), [workplace record](WORKPLACE_ACCEPTANCE.md), source-changes.json, build_candidate.py |
 
 Private receipts remain ignored under `.verification/full-acceptance/`; the published workplace record contains bounded methods and hashes, without private profiles or research data. The current tested runtime is `harness-0.6-6f9532ef91a5cdae`, source root `6f9532ef91a5cdaec9cfc345f888039b64f29f39472d4c1288f3ecc0f44efe91`. Original supported baseline is `harness-0.6-cdf4c9cbb9e48fb2`, ZIP SHA256 `067da359bf8ee832fc03a0c4a81e8da8cf90a9fd58c6eb3da22d5b0d505f8d1d`. Strict protocol/workplace pairing remains unchanged; arbitrary old/new release interoperability is not claimed.
@@ -25,10 +27,19 @@ Private receipts remain ignored under `.verification/full-acceptance/`; the publ
 
 | Item | Status and reason | Completion evidence needed |
 | --- | --- | --- |
-| Native Codex App bridge | NOT RUN end-to-end. NativeAppPort requires a declared genuine App stdio server path plus trusted caller/pipe context. The source archive does not supply that host service; isolated integration tests use an App fixture. A direct native read_thread call alone does not prove this adapter. | Bootstrap production NativeAppPort through the declared host server, verify genuine caller identity and read route; any send requires an explicitly authorized destination. No pipe discovery, impersonation or transport-owner lock. |
-| Writer remote business adapter | NOT RUN end-to-end through its own SSH adapter. Standalone MCP handshake, local validation and shared Provider consumers passed; Harness cross-end receipts do not prove Writer's separate remote path. | Run status/validation against an explicit isolated remote Writer profile with synthetic evidence, verify result/ownership and no paid model call. |
+| Native App send / paid Writer draft | NOT RUN; no messaging destination or paid execution is included in this engineering test. Existing integration/Provider fixtures passed. | Explicit authorized use-case and actual receipt; no claim of live message delivery or paid drafting. |
 | Another physical Windows device | NOT AVAILABLE. Evidence is same-host clean installation, explicitly allowed as the clean-install scenario; it does not prove another OS image or machine. | An additional declared device if broader hardware coverage is requested. |
 | GitHub Actions | NOT RUN remotely. Workflow is configured; no push/run is claimed. | Actual workflow receipt after authorized publication. |
 | Live deployment and research work | NOT RUN; outside this isolation task. | Separate deployment/task authorization and loaded-session verification. |
 
-The first two items limit the whole-system claim. M1–M4 Harness results are complete for their tested scope and are no longer marked pending because of unavailable physical hardware or intentionally untouched live configuration. All source fixes stay in the repository authority; no installed copy is a permanent fix.
+These exclusions limit deployment and paid business-execution claims; they are not unresolved failures of the completed isolation checks. M1–M4 Harness results are complete for their tested scope and are no longer marked pending because of unavailable physical hardware or intentionally untouched live configuration. All source fixes stay in the repository authority; no installed copy is a permanent fix.
+
+## Genuine host and Writer adapter closure
+
+The installed Codex package supplies `app/resources/plugins/openai-bundled/plugins/codex-app-tools/server.mjs` and official launch scripts. This native-tools MCP entry is distinct from the public `codex app-server` JSON-RPC interface. Installed server SHA256: `264116eb1273ab0e36b177198540afe943b533b89a4f27abfd178f476a4b8afc`. Production NativeAppPort used only the current executor's supplied caller/pipe, verified caller/host identity and read the exact caller thread. No message, hook change, pipe search or substitute server was used.
+
+Standalone Writer exposed its six tools. Provider was unconfigured; the explicit test SSH route validated one synthetic claim, returning evidence SHA256 `8903e789d862e440112d74391bcf6c85c74c71b2ed4c1d275d5d178b3eff53f5`. Installed remote script matches source SHA256 `6e5be0e2a804474e5422ce8726f08abb1d8d77e49b59438b57019c90884302e4`. Private receipt SHA256: `a907d31d710479be693f2747fe523bbe156434a0b8074b88c5be5d98184483c5`. Outside-root input was rejected. No provider credential or report content was sent; roots remain inside the installed script's deployment boundary.
+
+Diagnostics retained: sandbox networking/pipe access returned permission errors; the same read-only tests passed in the authorized normal environment. An acceptance assertion read `remote_writer_status.configured` instead of `remote_writer_status.remote.configured`; only the verifier was corrected. Initial fixture placement was moved inside the deployed Writer boundary before invoking its adapter. A TaskCapsule observation conflict was resolved by querying the original succeeded command ID, without resubmission.
+
+The authorized Linux/native/archive/matrix checks and documentation deliverables are complete. Candidate stage is retained; this record does not authorize live cutover or broaden supported devices/releases.
