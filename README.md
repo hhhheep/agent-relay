@@ -1,69 +1,73 @@
-# Agent Relay — P1 engineering candidate
+# Agent Relay
 
-First restructuring is implemented on the independent source, with existing plugin/MCP identities and state contracts retained. Isolated Linux Worker installation and Windows × Linux Harness checks now pass for M1–M3; whole-system acceptance remains partial and original-package M4 activation is blocked by its hash-bound deployment root. See [workplace evidence](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md). No live installation was switched.
+Agent Relay 把 Windows 上的插件、MCP 工具與遠端 Linux Worker 接起來，讓本地助手把工作交給指定的遠端環境執行，再取回可核對的結果。它也整理了報告撰寫、背景工作、任務路由與執行紀錄所需的共用程式，讓這些工具可以從同一個來源維護、打包和重建。
 
-Start with [installation/update/extension instructions](docs/engineering/phase-one/INSTALL.md), [engineering status and acceptance matrix](docs/engineering/phase-one/STATUS.md) and [authority/migration decisions](docs/engineering/phase-one/DECISIONS.md). Run `python scripts/release/build_candidate.py` for checked source-only client/Worker artifacts; dependencies are rebuilt at the destination. Shared provider authority is `packages/report-provider/`, consumed by Writer and Background.
+這個 repository 是共用工具的開發來源。研究專案的資料、環境、工作目錄與執行狀態仍由各研究專案管理；安裝包不攜帶研究資料或帳號金鑰。
 
-Historical extraction details follow; their test results and limitations describe the earlier baseline, not the new engineering candidate.
+## 怎麼工作
 
-This is a separate development project for the shared system: Python core/Harness MCP, lifecycle/router, XATS messaging/MCP upstream, remote-worker and artifact/Markdown delivery code, Writer MCP/provider, Token Guard, and background/Windows tooling. Existing services and plugin bindings remain on their original installation. See [the functional inventory](docs/extraction/ENTRYPOINTS.md) for each capability and its verification boundary.
+1. 在 Windows 客戶端選擇已配置的 workplace 與 Linux Worker。Harness 先核對兩端的 release、工具契約和 workplace 身份。
+2. 本地助手透過 Harness MCP 提交終端命令或遠端 Codex 工作。Worker 在指定的工作目錄執行，留下 command ID、狀態和回執。
+3. 客戶端用同一個 ID 查詢進度、恢復連線並取回結果。傳送結果不確定時，先查原 ID，避免重複執行。
+4. 文件與執行結果透過 Harness 的 artifact／回執機制交付，核對來源與雜湊後，再進行本地檢視或後續處理。
 
-## Included source
-- `solution_agent/`, `scripts/harness/`, `tests/`: release-matched Python core/Harness and existing source-only additions.
-- `components/lifecycle/`: router/manager and lifecycle entry sources.
-- `components/goal-routing-integration/vendor/`, `components/xats-routing-lab/upstream/`: required selected upstream source and licenses.
-- `plugins/`: Harness, current report writer/provider and Token Guard maintenance source.
-- `tools/research-background/`: background worker and Windows launcher source, synthetic development config.
-- `docs/extraction/`: source mapping, adjustments and verification results.
-- `docs/planning/`: later architecture and maintenance task specifications.
+Report Writer 可以根據已整理的證據撰寫 Markdown；Background 管理自己的背景規則與佇列。它們共用同一套 Provider 配置和模型 preset。Lifecycle 與路由整合負責工具間的工作生命週期與訊息接線，Token Guard 提供大型命令輸出的有界紀錄與可核對回執。
 
-No research corpus, active state, credentials, old venv/node_modules or existing Git history is copied into the source tree.
-Development dependencies are reconstructed separately under ignored `.venv/` and `.deps/`; no external links to the original runtime are allowed.
+## 專案裡有哪些部分
 
-## Scope
-Independent source baseline for private GitHub version control. Source publication does not register plugins, change hooks, deploy services, or migrate the live system.
-Original runtime and research locations are preserved. Do not execute installation/start/stop scripts against the current system.
-The background `config.json` addresses only this project's empty fixture vault and a nonexistent local credential file.
+| 部分 | 用途 | 維護來源 |
+| --- | --- | --- |
+| Core / Harness | 遠端命令、Worker 派送、身份檢查、狀態查詢及 artifact 交付 | `solution_agent/`、`scripts/harness/` |
+| Harness 插件 | 把既有 Harness 工具提供給本地 MCP 客戶端 | `plugins/solution-agent-harness/` |
+| Lifecycle / Routing / XATS | 任務生命週期、路由與訊息服務整合 | `components/lifecycle/`、`components/goal-routing-integration/`、`components/xats-routing-lab/` |
+| Report Writer | 證據檢查、報告撰寫與 Markdown 交付 | `plugins/research-report-writer/` |
+| Report Provider | Writer 與 Background 共用的傳輸、配置與版本化模型 preset | `packages/report-provider/` |
+| Background | 背景工作規則、佇列、狀態及 Windows 啟動入口 | `tools/research-background/` |
+| Token Guard | 大型輸出的有界擷取、雜湊與回執 | `plugins/research-token-guard/` |
 
-## Verification
-See `docs/extraction/VERIFICATION.md` and machine-readable receipts.
-Python uses `.venv/Scripts/python.exe` on Windows; invoke project scripts from this root.
-Router build: `node components/lifecycle/build-router-package.mjs` (writes candidate artifacts inside this project).
-Writer: `node --test plugins/research-report-writer/tests/core.test.mjs`.
-Background: `node --test tools/research-background/tests.mjs` (mock provider, synthetic state only).
-Formal Nx/uv/pnpm modularization, GitHub publication, Linux-native validation and live cutover are subsequent phases.
+既有 `solution_agent` namespace、插件名稱與 MCP 工具名稱保留。新增功能時，先找到表中的來源修改，再重新打包；生成的安裝副本不作為永久修改來源。
 
-## Extraction results
+## 這次整理完成了什麼
 
-904 mapped publication source files (40 private historical files excluded from the original 944-file extraction); router/writer/background/Guard checks pass. The initial Python core check has one cancellation failure and two skips; additional legacy checks have nine failures involving workspace configuration, documented in verification; see [verification](docs/extraction/VERIFICATION.md). Linux-native validation and online dependency reinstall remain unverified.
+原先分散在工具與部署目錄中的程式，現在有獨立、可追溯的開發來源。主要模組沿用既有布局，Writer 與 Background 的 Provider 已抽成真正共用的模組；部署配置可以放在機器私有位置，依賴按 Windows 客戶端與 Linux Worker 分別重建。
 
+目前可以產生客戶端來源包、Worker 安裝包及獨立 Writer 插件包。安裝器會檢查包的雜湊和目標目錄，客戶端包帶有配對所需的 Harness release manifest。取消工作時的競態已修復；原先依賴私人研究目錄的九項測試已改用完整的合成測試資料並通過，保留原有行為檢查。
 
+## 從來源開始
 
-## Publication boundary
+Windows 開發與打包使用 Python 3.13、Node 24、Git、npm 與 pnpm 11.25。Linux Worker 使用 Python 3.13；SSH、tmux、systemd user 與 Codex CLI 的需求取決於選用的執行方式。XATS 的 SQLite 原生模組需要在目標 OS、架構與 Node ABI 下建置。
 
-The source project is named **Agent Relay**; existing Python namespaces, MCP tool identities and plugin names remain compatible. Private historical receipts are outside this source tree. Dependencies, local configuration and generated artifacts are excluded by Git rules.
+取得 repository 後，在根目錄執行：
 
-Only variable names, relative paths and clearly synthetic examples belong in the source release. Configure actual workplace/SSH/provider paths and credentials through per-machine overrides outside Git. Security tests assemble explicitly fake credential-shaped values to exercise redaction.
+```powershell
+python scripts/release/install_dependencies.py --role windows-client
+python scripts/release/build_candidate.py
+```
 
-Run `python scripts/extraction/check-publication.py` before staging. Run `python scripts/extraction/package-source.py` to create a checked source-only ZIP under ignored `.verification/`; do not archive the entire development directory. This check supplements review of staged changes and any reachable Git history.
+依賴安裝到專案自己的環境。打包前會核對來源追溯與發布邊界，產物位於 `dist/p1-candidate/`：
 
+| 產物 | 使用方式 |
+| --- | --- |
+| `windows-client-source.zip` | 解壓到新的客戶端目錄，再安裝客戶端依賴並配置插件；包含配對 manifest |
+| `harness-worker.zip` | 用隨附的 bootstrap 安裝器安裝到新的 Worker 目錄，再重建 Linux 依賴 |
+| `research-report-writer.zip` | 獨立 Writer 插件包，包含共用 Provider、SDK 與依賴授權文件 |
+| `install_bootstrap_release.py` / `install_overlay.py` | 分別處理全新目錄安裝與受控 overlay 更新 |
+| `candidate.json` | 記錄來源 commit、runtime identity、產物雜湊和驗收狀態 |
 
-## Baseline publication — 2026-10-12
+這些產物還需要機器配置與插件接線。完整的安裝、dry run、更新和回退步驟見[安裝指南](docs/engineering/phase-one/INSTALL.md)。
 
-Agent Relay coordinates MCP tools, task routing, remote workers and artifact delivery, with shared writer, output-guard and background utilities. This repository preserves the independent extraction baseline before formal architecture normalization.
+## 連線與私有配置
 
-The known initial cancellation failure, nine additional legacy workspace-configuration failures and two initial skips remain documented in `docs/extraction/VERIFICATION.md`. Online dependency reinstall, Linux-native rebuild and live cutover have not been verified. Local receipts and dependency environments are excluded from the repository.
+Harness 客戶端需要自己的 workplace 宣告、SSH 連線設定與 Worker binding。兩端的 `.solution-agent/workplace.id` 必須相同，客戶端 manifest 必須對應實際載入的 Worker release；只複製原始插件目錄不足以完成配對。現有 Launcher 使用控制目錄中的 `remote-workplaces/connection-policy.yaml` 與所選 workplace 宣告。
 
-Private repository: https://github.com/hhhheep/agent-relay
+Worker 部署 profile 可參考 `config/harness_remote_deploy_profiles.example.json`。透過執行環境中的 `SOLUTION_AGENT_PROFILES_FILE` 選取私有配置，或使用既有私有 checkout 配置位置；各啟動入口需明確提供所需環境變數。範例值必須換成實際授權的目標。
 
-Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A clean GitHub clone reproduced all 941 baseline source files byte for byte; clone-owned offline dependencies passed the Harness 11-tool check, router/XATS build, and Writer/background tests. Online reinstall and Linux-native validation remain unverified.
+Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background 需要自己的 vault、state、rules 與 credential 引用。這些設定、workplace 身份、執行 DB、佇列與回執不放進 Git，也不隨共用安裝包分發。
 
-## 正規化與分期（2026-10-12）
+## 目前可以用到哪裡
 
-當前工程範圍：[第一期與按需分期](docs/planning/normalization-20261012/PHASED_DELIVERY.md)。先整理來源、Windows客戶端/Linux Worker兩端可重建安裝，驗證新/舊、新/新、舊/新、舊/舊更新；保留真實擴展位置及原插件/MCP用法。
+目前是 **P1 工程候選版**。已完成隔離 Linux Worker 安裝，以及 M1 新客戶端／舊 Worker、M2 新／新、M3 舊客戶端／新 Worker 的 Harness 跨端檢查。這些檢查使用同一台 Windows 的隔離環境，涵蓋 Harness 元件，完整四情境驗收仍未完成。
 
-第一期保留現有主要目錄；原941完整遷移map/apps/packages布局只是候選分析，非搬檔指令。[主任务書](docs/planning/normalization-20261012/TASKBOOK.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)已分清P1範圍。功能擴展、更新自動化、研究工作台各按實際使用需求觸發，不自動全部做；第一期暫估9–15基礎/約12–19含餘量人日，非日曆承諾。
+M4 舊／舊更新與回退尚有阻礙：原舊包把部署根目錄納入身份雜湊，直接搬到隔離目錄後無法啟用原身份。需要能保留原路徑的隔離環境，或另行建立經驗證的可搬移基線。現用部署尚未切換；GitHub 分支推送與 CI 執行也尚未完成。
 
-已完成四輪架構/維護討論及使用者後續分期修訂；最新P1實作與本機驗證見上方工程狀態。四情境跨端安裝及現用切換尚未執行。[歷史計劃索引](docs/planning/README.md)保留追溯。
-
-下一個agent必讀[根AGENTS](AGENTS.md)、[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。最小完整修復、唯一來源、原契約/state、必要驗證及交接仍須遵守；專案經驗留所屬project，不自動上升全域或其他repo。
+具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。

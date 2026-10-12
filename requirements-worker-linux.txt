@@ -1,5 +1,6 @@
 # Candidate Linux worker pins derived from the Windows baseline, excluding Windows-only bindings.
-# Linux-native resolution and installation are NOT VERIFIED.
+# Isolated Linux x64 / Python 3.13.16 installation and pip check verified.
+# Whole-system acceptance remains partial; see docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md.
 annotated-types==0.6.0
 anyio==4.10.0
 attrs==26.1.0

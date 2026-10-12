@@ -1,9 +1,9 @@
 # Agent Relay 正規化施工任務書
 
 最新施工授權：[FIRST_RESTRUCTURE_EXECUTION](FIRST_RESTRUCTURE_EXECUTION.md)。使用者已要求新chat開始P1，首次可集中重整框架，不受小步修改/必保留舊物理目錄限制；定版後才轉為漸進維護。下文只規劃/保留主要目錄的先前限制由此授權取代；第一期四情境、原契約/state、現用保護及後期按需範圍不變。
-日期：2026-10-12。狀態：經跨聊天審查的設計包；未開始程式遷移，未切換現用安裝。這是本次正規化的最新主文件，取代 10/10–10/11 文件中未落實的結構、Nx 必選及工程估算建議。歷史盤點仍保留。
+日期：2026-10-12。狀態：保留經跨聊天審查的設計與施工範圍；第一期已有工程候選，未切換現用安裝。這是本次正規化的最新主文件，取代 10/10–10/11 文件中未落實的結構、Nx 必選及工程估算建議。歷史盤點仍保留。
 
-最新範圍已依使用者要求分期：[第一期及按需路線](PHASED_DELIVERY.md)是施工範圍權威；[ADR-002](ADR-002-PHASED-DELIVERY.md)取代下面完整布局/C1–C6一次做完的預設。第一期只做來源整理、Windows/Linux四種新舊情境安裝與受控更新、真實擴展基礎。當前仍僅文件。
+最新範圍已依使用者要求分期：[第一期及按需路線](PHASED_DELIVERY.md)是施工範圍權威；[ADR-002](ADR-002-PHASED-DELIVERY.md)取代下面完整布局/C1–C6一次做完的預設。第一期只做來源整理、Windows/Linux四種新舊情境安裝與受控更新、真實擴展基礎。目前實作及驗收結果見[工程狀態](../../engineering/phase-one/STATUS.md)與[workplace驗收](../../engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。
 
 ## 1. 交付目的與範圍
 
@@ -11,7 +11,7 @@
 
 已完成：獨立來源、隱私清理、私人 GitHub 基線及 Windows 離線乾淨 clone 驗證。基準 commit 為 `6337753ed436e9d230b50c2e1c2356f6c8bf4ee5`，941 tracked files，904 映射來源。基線 tag 為 `extraction-baseline-2026-10-12`。
 
-本次 goal 交付文件、來源映射、接口與擴展邊界、逐批驗收及估算，並实际更新根 AGENTS 與維護準則。施工中的 package metadata、locks、validators、updater 仍是待做能力。未來獨立正規化工程與現用切換是不同工作範圍；不能從這份文件推導部署授權。
+原設計任務交付文件、來源映射、接口與擴展邊界、逐批驗收及估算，並实际更新根 AGENTS 與維護準則。這份設計中的完整 package metadata、locks、validators、updater 候選須逐項核對目前實作，不能由設計文件推定已交付。未來獨立正規化工程與現用切換是不同工作範圍；不能從這份文件推導部署授權。
 
 不把研究 Conda/GPU 環境、vault、真實 credentials、運行 DB、queue、leases、workplace 身份帶進共用程式 repo。研究文件沿原本權威來源保存；OS clipboard 不代替 Harness Artifact Clipboard。
 

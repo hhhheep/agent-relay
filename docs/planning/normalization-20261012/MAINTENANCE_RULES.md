@@ -1,7 +1,7 @@
 # Agent Relay 維護準則
 
 最新施工授權：[FIRST_RESTRUCTURE_EXECUTION](FIRST_RESTRUCTURE_EXECUTION.md)。使用者已要求新chat開始P1，首次可集中重整框架，不受小步修改/必保留舊物理目錄限制；定版後才轉為漸進維護。下文只規劃/保留主要目錄的先前限制由此授權取代；第一期四情境、原契約/state、現用保護及後期按需範圍不變。
-日期：2026-10-12。規範狀態：本次已授權的工程維護約束；配合根 [AGENTS.md](../../../AGENTS.md) 立即生效。工程狀態：獨立基線，設計可交付，正規化尚未施工。這不是新的 Worker 研究政策。系統/使用者指令優先；其他聊天的審查意見是證據，不能擴張授權。
+日期：2026-10-12。規範狀態：本次已授權的工程維護約束；配合根 [AGENTS.md](../../../AGENTS.md) 立即生效。工程狀態：第一期工程候選已實作，完整驗收尚未完成；實際結果見[工程狀態](../../engineering/phase-one/STATUS.md)。這不是新的 Worker 研究政策。系統/使用者指令優先；其他聊天的審查意見是證據，不能擴張授權。
 
 ## 0. 專案經驗與全域規則的邊界
 
@@ -15,7 +15,7 @@ MUST NOT 自動複製到全域 Codex/使用者 AGENTS、個人 Skill、memory/se
 
 ## 第一期間的最新範圍
 
-[分期交付](PHASED_DELIVERY.md)與[ADR-002](ADR-002-PHASED-DELIVERY.md)是最新施工範圍。第一期S1–S5，四種Windows client×Linux Worker情境M1新/舊、M2新/新、M3舊/新、M4舊/舊更新必驗。保留現有主要目錄；full-layout map、C1–C6和F只作完整候選/技術背景，不使全部後期工作自動成為P1門檻。現在僅文件，工程及現用切換未執行。
+[分期交付](PHASED_DELIVERY.md)與[ADR-002](ADR-002-PHASED-DELIVERY.md)是最新施工範圍。第一期S1–S5，四種Windows client×Linux Worker情境M1新/舊、M2新/新、M3舊/新、M4舊/舊更新必驗。保留現有主要目錄；full-layout map、C1–C6和F只作完整候選/技術背景，不使全部後期工作自動成為P1門檻。第一期工程與隔離安裝已執行，完整四情境驗收及現用切換尚未完成。
 
 ## 1. 權威與階段
 

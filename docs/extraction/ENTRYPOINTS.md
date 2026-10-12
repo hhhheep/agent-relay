@@ -1,5 +1,8 @@
 # Extracted entrypoints
 
+Historical extraction inventory (2026-10-11-12). The counts and verification boundaries below describe that baseline. Current capabilities and results: [README](../../README.md), [engineering status](../engineering/phase-one/STATUS.md), [workplace acceptance](../engineering/phase-one/WORKPLACE_ACCEPTANCE.md).
+
+
 All source below is in this project. No live profiles, credentials or state were copied.
 
 | Component | Source/build entry | Verification |
