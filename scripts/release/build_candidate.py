@@ -36,7 +36,7 @@ def main():
     commit=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True,check=True).stdout.strip()
     dirty=bool(subprocess.run(['git','status','--porcelain'],cwd=ROOT,capture_output=True,text=True,check=True).stdout)
     artifacts={}
-    for name in ['harness-worker.zip','windows-client-source.zip','install_bootstrap_release.py','research-report-writer.zip']:
+    for name in ['harness-worker.zip','windows-client-source.zip','install_bootstrap_release.py','install_overlay.py','research-report-writer.zip']:
         path=out/name
         artifacts[name]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size}
     manifest={'status':'P1_CANDIDATE_NOT_VERIFIED','source_commit':commit,'source_dirty':dirty,

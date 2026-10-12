@@ -1,1 +1,3 @@
+# Runtime release identity hashes exact committed bytes on Windows and Linux.
+# Preserve historical mixed line endings; never silently normalize source on checkout.
 * -text

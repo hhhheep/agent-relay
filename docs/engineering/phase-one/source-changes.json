@@ -27,7 +27,7 @@
     {
       "path": "tests/test_harness_bootstrap_release.py",
       "extraction_sha256": "a8a845b6b4a39d708ee83fb19e3df8854635c039e15d77cbb3ddbac08914bdfe",
-      "current_sha256": "a437a03d41ed94e041bcb8b9f5e8b0549a643c8f73aebf2f23e9b0d8eb44c97a"
+      "current_sha256": "f60755d86676f0ebe92fb9bedfe730b44cb29fd99c5ca97e6dc2fd6c4b2c187d"
     },
     {
       "path": "tests/test_harness_remote_profile.py",
@@ -42,7 +42,7 @@
     {
       "path": "scripts/harness/build_bootstrap_release.py",
       "extraction_sha256": "2eeff1b2f062a8857200a4908070017b4b360081c0cd538f6af2e85d4511d984",
-      "current_sha256": "4fccad0b29f198525459025f19b4a28c37521440505d7de46884f4a3fc851510"
+      "current_sha256": "fd4be4c727440f59a363ba06564f4df5e792696d007ec19219cee05bd74ce9fe"
     },
     {
       "path": "plugins/solution-agent-harness/.mcp.json",

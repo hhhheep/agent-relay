@@ -186,9 +186,10 @@ def build_release(root: Path, output: Path, *, migration_review: dict | None = N
         json.dumps(result, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    installer_source = root / "scripts" / "harness" / "install_overlay.py"
+    installer_source = root / "scripts" / "harness" / "install_bootstrap_release.py"
     installer_output = output.parent / "install_bootstrap_release.py"
     shutil.copy2(installer_source, installer_output)
+    shutil.copy2(root / "scripts/harness/install_overlay.py", output.parent / "install_overlay.py")
     handoff = output.parent / "REMOTE_INSTALL_HANDOFF.md"
     handoff.write_text(
         "# Example 91 Solution Agent Harness bootstrap handoff\n\n"
@@ -203,8 +204,9 @@ def build_release(root: Path, output: Path, *, migration_review: dict | None = N
         "- Run root: `/srv/example-workspaces/harness-runs`\n\n"
         "Transfer the release, manifest, and installer as declared artifacts into a new deployment "
         "directory below the run root. Verify the remote release SHA-256 equals the value above. "
-        "Run the installer without `--apply`, stop on any conflict or unsafe path, then "
-        "repeat with `--apply --plan-sha256 <dry-run plan hash>` only after a zero-conflict dry-run. Follow "
+        "For a new directory, run install_bootstrap_release.py with --archive, --expected-sha256 and --target-root without --apply; "
+        "then repeat with --apply after a safe dry-run. For a managed existing directory use install_overlay.py --bundle --target-root; "
+        "stop on conflicts, then apply with --plan-sha256 <reviewed dry-run hash>. Follow "
         "`docs/HARNESS_V2_BOOTSTRAP_INSTALL.md` inside the installed release for runtime, plugin, "
         "and fresh-task smoke gates. Never read or copy the provider key.\n",
         encoding="utf-8",
