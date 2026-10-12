@@ -117,7 +117,7 @@ def test_external_profiles_file_override_and_legacy_fallback(tmp_path, monkeypat
     path = tmp_path / "profiles.json"
     path.write_text(json.dumps({"schema_version":1,"profiles":{"TEST":_profile()}}),encoding="utf-8")
     monkeypatch.setenv("SOLUTION_AGENT_PROFILES_FILE",str(path))
-    assert deployment_profiles_path(tmp_path / "checkout") == path
+    assert deployment_profiles_path(tmp_path / "checkout") == path.resolve()
     assert load_remote_deploy_profile(deployment_profiles_path(tmp_path),"TEST").name == "TEST"
     monkeypatch.delenv("SOLUTION_AGENT_PROFILES_FILE")
     assert deployment_profiles_path(tmp_path) == tmp_path / "config/harness_remote_deploy_profiles.yaml"

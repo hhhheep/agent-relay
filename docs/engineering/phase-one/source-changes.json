@@ -35,9 +35,14 @@
       "current_sha256": "f60755d86676f0ebe92fb9bedfe730b44cb29fd99c5ca97e6dc2fd6c4b2c187d"
     },
     {
+      "path": "tests/test_harness_codex_worker.py",
+      "extraction_sha256": "7ba1590ad63b693a49645f68ce14a458e668bd62edbebadb906e0a6aa7ef5112",
+      "current_sha256": "47ae82d68075ebd66d16344f75d2d62158b89e9f72ae2fe928e82e8ef31fd073"
+    },
+    {
       "path": "tests/test_harness_remote_profile.py",
       "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
-      "current_sha256": "e36aee9d225a3e9c2bdc87d98250b45c2b15cdc864249b36235a9b8eb4a86250"
+      "current_sha256": "408731e3f81113495f56b7ae07a37ec20e9db6fc8efc53642a63c5863a0b443e"
     },
     {
       "path": "tests/test_remote_status_worker_agnostic.py",
