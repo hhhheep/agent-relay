@@ -1,0 +1,12 @@
+.codex-plugin/plugin.json
+.mcp.json
+scripts/server.py
+skills/solution-agent-harness/agents/openai.yaml
+skills/solution-agent-harness/references/feedback.md
+skills/solution-agent-harness/references/managed-markdown.md
+skills/solution-agent-harness/references/project-routing.md
+skills/solution-agent-harness/references/remote-codex.md
+skills/solution-agent-harness/references/remote-and-reporting.md
+skills/solution-agent-harness/references/source-acquisition.md
+skills/solution-agent-harness/scripts/lint_feedback.py
+skills/solution-agent-harness/SKILL.md

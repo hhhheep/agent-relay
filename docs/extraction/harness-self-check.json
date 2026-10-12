@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "mcp_version": "2.2.0",
+  "tool_count": 11,
+  "runtime_source_hash": "e0a6fb565b47dbdceccd1e117ead71bee07a7c6d32fcf668db4901eb5e71a0e7",
+  "source_plugin_version": "0.6.0+codex.routing.20261006",
+  "installed_plugin_version_reference": "0.6.0+codex.reattach.20261008",
+  "same_python_manifest_files": true,
+  "live_remote_profile_configured": false,
+  "note": "extracted source identity differs intentionally; no installed release replaced"
+}

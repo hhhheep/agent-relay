@@ -1,0 +1,24 @@
+{
+  "status": "ready",
+  "task_id": "probe_axis_tf_jpeg_0502",
+  "task_type": "probe_inference",
+  "source_task_path": "tasks/probe_axis_tf_jpeg_0502.md",
+  "jobs": [
+    {
+      "job_id": "generate_probe_materials",
+      "worker": "qwen_coder_30b",
+      "job_type": "generate_materials",
+      "input_files": ["tasks/probe_axis_tf_jpeg_0502.md"],
+      "required_outputs": ["probe_infer_config.yaml", "sample_manifest.csv", "probe_axes.csv", "commands.md", "expected_tables.md", "output_contract.yaml"],
+      "forbidden_actions": ["modify_source_code", "execute_training", "change_dataset_split", "overwrite_checkpoint", "delete_files"]
+    }
+  ],
+  "required_outputs": ["probe_infer_config.yaml", "sample_manifest.csv", "probe_axes.csv", "commands.md", "expected_tables.md", "output_contract.yaml"],
+  "input_files": ["tasks/probe_axis_tf_jpeg_0502.md"],
+  "allowed_output_root": "runs/probe_axis_tf_jpeg_0502/",
+  "forbidden_actions": ["modify_source_code", "execute_training", "change_dataset_split", "overwrite_checkpoint", "delete_files"],
+  "validation_steps": ["validate_yaml_schema", "validate_csv_columns", "validate_commands_allowlist", "validate_output_contract"],
+  "retry_policy": {"reader_max_retries": 1, "qwen_max_retries": 2},
+  "escalation_policy": {"escalate_if": ["validator_failed_twice", "requires_loss_or_model_change", "ambiguous_task_definition"]}
+}
+

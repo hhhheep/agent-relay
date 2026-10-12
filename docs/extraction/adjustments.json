@@ -1,0 +1,571 @@
+[
+  {
+    "target": "tools/research-background/windows.ps1",
+    "before_sha256": "5b1674e996c548f9ef00cd28ea0f225010e5f097384b17d97c5f5ac0eef99803",
+    "after_sha256": "8a00b027f232acb873dabae0507137f5341986f5fb4f703495c8a975ac09fea6",
+    "reason": "use distinct development task identity; never register or stop the live service"
+  },
+  {
+    "target": "tools/research-background/windows.ps1",
+    "before_sha256": "8a00b027f232acb873dabae0507137f5341986f5fb4f703495c8a975ac09fea6",
+    "after_sha256": "c9dbff7f09e071ff6f401fb002dbd23a3a85029ee80a12b53dbd6fe94d2fa2c0",
+    "reason": "use distinct development startup identity; script not executed"
+  },
+  {
+    "target": "components\\lifecycle\\harness-port.ts",
+    "before_sha256": "0b3e21ddd23b1c2463e8c3d48da01cdee03059be04a08d4c15889f37a498991c",
+    "after_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
+    "reason": "resolve declared SDK in independent project dependency tree"
+  },
+  {
+    "target": "components\\lifecycle\\native-app-port.ts",
+    "before_sha256": "79152c14041e5d4c25ef66cb75980d65f979e81529a073a51d124121db848f92",
+    "after_sha256": "c36dc4fd8b5772a7c4c192b62fccc97b52404ed1efabbbbd44eb5ddc95193ef6",
+    "reason": "resolve declared SDK in independent project dependency tree"
+  },
+  {
+    "target": "components\\lifecycle\\stable-inbox.ts",
+    "before_sha256": "4bac9e17b721221a740eacb192beb686e4ff90623b2338fc41fa12205c4230d9",
+    "after_sha256": "b582543b88d2a8aaf56710c41018d8154c1d6f39f32f8ae6dccbfa6a46096a6a",
+    "reason": "resolve declared SDK in independent project dependency tree"
+  },
+  {
+    "target": "components/lifecycle/build-router-package.mjs",
+    "before_sha256": "306568ecfc0cf8fc9bd5d03b3ae1aeadb59919eed854776de8295c24d38100ee",
+    "after_sha256": "8a42a915606dccc77f8c0b2a15b5179a09c5ef6f4a302329228c4f88d88f20dc",
+    "reason": "resolve declared esbuild dependency, not research node_modules"
+  },
+  {
+    "target": "components/lifecycle/build-router-package.mjs",
+    "before_sha256": "8a42a915606dccc77f8c0b2a15b5179a09c5ef6f4a302329228c4f88d88f20dc",
+    "after_sha256": "b5a259d79f9d5f8e8fd2e67cd9df92c80b2f50254f8f81b871c1ebfaf16f53e1",
+    "reason": "separate lifecycle source location from project Python/plugin source"
+  },
+  {
+    "target": "components/lifecycle/build-router-package.mjs",
+    "before_sha256": "b5a259d79f9d5f8e8fd2e67cd9df92c80b2f50254f8f81b871c1ebfaf16f53e1",
+    "after_sha256": "3c5e0bd0eabb0ea48985a7cd75a568d41c4d269fae37e77db9978ed667b1f5de",
+    "reason": "copy Python/plugin payload from sole project source; no duplicate runtime namespace"
+  },
+  {
+    "target": "deploy/overlay-files.txt",
+    "before_sha256": "5b0c228d14fda3a1bded9e7a86f957ba95c6dbaace43c8d6157f454a78d36007",
+    "after_sha256": "e4388624c533b527fe3efeb805dfd6e69fa109e9dd1f84820bb7aea6aa920b0c",
+    "reason": "extraction source release excludes live profile, research execution spec and runtime state manifest; all originals remain unchanged"
+  },
+  {
+    "target": "components/lifecycle/build-router-package.mjs",
+    "before_sha256": "3c5e0bd0eabb0ea48985a7cd75a568d41c4d269fae37e77db9978ed667b1f5de",
+    "after_sha256": "cb4b816c8177ea41c8d14e292e871eaf8243330da8125594208771180e418c28",
+    "reason": "preserve license/provenance collection when dependency inputs resolve to new internal offline package pool"
+  },
+  {
+    "target": "components/lifecycle/mailbox-artifact.test.ts",
+    "before_sha256": "c9d7f589fe71babda602ceb25b6d9f0f85292c270a37c5f25026456c84935cd8",
+    "after_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
+    "reason": "synthetic tests use extracted project Python environment; no test assertions or runtime behavior changed"
+  },
+  {
+    "target": "components/lifecycle/mailbox-driver.test.ts",
+    "before_sha256": "c446093f68c3e1e5e9a246523f306fd3ff8147168cd5c5fdc83828b168697b9e",
+    "after_sha256": "60878f7f1ddbcdf577b687591f7e0f4e3ae83f6871dc128eea331fff24a96332",
+    "reason": "synthetic tests use extracted project Python environment; no test assertions or runtime behavior changed"
+  },
+  {
+    "target": "components/lifecycle/resume-controller.test.ts",
+    "before_sha256": "372236876b8d7ca8257d3459c30f077987374e75ccba0e9d7cc26978eead63c9",
+    "after_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
+    "reason": "synthetic tests use extracted project Python environment; no test assertions or runtime behavior changed"
+  },
+  {
+    "target": "components/lifecycle/resume-scheduler.test.ts",
+    "before_sha256": "04f6ee5e45c92d1b80af27270a9abb046b54944b3ae3c371568b09b746d5d587",
+    "after_sha256": "13951c67e6c13e016b50d28592ecab146856f8d9d36d074e8e7a403bcaf70e13",
+    "reason": "synthetic tests use extracted project Python environment; no test assertions or runtime behavior changed"
+  },
+  {
+    "target": "components/lifecycle/task-publisher.test.ts",
+    "before_sha256": "210be79c98dd94b85c8fe12f03bff05dddd897c132fc4988ac45cbe202a9f50e",
+    "after_sha256": "685dfbab860b71cbe8a65a13a9bef9c4341c7c97013a42ed565effb5b4b30c85",
+    "reason": "synthetic tests use extracted project Python environment; no test assertions or runtime behavior changed"
+  },
+  {
+    "target": "components/lifecycle/mailbox-rpc.py",
+    "before_sha256": "f4bad6647df4575a56227649677d0f30f1766f27ec4d71f31e98c79704b965e9",
+    "after_sha256": "c5c305bab10a66df5057afe3151e77368d7f17c72858ef9e619c03f9185c5bec",
+    "reason": "RPC entry discovers the sole local solution_agent package after relocation"
+  },
+  {
+    "target": "components/lifecycle/resume-rpc.py",
+    "before_sha256": "fb41d63c4950c296857aaf31315f7f7cf405de286177eb0206a37c057cdf3bbd",
+    "after_sha256": "f7c2e32bfa08e8632263ada9f4cc9657b30be1450da57f3b576455e9f7b2c4ff",
+    "reason": "RPC entry discovers the sole local solution_agent package after relocation"
+  },
+  {
+    "target": "components/lifecycle/md-plan-rpc.py",
+    "before_sha256": "96d12c4206134dd08066ffab092f456658b6593f4726c2a265eca7f8ed4acf7e",
+    "after_sha256": "0cad1952fab3b3fc59f2c5acc75c54b3b86cdeeb8fb8ecbd8dec4611bdfe1a22",
+    "reason": "RPC entry discovers the sole local solution_agent package after relocation"
+  },
+  {
+    "target": "components/goal-routing-integration/xats.ts",
+    "before_sha256": "e89cb0906c3eeebe1c22721656ac82edd78347731512439404cd8b0c27ee1a0e",
+    "after_sha256": "7d8b74cf6d10bd8f1ea3f0b5dc5504e7832ca100aaaf59b086ec959a377ff7f6",
+    "reason": "synthetic inbox integration adapter uses declared local SDK dependency"
+  },
+  {
+    "target": "components/goal-routing-integration/app-receipt.test.ts",
+    "before_sha256": "14efdf54f0b74569536ca94ab4bd1502b8916948da8257c39a99e4b0b4c350c4",
+    "after_sha256": "62a67827dfc55f48c6f8e1f3d65db5c5690a5a4319548d19d6056579a2e288f1",
+    "reason": "replace unshipped real App receipt with labelled synthetic fixture; preserve binding/rejection assertions"
+  },
+  {
+    "after_sha256": "7eea57ac9511046af3c8b382093220d8857a7573a6c37200ad6705f0e4e39d22",
+    "reason": "Generated portable source-only MCP declaration: original live binding intentionally excluded; repairs plugin manifest reference without credentials, personal paths, registration or service activation.",
+    "before_sha256": null,
+    "target": "plugins/research-report-writer/.mcp.json",
+    "generated": true
+  },
+  {
+    "target": "project.json",
+    "before_sha256": "de86c319c971065e9cce1f01a3f342331a8cfb400f263ec14c8ee4dcf03a491d",
+    "after_sha256": "eb4536c198104ae8d864b755ece2194684df8787efe5fa6d776f868bef92a725",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "README.md",
+    "before_sha256": "08fbf87d6e8c64ffaffd072c3fff3e29927b6479085d2f97b749eed881505245",
+    "after_sha256": "bdfcace4d7d1d1c90107dbcd18086eb9f37459a22791017c3c2e32e2495cb987",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "components/lifecycle/worker-md-allowlist.json",
+    "before_sha256": "eb241fca7af213568874032bf7b199f61dce02222e8bf177855bf2104ef835a9",
+    "after_sha256": "aeb4edd145674c1b4a8cf51056e395371f28ac504a3b534f1519e9613cf03fbe",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "deploy/overlay-files.txt",
+    "before_sha256": "e4388624c533b527fe3efeb805dfd6e69fa109e9dd1f84820bb7aea6aa920b0c",
+    "after_sha256": "764e834f6bcff7afdc12f450d0bc021208250f053c67be6225d51cefc515ae4e",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "deploy/plugin-overlay-files.txt",
+    "before_sha256": "1b11e683a97dc2c5170390f24bb042da834a54434d63028f26c8b2dcfef6fc14",
+    "after_sha256": "050824df6e8dc677744af406478fcba07d3ee99bf6ea954791fda221cafbbc7e",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/GPT6_SKILL_SCOPE_CONSOLIDATION_RECEIPT.md",
+    "before_sha256": "fef54de83dea962d8e4288106ac4438de6118d5078ec3b6ac0258123ab000678",
+    "after_sha256": "03fad1b11e22c7d1b037d7656322adfaabdf4fa61b5af26c976096c5f2d32998",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_ACCEPTANCE.md",
+    "before_sha256": "8e60932f36a456065fce2831b2e4ed9fa16a75f038b9a80a511e51a18a8a59e3",
+    "after_sha256": "84f4f186652f285c4b6c799a33a44cb48d5fb9580766a05aeae869314e500ab8",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_BOOTSTRAP_INSTALL.md",
+    "before_sha256": "8384e1b56d1f3ba73c66652ca1371e09687441164a932314d24515e69d2e4c8d",
+    "after_sha256": "060f63af6ca0f72fe5457bfe74006cdc62d17a6583131ec03b6b9274668b14e7",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_COMPLETION_AUDIT.md",
+    "before_sha256": "4ef9ee03f6ad8811ce077886be253291ca60e3cd350880d0a72e28e4458fd248",
+    "after_sha256": "64d9d82a2cf1504cfa9958750ecedf58092957100820d902cac92feac52419b2",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_DEPLOYMENT.md",
+    "before_sha256": "8894570fc1ce6fccc24c88494f89c4c05c02666116bee2b1ea41ae4a926951b1",
+    "after_sha256": "7799d4edc4a9ab6185858ff370c4c17708563a382f3da1b99e33ea13548dd694",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
+    "before_sha256": "24cf590aa7364b9f7b403d37e9878b147a45510451eedf93478a8bd6d6cd9ba6",
+    "after_sha256": "1daeab74ba374a83ab0734b0b86b10356f2a074f0d3dc25cbd99bc42be1ffc63",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_INTEGRATED_FOCUS_RUNTIME_IMPLEMENTATION_DRAFT.md",
+    "before_sha256": "123e613fb0e4ed760465a11a60512893da930416203bd0f43dd7cc3069b1f6e5",
+    "after_sha256": "fa02f0fa1bc15ef56cab7035ec02fbba95f6116379f0006f67b411a6772ca1ad",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_INTEGRATED_FOCUS_RUNTIME_TASKBOOK.md",
+    "before_sha256": "5688d640238cd0901f1b9bc3ad9e53525a77b9886be85ed8aee846a4b9fcb79f",
+    "after_sha256": "aebf284772b3ba858eb99473da08580ef172b1356605edb1bb4d92eb17a29a48",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_MANAGEMENT_COMPATIBILITY.md",
+    "before_sha256": "3f4d6eda6b151480e678cbccc25b81b939371ba73e82c6c47a4e49d2c18655d2",
+    "after_sha256": "a572035f06c44dd7efa718de1fefa63429649d81921ae4cd67d4c4bd94eb4e48",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_MD_SYNC_AND_WRITING_ROUTER_DESIGN.md",
+    "before_sha256": "dd530a42dfa7178615d90669098951da9a13e5bf130280e4407ba9b50e7552fc",
+    "after_sha256": "229c14c934e10daa1d180792ee305bc7a7aa30c2658d51294d15020bafd6aaf0",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_MD_SYNC_PHASE0_ACCEPTANCE.md",
+    "before_sha256": "4ea9560271291170e543fd2ccb394b7facb482730db739b19523e01bdf0414a0",
+    "after_sha256": "418dfcac0f31c30aa85b9c1c50c8d232aea26aaa156f856c32959fbd55af56f1",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_NEXT_TASK.md",
+    "before_sha256": "a569b534327c14d52cf8edbd33911433029da860aa9a7f4ec07e4023fbfb062b",
+    "after_sha256": "7b7deed469ab8a02127061c43f409c4937ee94f42e5ac84ece5348cd0092740a",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_PROFILE_BOUND_TERMINAL_REFACTOR_PLAN.md",
+    "before_sha256": "737a23a9a196e4f57b1cf7e236ffa2cd9cbba21ed8fbab93598b5c829cece5cf",
+    "after_sha256": "8ce04f8e8ea9f72371d3e12e0ff592d4abef20e729c1bb30fca40c5a2751e9b4",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V2_REMOTE_DEPLOYMENT_REQUIREMENTS.md",
+    "before_sha256": "fe5ea8b6fcc5a9893a459126742869ec2659ffb95d3ef156d9e735cbcff678e6",
+    "after_sha256": "557aa3b9b9936107fae23ffccd70a3381400b0af4bf149a3a8c1bc4c2f39462c",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/HARNESS_V3_PERSISTENT_TRANSPORT_MULTIPLEXED_EXECUTION_TASKBOOK.md",
+    "before_sha256": "da86ae2db2c2a93d32a17ec959c794ab4eb26a055086288f267685b86c2c327b",
+    "after_sha256": "840f1685113bfc99d5a555e1e2911e3c9cd4225a2ff465c588d1eb9fdd1b1768",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/extraction/ENTRYPOINTS.md",
+    "before_sha256": "5dd6e7718c1de02f9b2e61a3701c1d43a728e3c4d79c042ceba4249f81feffed",
+    "after_sha256": "4a05507f275acaeef2830d10abb0ecdf9b2ae4c21f31bc9f9c683b8bb15afbde",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/extraction/VERIFICATION.md",
+    "before_sha256": "70d5ec1ec324de82ea1e4b5eaeefd60016d5929344135d9bac0015b2e61f2fd2",
+    "after_sha256": "1fee8e804c72e3e5f6b3cfa9686fb97d473326e04aeb6f54dc510216e7db54c4",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/planning/FRAMEWORK_AND_STANDALONE_PROJECT_20261010.md",
+    "before_sha256": "66574eafea644a08ca22b9edbf4814adbad8b8c4a43381060f378073fd12115d",
+    "after_sha256": "839cf61bcf80ce11c8dc7988235f698b35abc099f5d6eb2e797e7ea95c26a0cf",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/planning/PROJECT_EXTRACTION_TASKBOOK_20261011.md",
+    "before_sha256": "4fc039f470e76ea52bee13ee8a653d5528f9b268cd31cb9995c55be97603b4d9",
+    "after_sha256": "c95906b4eb6a97b47e9d5d63533633664e21386aa7c333d9ee5086236fa74896",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "docs/planning/STRUCTURE_AND_ENGINEERING_ESTIMATE_20261011.md",
+    "before_sha256": "eb9cd38b7fa88e17f00e29e4a11cf0f3058cbeea3351a6513b0f543de70897b4",
+    "after_sha256": "81f093fa2013f64ac32f34cd5b804cf2698fc0bb53c2282f904b7f27f314cecb",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "evals/skill-routing.prompts.csv",
+    "before_sha256": "2ef6df839f18049799747826f4c05b291513b1df3b5cf4b4c51decb9a6bbd271",
+    "after_sha256": "6651a354d141dcf60b6c127cc77cb8ec54e88216a1b6848943235c5146e19a9c",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/research-report-writer/README.md",
+    "before_sha256": "40f520844166f8500a9ac9a236add51fff0b3bce65259f0c54dbd5f9e8a20cfa",
+    "after_sha256": "fb5668d24398bdff94e2652b9eddd13431d8bd249f4a33ff9803970d43824beb",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/research-report-writer/tests/core.test.mjs",
+    "before_sha256": "d2401a1260d22864738118531c77f4025df4966b95a3469682c7734031f64118",
+    "after_sha256": "21d4fb441bf42ba8f13bad50477b677b9abdbf641982f0bffc10edac88cd0429",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/research-token-guard/DEPLOYMENT_HANDOFF.md",
+    "before_sha256": "3a15553c27971f833c72ab220605e5866e014c62766aeef5564f5cf79aa81286",
+    "after_sha256": "674273ab5b9d966e98a3077df79ca1fc94c24a8960d352e62f660c6dc2119a55",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/research-token-guard/tests/test_stage_ledger.py",
+    "before_sha256": "080293b6996156ecdddb7c35409645260f78fd54334c04059205520961638014",
+    "after_sha256": "da6bef17dd9718a2c36e31706e907bfea06b5e4994f82367139659a30aadbe60",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/research-token-guard/tests/test_token_guard.py",
+    "before_sha256": "f81f54b555d6e18f04a6fcde8573ed5e2bbd561ed49da52ac2efa6aafeeedf6f",
+    "after_sha256": "db77fab8de609a16bb8c3079c9d56529e8d907f046e9e793f057ffa39f293b24",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/solution-agent-harness/skills/solution-agent-harness/SKILL.md",
+    "before_sha256": "a915e317bde63c165ae3e2e81e9297c0ef4932de01d1ca7739d1f46b613797d8",
+    "after_sha256": "263cbc7e836d84fb62c61be3dbff9ee3591be8f338e9d179edfa1fc5c6d1e12d",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/solution-agent-harness/skills/solution-agent-harness/references/ncku-routing.md",
+    "before_sha256": "a261e7be287b4f91c1fa6105f4e3f9111b2fdc9566af8ef40808e7a8cd647bde",
+    "after_sha256": "9fd78ee9c73e758e184f0e8eba40d98edb20527e1f86c79a58269f86a87ff6e7",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "scripts/harness/build_bootstrap_release.py",
+    "before_sha256": "754df026e0b69e65b3352d536299f984fe68a72276878817a1faa3aa574b572f",
+    "after_sha256": "2eeff1b2f062a8857200a4908070017b4b360081c0cd538f6af2e85d4511d984",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/cli.py",
+    "before_sha256": "ce07eab71b54e52804eb45d9bba44f71e9909ae906534da5ffdc391f10ed3f82",
+    "after_sha256": "4032991ea29973a3193fd98d40532d80b69bfe71e29df1399bfdd658e0e60ee3",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/web.py",
+    "before_sha256": "6b08429775b0f0e5bc9cb02227471b8d2f5cfa4e5b108fb95ca86f6cdf8fdb02",
+    "after_sha256": "9a3d9374e83b4211001068c48b5f0d18dfb1989939c0a50c63207dcf57ae5ffe",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/continuation/night_researcher.py",
+    "before_sha256": "9eede4dee07f1b9ef2ca58c6ff14fdd5b5986acaee8bfcf6b12f4a803ab0467a",
+    "after_sha256": "f08eb4cfd24c8c99c91226c09babe6456a43aa81d8f0a8fa3bc12bb12584f93b",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/continuation/three_agent_flow.py",
+    "before_sha256": "d1429fe6e6e8b643070a8ffbe4e5eac31ff55081a945dbf2098d9f37e396a95c",
+    "after_sha256": "d81856ba045f4a792676cbefec76afe99653233a32762dc3fe31d0cf42e6bc17",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/execution_port/script_registry.yaml",
+    "before_sha256": "e3ae9df290362a53a6f0ba1f1fe8a18e3178877b6941c93456efc226efc267c3",
+    "after_sha256": "e5e680595e739205e3cac5609bf8d63577f7c03f46b72a823a1e083b4c690a7d",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "solution_agent/orchestrator/core.py",
+    "before_sha256": "35b571891b9dc822409623fb590bdfb9c0d398557429526c0b4dc29e419cc20a",
+    "after_sha256": "e7196879a7e765925db811f45e9887c6eba1fc39fee8ac85f448ce92c00e6a96",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_build_profile_plugin.py",
+    "before_sha256": "ba487ed9b30919ee3a9db1f5376b5f8a54833e2907244164aaeab16019ddf499",
+    "after_sha256": "edcb76fe2516e4dbe718b65d63327cc7bb96e4256ddeebf74dde5ba3f0971a83",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_context_gateway.py",
+    "before_sha256": "7473780a88093ca15283a8ce623b96360baf7dd2cdea21c7260b6fc9a2ac72d4",
+    "after_sha256": "57d4285e838e43245728f9f7fae7704c1ad1f8c43a45ea16bd03eed15b82289e",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_context_index.py",
+    "before_sha256": "8eee1e97b29fec30fa79c72becb2e966efebf6fac59724ef8359189bc9442fdd",
+    "after_sha256": "904127d92d00ce12717332149f081ab28a87c51e2b4b2922e97863230c955d9f",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_mission_remote_loop.py",
+    "before_sha256": "1c16a28f87912b0f3302dccf14ebad6d21d8face863d6139c7df634778e440d3",
+    "after_sha256": "196fc5ece55baf3bf008f575ce3e739cb72076de3274746f5c548d9ba232b4c9",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_p3e_launch_intent.py",
+    "before_sha256": "b0292ec057c4f3377e6cbbadd73fe3144115c2d385d3468911f048a5a303fa15",
+    "after_sha256": "6ae323e3f4c0b7f88e2ac9caba19909f2e645adb68d2b997ae1025359cb806f9",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_project_dialogue.py",
+    "before_sha256": "ecf0e21d17510ace06e6996feb24fca2c888ad44e0d7a067ee6fa31eb37cc679",
+    "after_sha256": "26a934c6aa68a9788d3dcbfa0f86371e0521c6b68a8e7cac2983fd38713d905e",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_project_knowledge_ingestion.py",
+    "before_sha256": "38bf6e090f5da5c9f712430538e878c18fb3599257e51cbea5b36ef335fc90f2",
+    "after_sha256": "2f7d7f3b75b7d8cb7f9a772d64198941fe7b8e5c0d245875ceb5797737440e01",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_research_deliberation_session.py",
+    "before_sha256": "4f371d82711c6536b39bf95880a61f14a752f48de532c601233fbcbc7d30b2d4",
+    "after_sha256": "dbfa9a64702f69319343bbddc568f98590f2b48590c7d44f7b85ca1a4dff9a73",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_skeleton.py",
+    "before_sha256": "60f9b7347f2983586c8f7603c97ea649c4674629e9693f97e9d32c70f5370804",
+    "after_sha256": "67a5c4647e23229a0877da087994ab1290e6bef0990e95866ec8edcd718e03a3",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_continuation_three_agent_flow.py",
+    "before_sha256": "400abe1519467c6d67c5a3a85fd6da4301b67d56e675206b78a51e0973ba29c5",
+    "after_sha256": "00a76956faf5e7b73e56fd4708c5b4aa94ee4146396da6357a39de75497d3218",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_dashboard_workplaces.py",
+    "before_sha256": "291543a949dda7b6dac4ac4ca20852c0d9cb9af1e938bb40c957c924157a81f5",
+    "after_sha256": "12f0c16b05dca7eb0274d930bf7f6088593b72bb8d057aed7c242d6c55e6a76c",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_execution_port_spec.py",
+    "before_sha256": "bfc7c2ba9f6c83003bfa4756935634b1274b51c9c862dae3dab7ae8802d58491",
+    "after_sha256": "031d634627f4c9b2dafcab61924ecd39ea2c551753143d91a24e34fc7aa74cff",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_harness_artifact_runtime.py",
+    "before_sha256": "7d5ca4943909c2278d3a8cb1d63801418f9ccbe4f40e1a40b02f97f3cbde8c87",
+    "after_sha256": "8ff75ea1118fe90a97d1ce8ba7b4dbf549c9417404af1ac8a1201c9a81629428",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_harness_remote_profile.py",
+    "before_sha256": "5245319359cc7e90451a997fcf55e37208eb2cc6de29cadee05c124da1d49b47",
+    "after_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_materialized_execution_contract.py",
+    "before_sha256": "9a2ca4bd6534ad2b2372c3fa03f0f0ec44fda7083bd7a7b4aa6b00b8024c35ea",
+    "after_sha256": "5baafec90f074a7ad618b023636b90504c683f05a6f224d3d52bf0401187ca74",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_night_researcher.py",
+    "before_sha256": "eee830b4cda47f95d36095311f4f1a4c73b6b99ed7bf1519d7687dfdaaa91917",
+    "after_sha256": "807191f4938eb411b47c4bc255bbdc1d144f8fb4690dabc6178fbd1f7f8628da",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_remote_materializer_integration.py",
+    "before_sha256": "45a1fa30793822fab4924a6905b1dde6f43ca8aefdd875f8c9facd7aa7f34f3d",
+    "after_sha256": "571c800431953e43a0d62ea8af87c59eecc3cd391324e10076ffd2ad52c64c75",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_remote_preflight.py",
+    "before_sha256": "b12f33a69badb70044528506e2b429a8e52e7d884a08c050ff2db522524586c6",
+    "after_sha256": "d683e9c9549ce6438c256553f6178faf08c9fc80804010d30874ca71ecb08b8c",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_remote_status_worker_agnostic.py",
+    "before_sha256": "d7ccfa03a277e5b76a5ff6831b4a91c75f061348a48b8c00393b21898c637006",
+    "after_sha256": "03894493c7071493375fa9f4a0aad54673766bea332fd4d64b33e7483d615f31",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_remote_terminal.py",
+    "before_sha256": "8754efb336888b46e20582d1840c229d84a15f06ee6ef92184387356b8a868ba",
+    "after_sha256": "5b46ce66d556ea708ca51ce8683156a033636a048feb96a866c6a7e410c6bd22",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/test_skill_routing_contract.py",
+    "before_sha256": "0bde72e4e8be039d61ca1eccd62189e885421ba114dce335ea7f73febe84bc8e",
+    "after_sha256": "234e4689f5c1a1a7006d6aaaf3c20bc56260a9981dcc4c8d15cc6890c9569bfe",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tests/fixtures/night_researcher/B14/bounded_decoder_not_configured.yaml",
+    "before_sha256": "70c7d1a9fd7a396a46cf16de9dc005f11c789552c68625561d701dd70c959f00",
+    "after_sha256": "dd20c30cd779bccd7430a451b9b1e35bf2cc691503ff65e722684c498ddd0aec",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tools/research-background/launch-hidden.vbs",
+    "before_sha256": "b4aa2d4b87bdf4d2db03affe1b0cd3554c2e88992ea59c33eb42c4315f48652c",
+    "after_sha256": "50ebabfb64a82da8ae8548ad05dd791970a22a6cab7e6997511c7fef9491b673",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "tools/research-background/windows.ps1",
+    "before_sha256": "c9dbff7f09e071ff6f401fb002dbd23a3a85029ee80a12b53dbd6fe94d2fa2c0",
+    "after_sha256": "3bfdd2bdfa70cf0c260047a45a41bcc60f311d3eb25ca857075cf12db040a3e8",
+    "reason": "Privacy sanitization / project naming; private identifiers replaced with examples."
+  },
+  {
+    "target": "plugins/solution-agent-harness/skills/solution-agent-harness/references/project-routing.md",
+    "previous_target": "references/project-specific-routing.md",
+    "reason": "Renamed project-specific skill reference and updated links/allowlist."
+  },
+  {
+    "reason": "Replace historical local chat/field receipts with nonpersonal technical maintenance topics; original preserved outside publication source.",
+    "after_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
+    "target": "docs/HARNESS_V2_FIELD_FEEDBACK.md"
+  },
+  {
+    "target": "project.json",
+    "before_sha256": "eb4536c198104ae8d864b755ece2194684df8787efe5fa6d776f868bef92a725",
+    "after_sha256": "00445ab63c2bd1d901f8c29ecb44a1871abb479a12aba1f9ca425ace981ed325",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "README.md",
+    "before_sha256": "c31a0d5c7d0430f04cf054cd12176b2441f0f641f973ceff34ab4ed1e2680377",
+    "after_sha256": "a113113dc7e9826dc9e2be90b2e59b8c3f2db3543b8c467bf6b66a7c418d0a5a",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "components/lifecycle/router-package-latest.json",
+    "before_sha256": "c72aec9eb1648187bb40bd53ac2db7c935fc7a70d81eb29f3732e5ad571b8210",
+    "after_sha256": "e1fdb5484829ca8064868556c4aec6ad7870a46ec0593dfd0cc58994abbf9212",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "docs/extraction/ENTRYPOINTS.md",
+    "before_sha256": "4a05507f275acaeef2830d10abb0ecdf9b2ae4c21f31bc9f9c683b8bb15afbde",
+    "after_sha256": "164a645c55fd54de0d9b74c2a8f5e9f322000eb8e0b04b3f5f2dc8b87fa96a46",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "docs/extraction/privacy-verification.json",
+    "before_sha256": "f341f7a62ff68c6a55267ad1270df7132377bd19bf85160b5a42bb26f02a29d4",
+    "after_sha256": "48b2614f37041d97dd0d3928b7927559a45a821ef2441b5165fc64fb0e2b6307",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "docs/extraction/VERIFICATION.md",
+    "before_sha256": "7eb777272a5ee3533b49e81e3290672d9238c6de13825d3fc3ecd7a6719e2db9",
+    "after_sha256": "b2652f39768f7f2e5c436bde1d9afcbcb6fef55b0048da6fcc60cc17c71c58a9",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "scripts/extraction/package-source.py",
+    "before_sha256": "510ac6d198af3c9f28c4c69477aa474f5d41e914732fec435917da3e324f502e",
+    "after_sha256": "0616f6f4fa0920b3e6ba10307a8d3ca9769c3a0ca2b145342a1689f4ef5e4b72",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  },
+  {
+    "target": "tools/research-background/windows.ps1",
+    "before_sha256": "3bfdd2bdfa70cf0c260047a45a41bcc60f311d3eb25ca857075cf12db040a3e8",
+    "after_sha256": "ed9db90b3c5ce768225bff4df8eb5b64f297b6396d2a9cb83284a840511a58bc",
+    "reason": "Rename the standalone project to Agent Relay; preserve public Python/plugin/MCP identities."
+  }
+]

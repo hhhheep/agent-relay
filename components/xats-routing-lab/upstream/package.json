@@ -1,0 +1,69 @@
+{
+  "name": "cross-agent-teams-mcp",
+  "version": "0.8.6",
+  "description": "MCP daemon for cross-agent collaboration",
+  "type": "module",
+  "bin": {
+    "cross-agent-teams-mcp": "./dist/cli.js",
+    "cross-agent-teams-channel": "./dist/channel-cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build && pnpm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtianling/cross-agent-teams-mcp.git"
+  },
+  "homepage": "https://github.com/jtianling/cross-agent-teams-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/jtianling/cross-agent-teams-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude-code",
+    "codex",
+    "agent",
+    "multi-agent",
+    "cross-agent"
+  ],
+  "author": "jtianling <jtianling@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "better-sqlite3": "12.9.0",
+    "fastify": "5.8.5",
+    "json-schema-diff-validator": "0.4.2",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
+  }
+}

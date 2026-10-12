@@ -1,0 +1,96 @@
+schema_version: 1
+
+direct_closure_artifacts:
+  mode_name: direct_closure_artifacts
+  required_outputs_source: task_explicit_materializer_outputs
+  exact_names:
+    - action_requests.json
+    - artifact_summary.md
+    - decision.json
+    - execution_plan.json
+    - execution_spec.yaml
+    - worker_notes.md
+  suffixes:
+    - _decision.json
+    - _decision.md
+    - _summary.md
+    - _notes.md
+    - _action_requests.json
+    - _plan.json
+  allowed_execution_scripts:
+    - contract_artifact_writer
+  materialization_failed_substitute:
+    allowed: false
+    filename: materialization_failed.json
+  reader_meta:
+    execution_capability_needed: "none: required outputs are materializer-authored closure artifacts; write the requested judgment, notes, summary, and action requests directly"
+    claim_policy: "missing_evidence blocks claims, not bounded execution; mark findings as exploratory/partial when evidence is weak"
+    task_input_sufficiency: task_book_is_sufficient_for_requested_closure_artifacts
+    refusal_policy: "do not output only materialization_failed.json for direct closure artifacts; produce every required output and put objections, caveats, missing evidence, or action requests inside them"
+    task_text_evidence_policy: "task.md explicit facts are valid evidence for bounded closure artifacts unless the task explicitly requires reading external artifacts first"
+
+patch_policy:
+  required_patch_filename: patch.diff
+  intent_filename: patch_intent.json
+  quality_report_filename: patch_quality_report.json
+  allowed_intent_tiers:
+    - P0
+    - P1
+  allowed_intent_operations:
+    - insert_after
+    - insert_before
+    - replace_block
+  require_real_unified_diff: true
+  reject_placeholder_hunks: true
+  allow_deferred_with_closure: true
+  deferred_markers:
+    - "No patch.diff generated"
+    - "Patch cannot be generated"
+    - "exact source context is not available"
+    - "target file"
+    - "not available in context_pack"
+    - "no valid unified diff"
+    - "do not invent a fake patch"
+  deferred_required_closure_files:
+    - decision.json
+    - action_requests.json
+
+action_request_policy:
+  required_fields:
+    - kind
+    - missing_or_needed
+    - why_needed
+    - next_owner
+    - blocks
+    - blocks_claim_not_execution
+    - blocks_execution
+    - suggested_next_step
+  allowed_kinds:
+    - request_approval
+    - request_context
+    - request_artifact
+    - request_manual_review
+    - request_retry
+    - request_debug
+    - bounded_exploratory_probe
+    - evidence_probe
+    - manual_review
+    - missing_context
+  allowed_next_owners:
+    - user
+    - scheduler
+    - materializer
+    - experiment_runner
+    - execution_port
+    - codex
+    - human_reviewer
+  allowed_blocks:
+    - claim
+    - execution
+    - routing
+    - collect
+  vague_phrases:
+    - need more context
+    - more context needed
+    - insufficient context
+  approval_flag_prefix: allow_

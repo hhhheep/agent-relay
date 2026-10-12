@@ -1,0 +1,11 @@
+schema_version: 1
+fixture_id: b14_source_behavior_boundary_01
+mission_id: B14_night_research_v1
+scenario_id: b14_source_behavior_boundary
+scenario_type: source_behavior_boundary
+parent_decision_id: null
+evidence:
+  scenario_type: source_behavior_boundary
+  source_behavior_change_required: true
+expected: {}
+

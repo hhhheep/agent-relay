@@ -1,0 +1,24 @@
+{
+  "status": "ready",
+  "task_id": "tv_2026_0502_r6_eval",
+  "task_type": "training_validation",
+  "source_task_path": "tasks/tv_2026_0502_r6_eval.md",
+  "jobs": [
+    {
+      "job_id": "generate_training_materials",
+      "worker": "qwen_coder_30b",
+      "job_type": "generate_materials",
+      "input_files": ["tasks/tv_2026_0502_r6_eval.md"],
+      "required_outputs": ["train_config.yaml", "val_config.yaml", "data_manifest.csv", "commands.md", "output_contract.yaml"],
+      "forbidden_actions": ["modify_source_code", "execute_training", "change_dataset_split", "overwrite_checkpoint", "delete_files"]
+    }
+  ],
+  "required_outputs": ["train_config.yaml", "val_config.yaml", "data_manifest.csv", "commands.md", "output_contract.yaml"],
+  "input_files": ["tasks/tv_2026_0502_r6_eval.md"],
+  "allowed_output_root": "runs/tv_2026_0502_r6_eval/",
+  "forbidden_actions": ["modify_source_code", "execute_training", "change_dataset_split", "overwrite_checkpoint", "delete_files"],
+  "validation_steps": ["validate_yaml_schema", "validate_csv_columns", "validate_commands_allowlist", "validate_output_contract"],
+  "retry_policy": {"reader_max_retries": 1, "qwen_max_retries": 2},
+  "escalation_policy": {"escalate_if": ["validator_failed_twice", "requires_loss_or_model_change", "ambiguous_task_definition"]}
+}
+

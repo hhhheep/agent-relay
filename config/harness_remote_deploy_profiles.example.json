@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "EXAMPLE": {
+      "binding_id": "EXAMPLE_WORKPLACE",
+      "host": "user@example.invalid",
+      "solution_agent_root": "/opt/solution-agent",
+      "project_workdir": "/work/example",
+      "remote_run_root": "/work/example/.solution-agent/runs",
+      "codex_path": "codex",
+      "python_bootstrap": "python3",
+      "plugin_home": "/work/example/.plugins",
+      "personal_marketplace": "/work/example/marketplace.json",
+      "provider_env_file": "/work/example/credentials.local.env",
+      "initialize_checkout": false,
+      "jobs": {
+        "backend": "systemd",
+        "max_concurrent": 1
+      },
+      "bootstrap": {
+        "mode": "managed"
+      }
+    }
+  }
+}

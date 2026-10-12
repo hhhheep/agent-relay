@@ -1,0 +1,12 @@
+schema_version: 1
+fixture_id: b14_missing_evidence_01
+mission_id: B14_night_research_v1
+scenario_id: b14_missing_evidence_inventory
+scenario_type: missing_evidence_inventory
+parent_decision_id: null
+evidence:
+  scenario_type: missing_evidence_inventory
+  missing_evidence: true
+  source_behavior_change_required: false
+expected: {}
+

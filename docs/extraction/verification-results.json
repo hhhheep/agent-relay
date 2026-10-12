@@ -1,0 +1,58 @@
+{
+  "scope": "Windows extraction verification; no live/remote acceptance",
+  "python_core": {
+    "passed": 67,
+    "failed": 1,
+    "skipped": 2,
+    "failure": "test_explicit_cancel_stops_only_the_bound_child_job",
+    "recheck": "failed again",
+    "source_modified_to_fix": false
+  },
+  "router_goal_integration": {
+    "passed": 77,
+    "failed": 0
+  },
+  "writer": {
+    "passed": 9,
+    "failed": 0
+  },
+  "background": {
+    "passed": 12,
+    "failed": 0,
+    "provider": "mock; no API requests"
+  },
+  "token_guard": {
+    "passed": 37,
+    "failed": 0
+  },
+  "builds": {
+    "harness_source_bundle": true,
+    "router_bundle": true,
+    "xats_service": true,
+    "native_sqlite_in_memory": true,
+    "windows_gui_launcher_compile": true
+  },
+  "source_integrity": {
+    "source_files_checked": 944,
+    "source_mismatches": [],
+    "internal_junctions": 343,
+    "external_links": []
+  },
+  "original_runtime_integrity": {
+    "checked_at": "2026-10-11T07:55:23.451148+00:00",
+    "files_checked": 137,
+    "unchanged": true,
+    "changed_file_names": [],
+    "live_hooks_modified": false,
+    "live_services_started_or_stopped": false,
+    "plugins_registered": false,
+    "remote_operations": false,
+    "note": "configuration/source fingerprints; active runtime DBs may evolve normally and were neither copied nor overwritten"
+  },
+  "unverified": [
+    "Linux native runtime/build",
+    "fresh online dependency installation",
+    "live deployment/migration"
+  ],
+  "known_issue_note": "unchanged terminal cancellation code fails when cancelling immediately after wait_ms=0, before child PID is available; extraction does not change job semantics"
+}

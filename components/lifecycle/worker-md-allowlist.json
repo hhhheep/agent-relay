@@ -1,0 +1,9 @@
+{
+  "schema": "harness-worker-md-allowlist/v1",
+  "purpose": "Harness worker instructions only; no research document auto-discovery",
+  "files": [
+    "plugins/solution-agent-harness/skills/solution-agent-harness/SKILL.md",
+    "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
+    "plugins/solution-agent-harness/skills/solution-agent-harness/references/project-routing.md"
+  ]
+}

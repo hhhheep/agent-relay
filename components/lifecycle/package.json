@@ -1,0 +1,19 @@
+{
+  "name": "extracted-harness-lifecycle",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node build-router-package.mjs",
+    "test": "node --import tsx --test *.test.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.7",
+    "tsx": "4.21.0"
+  }
+}

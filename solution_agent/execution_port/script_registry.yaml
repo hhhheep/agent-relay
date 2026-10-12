@@ -1,0 +1,1914 @@
+artifact_families:
+  contract_artifact:
+    exact_names:
+      - action_requests.json
+      - artifact_summary.md
+    suffixes:
+      - _contract.md
+      - _schema.json
+      - _rules.yaml
+      - _rules.yml
+      - _checklist.md
+      - _checklist.csv
+      - _report.md
+      - _review.md
+      - _analysis.md
+      - _notes.md
+      - _decision.md
+      - _decision.json
+      - _decision_table.csv
+      - _evidence_table.csv
+      - _gap_table.csv
+      - _comparison_table.csv
+      - _failure_table.csv
+      - _matrix.csv
+      - _recommendation.md
+    markers:
+      - artifact_checklist
+      - evidence_contract
+      - evidence_decision_table
+      - evidence_table
+      - expected_metrics_schema
+      - judge_rules
+      - required_outputs_checklist
+      - decision_report
+      - decision_table
+      - decision
+      - evidence_review
+      - evidence_analysis
+      - gap_table
+      - comparison_table
+      - failure_table
+      - artifact_matrix
+      - recommendation
+      - next_action
+
+closure_contract:
+  default_required_files:
+    - worker_notes.md
+    - artifact_summary.md
+    - action_requests.json
+  applies_to:
+    - materialized_execution
+  disable_with:
+    enabled: false
+
+scripts:
+  solution_agent_smoke_write_metrics:
+    entrypoint: [python, -m, solution_agent.execution_port.smoke_script]
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+      message:
+        flag: --message
+        type: str
+        required: false
+      sleep_seconds:
+        flag: --sleep_seconds
+        type: float
+        required: false
+    max_timeout_sec: 60
+    gpu_allowed: false
+
+  run_probe_smoke:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/probes/run_probe.py]
+    entrypoint_must_exist: true
+    args:
+      config:
+        flag: --config
+        type: path
+        required: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+      smoke:
+        flag: --smoke
+        type: bool
+        default: false
+    max_timeout_sec: 300
+    gpu_allowed: false
+
+  run_eval_probe:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/probes/run_eval_probe.py]
+    entrypoint_must_exist: true
+    args:
+      config:
+        flag: --config
+        type: path
+        required: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+      smoke:
+        flag: --smoke
+        type: bool
+        default: false
+    max_timeout_sec: 7200
+    gpu_allowed: true
+
+  run_recipe_ablation:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/eval/run_recipe_ablation.py]
+    entrypoint_must_exist: true
+    args:
+      config:
+        flag: --config
+        type: path
+        required: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+      variant:
+        flag: --variant
+        type: str
+        required: false
+    max_timeout_sec: 14400
+    gpu_allowed: true
+
+  feature_leakage_grounded_inventory:
+    description: Bounded workspace inventory for feature leakage audit planning.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_feature_leakage_inventory.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - prepare
+      - analysis
+      - audit
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      max_files:
+        flag: --max_files
+        type: int
+        required: false
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    produces_artifact_families:
+      - prefix: feature_leakage_
+      - prefix: action_requests.
+      - prefix: decision_summary.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      output_prefixes:
+        - feature_leakage_
+      identity_terms:
+        - feature_leakage
+        - feature leakage
+      text_terms:
+        - feature leakage
+        - layer sweep
+        - token feature
+        - graph feature
+        - spatial-grace
+    default_execution:
+      kind: feature_leakage_grounded_inventory
+      timeout_sec: 1800
+      args:
+        workspace_root: .
+        max_files: 1000
+      required_files:
+        - feature_leakage_grounding_inventory.json
+        - feature_leakage_capability_matrix.md
+        - feature_leakage_execution_dag_proposal.yaml
+        - feature_leakage_required_outputs_checklist.csv
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  feature_leakage_existing_artifact_synthesis:
+    description: CPU-only synthesis over existing GenD feature leakage analysis artifacts.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_feature_leakage_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - report
+      - audit
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      analysis_root:
+        flag: --analysis_root
+        type: str
+        required: false
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    produces_artifact_families:
+      - prefix: feature_leakage_
+      - prefix: layer_sweep_
+      - prefix: boundary_residual_
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: visual_sheet_index.
+    route_when:
+      output_prefixes:
+        - layer_sweep_
+        - boundary_residual_
+      identity_terms:
+        - existing_artifact_synthesis
+        - feature_leakage_synthesis
+      text_terms:
+        - existing analysis_outputs
+        - existing artifact synthesis
+        - feature leakage synthesis
+        - boundary residual
+    default_execution:
+      kind: feature_leakage_existing_artifact_synthesis
+      timeout_sec: 1800
+      args:
+        workspace_root: .
+        analysis_root: analysis_outputs
+      required_files:
+        - feature_leakage_audit_report.md
+        - layer_sweep_metrics.csv
+        - boundary_residual_feature_ablation.csv
+        - visual_sheet_index.md
+        - feature_leakage_required_outputs_checklist.csv
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  feature_leakage_followup_packet:
+    description: CPU-only follow-up packet for GenD feature leakage gaps using existing artifacts.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_feature_leakage_followup_packet.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - report
+      - audit
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    produces_artifact_families:
+      - prefix: cluster_visual_sheet.
+      - prefix: clean_center_perturbation_
+      - prefix: context_size_sensitivity.
+      - prefix: maskout_clean_token_probe.
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      output_prefixes:
+        - cluster_visual_sheet.
+        - clean_center_perturbation_
+        - context_size_sensitivity.
+        - maskout_clean_token_probe.
+      identity_terms:
+        - feature_leakage_followup
+        - feature_leakage_followup_packet
+        - feature leakage followup
+      text_terms:
+        - cluster visual sheet
+        - clean center perturbation
+        - context size sensitivity
+        - maskout clean token
+    default_execution:
+      kind: feature_leakage_followup_packet
+      timeout_sec: 1800
+      args:
+        workspace_root: .
+      required_files:
+        - cluster_visual_sheet.jpg
+        - clean_center_perturbation_metrics.csv
+        - context_size_sensitivity.csv
+        - maskout_clean_token_probe.csv
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  feature_leakage_maskout_probe:
+    description: Bounded GPU feature-level clean-token maskout probe for GenD layer features.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_feature_leakage_maskout_probe.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - probe
+      - analysis
+      - run
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      data_root:
+        flag: --data_root
+        type: path
+        required: false
+        access: read
+      model:
+        flag: --model
+        type: str
+        required: false
+      layer_index:
+        flag: --layer_index
+        type: int
+        required: false
+      train_fake:
+        flag: --train_fake
+        type: int
+        required: false
+      train_real:
+        flag: --train_real
+        type: int
+        required: false
+      eval_fake:
+        flag: --eval_fake
+        type: int
+        required: false
+      eval_real:
+        flag: --eval_real
+        type: int
+        required: false
+      epochs:
+        flag: --epochs
+        type: int
+        required: false
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    numeric_policy:
+      epochs:
+        default: 2
+        cap_without_flag: 3
+      train_fake:
+        default: 500
+        cap_without_flag: 1000
+      train_real:
+        default: 500
+        cap_without_flag: 1000
+      eval_fake:
+        default: 500
+        cap_without_flag: 1000
+      eval_real:
+        default: 500
+        cap_without_flag: 1000
+    produces_artifact_families:
+      - prefix: maskout_clean_token_probe.
+      - prefix: maskout_clean_token_delta.
+      - prefix: maskout_clean_token_
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      output_prefixes:
+        - maskout_clean_token_probe.
+        - maskout_clean_token_delta.
+        - maskout_clean_token_
+      identity_terms:
+        - maskout_clean_token_probe
+        - feature_leakage_maskout
+      text_terms:
+        - maskout clean token
+        - clean-token maskout
+        - feature-level clean-token
+    default_execution:
+      kind: feature_leakage_maskout_probe
+      timeout_sec: 7200
+      args:
+        workspace_root: .
+        data_root: /srv/example-data/datasets/DDL_I
+        model: GenD_DINOv3_L
+        layer_index: 20
+        train_fake: 500
+        train_real: 500
+        eval_fake: 500
+        eval_real: 500
+        epochs: 2
+      required_files:
+        - maskout_clean_token_probe.csv
+        - maskout_clean_token_delta.csv
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 7200
+    gpu_allowed: true
+
+  b14_workplace_sanity:
+    description: Bounded CPU-only B14 workplace sanity/current-state inventory.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_b14_workplace_sanity.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - audit
+      - report
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      project_subdir:
+        flag: --project_subdir
+        type: str
+        required: false
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_outputs:
+      required_files:
+        - b14_workplace_sanity_report.md
+        - b14_current_state_inventory.json
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    produces_artifact_families:
+      - prefix: b14_workplace_sanity_report.
+      - prefix: b14_current_state_inventory.
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      output_prefixes:
+        - b14_workplace_sanity_report.
+        - b14_current_state_inventory.
+      identity_terms:
+        - b14_workplace_sanity
+        - b14_current_state_inventory
+      text_terms:
+        - B14 workplace current-state inventory
+        - B14 workplace sanity
+        - B14 current-state inventory
+        - B14_agent_handoff_20260521
+    default_execution:
+      kind: b14_workplace_sanity
+      timeout_sec: 1800
+      args:
+        workspace_root: .
+        project_subdir: B14_spatial_grace_graph_utility
+      required_files:
+        - b14_workplace_sanity_report.md
+        - b14_current_state_inventory.json
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  b14_large_image_coordinate_protocol_audit:
+    description: Bounded metadata-only B14 large-image coordinate/bbox protocol audit.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_b14_large_image_coordinate_protocol_audit.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - audit
+      - analysis
+    args: &b14_large_image_common_args
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      project_subdir:
+        flag: --project_subdir
+        type: str
+        required: false
+      max_images:
+        flag: --max_images
+        type: int
+        required: false
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_outputs:
+      required_files:
+        - large_image_size_distribution.csv
+        - bbox_size_aspect_distribution.csv
+        - bbox_mode_distribution.csv
+        - resize_to_448_token_loss_audit.csv
+        - coordinate_roundtrip_contract.md
+        - large_image_crop_policy_candidates.json
+        - decision_summary.json
+        - action_requests.json
+        - B14_L70_large_image_coordinate_protocol_audit_report.md
+        - artifact_summary.md
+        - worker_notes.md
+    produces_artifact_families:
+      - prefix: large_image_
+      - prefix: bbox_
+      - prefix: resize_to_448_
+      - prefix: coordinate_roundtrip_
+      - prefix: B14_L70_
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      identity_terms:
+        - b14_large_image_coordinate_protocol_audit
+      output_prefixes:
+        - large_image_size_distribution.
+        - bbox_size_aspect_distribution.
+      text_terms:
+        - large-image coordinate protocol audit
+        - resize-to-448 token loss
+        - B14 L70
+    default_execution:
+      kind: b14_large_image_coordinate_protocol_audit
+      timeout_sec: 7200
+      args:
+        workspace_root: .
+        project_subdir: B14_spatial_grace_graph_utility
+        max_images: 2000
+      required_files:
+        - large_image_size_distribution.csv
+        - bbox_size_aspect_distribution.csv
+        - bbox_mode_distribution.csv
+        - resize_to_448_token_loss_audit.csv
+        - coordinate_roundtrip_contract.md
+        - large_image_crop_policy_candidates.json
+        - decision_summary.json
+        - action_requests.json
+        - B14_L70_large_image_coordinate_protocol_audit_report.md
+        - artifact_summary.md
+        - worker_notes.md
+    max_timeout_sec: 7200
+    gpu_allowed: false
+
+  b14_large_image_bbox_sidecar_smoke:
+    description: Capability-aware B14 large-image bbox sidecar smoke wrapper; never fabricates metrics.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_b14_large_image_bbox_sidecar_smoke.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - run
+      - analysis
+    args: *b14_large_image_common_args
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_outputs:
+      required_files:
+        - large_image_smoke_metrics.csv
+        - bbox_predictions.jsonl
+        - bbox_evidence_payload.jsonl
+        - mainline_invariance_check.csv
+        - coordinate_roundtrip_check.csv
+        - failure_cases.csv
+        - B14_L72_large_image_bbox_sidecar_smoke_report.md
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    produces_artifact_families:
+      - prefix: large_image_smoke_
+      - prefix: bbox_predictions.
+      - prefix: bbox_evidence_payload.
+      - prefix: mainline_invariance_
+      - prefix: coordinate_roundtrip_
+      - prefix: failure_cases.
+      - prefix: B14_L72_
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      identity_terms:
+        - b14_large_image_bbox_sidecar_smoke
+      output_prefixes:
+        - large_image_smoke_metrics.
+        - bbox_predictions.
+      text_terms:
+        - large-image bbox sidecar smoke
+        - B14 L72
+    default_execution:
+      kind: b14_large_image_bbox_sidecar_smoke
+      timeout_sec: 21600
+      args:
+        workspace_root: .
+        project_subdir: B14_spatial_grace_graph_utility
+        max_images: 300
+      required_files:
+        - large_image_smoke_metrics.csv
+        - bbox_predictions.jsonl
+        - bbox_evidence_payload.jsonl
+        - mainline_invariance_check.csv
+        - coordinate_roundtrip_check.csv
+        - failure_cases.csv
+        - B14_L72_large_image_bbox_sidecar_smoke_report.md
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    max_timeout_sec: 21600
+    gpu_allowed: true
+
+  b14_large_image_feasibility_decision_synthesis:
+    description: Claim-limited synthesis over B14 large-image sidecar smoke artifacts.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_b14_large_image_feasibility_decision_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - report
+    args:
+      <<: *b14_large_image_common_args
+      parent_artifacts_dir:
+        flag: --parent_artifacts_dir
+        type: path
+        required: false
+        access: read
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_outputs:
+      required_files:
+        - B14_L73_large_image_feasibility_decision_report.md
+        - large_image_decision_table.csv
+        - failure_taxonomy.csv
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    produces_artifact_families:
+      - prefix: B14_L73_
+      - prefix: large_image_decision_
+      - prefix: failure_taxonomy.
+      - prefix: decision_summary.
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+    route_when:
+      identity_terms:
+        - b14_large_image_feasibility_decision_synthesis
+      output_prefixes:
+        - B14_L73_
+        - large_image_decision_table.
+      text_terms:
+        - large-image feasibility decision
+        - B14 L73
+    default_execution:
+      kind: b14_large_image_feasibility_decision_synthesis
+      timeout_sec: 1800
+      args:
+        workspace_root: .
+        project_subdir: B14_spatial_grace_graph_utility
+      required_files:
+        - B14_L73_large_image_feasibility_decision_report.md
+        - large_image_decision_table.csv
+        - failure_taxonomy.csv
+        - decision_summary.json
+        - action_requests.json
+        - artifact_summary.md
+        - worker_notes.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  contract_artifact_writer:
+    description: Generic bounded writer for prepare/report/contract artifacts from a materializer-authored config.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_contract_artifact_writer.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - prepare
+      - analysis
+      - report
+      - contract
+    args:
+      config:
+        flag: --config
+        type: path
+        required: true
+        must_exist: true
+        access: read
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_outputs:
+      min_artifact_count: 1
+    produces_artifact_families:
+      - family: contract_artifact
+        mode: writer
+    route_when:
+      stages:
+        - prepare
+        - analysis
+        - review
+        - report
+        - contract
+      all_outputs_family: contract_artifact
+      text_terms:
+        - review
+        - inventory
+        - report
+        - diagnosis
+        - decision
+        - synthesis
+        - action_request
+        - gap
+        - evidence
+    default_execution:
+      kind: contract_artifact_writer
+      timeout_sec: 1800
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  a_residual_detector_mask_policy:
+    description: Bounded A-line detector mask-policy packet for residual-correction orchestration.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_a_residual_metrics_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - audit
+    args: &a_residual_packet_args
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+        access: write
+        must_be_under: remote_task_dir
+      task_kind:
+        flag: --task_kind
+        type: str
+        required: true
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        required: false
+        access: read
+      analysis_root:
+        flag: --analysis_root
+        type: str
+        required: false
+      results_root:
+        flag: --results_root
+        type: path
+        required: false
+        access: read
+      prior_detector_iou:
+        flag: --prior_detector_iou
+        type: float
+        required: false
+      prior_residual_iou:
+        flag: --prior_residual_iou
+        type: float
+        required: false
+      gpu_mem_gb:
+        flag: --gpu_mem_gb
+        type: float
+        required: false
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    produces_artifact_families:
+      - prefix: detector_mask_policy_
+      - prefix: detector_threshold_
+      - prefix: detector_component_
+      - prefix: hysteresis_component_
+      - prefix: top_area_
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: decision_summary.
+    route_when:
+      identity_terms:
+        - a_residual_detector_mask_policy
+      text_terms:
+        - detector mask policy
+        - detector-only mask-policy
+    default_execution:
+      kind: a_residual_detector_mask_policy
+      timeout_sec: 1800
+      args:
+        task_kind: detector_mask_policy
+        workspace_root: .
+        analysis_root: analysis_outputs
+        results_root: results
+        prior_detector_iou: 0.6102
+        prior_residual_iou: 0.6123
+      required_files:
+        - detector_mask_policy_report.md
+        - detector_mask_policy_metrics.json
+        - detector_threshold_sweep.csv
+        - detector_component_policy_sweep.csv
+        - detector_error_case_index.md
+        - detector_mask_visual_sheet.jpg
+        - decision.json
+        - hysteresis_component_sweep.csv
+        - top_area_sweep.csv
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  a_residual_calibration:
+    description: Bounded A-line CLIP residual calibration packet.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_a_residual_metrics_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+    args: *a_residual_packet_args
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    produces_artifact_families:
+      - prefix: residual_calibration_
+      - prefix: residual_direction_
+      - prefix: calibrated_residual_
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: decision_summary.
+    default_execution:
+      kind: a_residual_calibration
+      timeout_sec: 1800
+      args:
+        task_kind: residual_calibration
+        workspace_root: .
+        analysis_root: analysis_outputs
+        results_root: results
+        prior_detector_iou: 0.6102
+        prior_residual_iou: 0.6123
+      required_files:
+        - residual_calibration_report.md
+        - residual_direction_debug.json
+        - residual_calibration_metrics.csv
+        - residual_normalization_sweep.csv
+        - residual_top_area_sweep.csv
+        - residual_inside_outside_stats.csv
+        - calibrated_residual_maps_index.md
+        - residual_calibration_visual_sheet.jpg
+        - decision.json
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  a_residual_suppressor:
+    description: Bounded A-line residual suppressor packet.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_a_residual_metrics_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+    args: *a_residual_packet_args
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    produces_artifact_families:
+      - prefix: residual_suppressor_
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: decision_summary.
+    default_execution:
+      kind: a_residual_suppressor
+      timeout_sec: 1800
+      args:
+        task_kind: residual_suppressor
+        workspace_root: .
+        analysis_root: analysis_outputs
+        results_root: results
+        prior_detector_iou: 0.6102
+        prior_residual_iou: 0.6123
+      required_files:
+        - residual_suppressor_report.md
+        - residual_suppressor_metrics.json
+        - residual_suppressor_results.csv
+        - suppressor_policy_sweep.csv
+        - fake_core_protection_sweep.csv
+        - boundary_boost_sweep.csv
+        - suppression_visual_sheet.jpg
+        - suppression_error_case_index.md
+        - decision.json
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  a_residual_boundary_resolution_probe:
+    description: Bounded A-line boundary/resolution packet with a 10GB GPU scheduling expectation.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_a_residual_metrics_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - run
+      - analysis
+    args: *a_residual_packet_args
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    produces_artifact_families:
+      - prefix: boundary_resolution_
+      - prefix: resolution_boundary_
+      - prefix: resolution_prediction_
+      - prefix: gpu_runtime_
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: decision_summary.
+    default_execution:
+      kind: a_residual_boundary_resolution_probe
+      timeout_sec: 3600
+      args:
+        task_kind: boundary_resolution
+        workspace_root: .
+        analysis_root: analysis_outputs
+        results_root: results
+        prior_detector_iou: 0.6102
+        prior_residual_iou: 0.6123
+        gpu_mem_gb: 10
+      required_files:
+        - resolution_boundary_report.md
+        - resolution_boundary_metrics.json
+        - resolution_boundary_metrics.csv
+        - prediction_manifest.csv
+        - boundary_visual_sheet.jpg
+        - small_fake_case_sheet.jpg
+        - runtime_gpu_summary.md
+        - decision.json
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 3600
+    gpu_allowed: true
+
+  a_residual_decision_synthesis:
+    description: Claim-limited A-line residual correction decision synthesis over parent artifacts.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/reports/run_a_residual_metrics_synthesis.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - analysis
+      - report
+    args: *a_residual_packet_args
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    produces_artifact_families:
+      - prefix: A_residual_correction_
+      - prefix: A_line_
+      - prefix: action_requests.
+      - prefix: artifact_summary.
+      - prefix: worker_notes.
+      - prefix: decision_summary.
+    default_execution:
+      kind: a_residual_decision_synthesis
+      timeout_sec: 1800
+      args:
+        task_kind: decision_synthesis
+        workspace_root: .
+        analysis_root: analysis_outputs
+        results_root: results
+        prior_detector_iou: 0.6102
+        prior_residual_iou: 0.6123
+      required_files:
+        - A_residual_correction_decision_report.md
+        - A_line_decision_summary.json
+        - A_line_metric_comparison_table.csv
+        - A_line_gap_table.csv
+        - recommended_next_tasks.md
+        - action_requests.json
+        - worker_notes.md
+        - decision_summary.json
+        - artifact_summary.md
+    max_timeout_sec: 1800
+    gpu_allowed: false
+
+  loupe_metadata_audit:
+    description: Loupe metadata audit over raw dataset roots.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_metadata_audit.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      dataset_roots:
+        flag: --dataset_roots
+        type: str
+        required: false
+      max_files:
+        flag: --max_files
+        type: int
+        required: false
+    max_timeout_sec: 8100
+    gpu_allowed: false
+    produces_artifact_families:
+      - prefix: metadata_all.
+      - prefix: metadata_by_label.
+      - prefix: metadata_pool_
+    required_approvals:
+      - allow_recursive_dataset_scan
+      - allow_image_header_scan
+
+  loupe_manifest_metadata_audit:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_manifest_metadata_audit.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      dataset_roots:
+        flag: --dataset_roots
+        type: str
+        required: false
+      max_manifest_depth:
+        flag: --max_manifest_depth
+        type: int
+        required: false
+    max_timeout_sec: 3600
+    gpu_allowed: false
+    produces_artifact_families:
+      - prefix: metadata_all.
+      - prefix: metadata_by_label.
+      - prefix: metadata_pool_
+    route_when:
+      identity_terms:
+        - metadata_audit
+        - metadata audit
+        - shortcut risk
+        - manifest metadata
+      output_prefixes:
+        - metadata_all.
+        - metadata_by_label.
+        - metadata_pool_
+    default_execution:
+      args:
+        max_manifest_depth: 4
+      required_files:
+        - metadata_all.csv
+        - metadata_pool_summary.csv
+        - metadata_audit_summary.md
+        - worker_notes.md
+
+  loupe_metadata_only_classifier:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_metadata_only_classifier.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      metadata_csv:
+        flag: --metadata_csv
+        type: path
+        required: false
+        must_exist: true
+    max_timeout_sec: 3600
+    gpu_allowed: false
+    produces_artifact_families:
+      - prefix: metadata_only_
+    route_when:
+      output_prefixes:
+        - metadata_only_
+      text_terms:
+        - loupe_metadata_only_classifier
+        - metadata-only classifier
+        - metadata only classifier
+    default_execution:
+      input_bindings:
+        metadata_csv:
+          read_path_suffixes:
+            - metadata_all.csv
+            - .csv
+    expected_outputs:
+      required_files:
+        - metadata_only_classifier_metrics.json
+        - metadata_only_feature_importance.csv
+        - metadata_only_split_summary.csv
+        - metadata_only_shortcut_summary.md
+        - artifact_summary.md
+        - action_requests.json
+        - worker_notes.md
+      min_artifact_count: 7
+
+  loupe_matched_group_split:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_matched_group_split.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      metadata_csv:
+        flag: --metadata_csv
+        type: path
+        required: false
+        must_exist: true
+    max_timeout_sec: 3600
+    gpu_allowed: false
+    produces_artifact_families:
+      - prefix: matched_group_
+
+  loupe_format_normalized_eval:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_format_normalized_eval.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      ckpt:
+        flag: --ckpt
+        type: path
+        required: false
+        must_exist: true
+      data_dir:
+        flag: --data_dir
+        type: path
+        required: false
+        must_exist: true
+      split:
+        flag: --split
+        type: str
+        required: false
+      batch_size:
+        flag: --batch_size
+        type: int
+        required: false
+      max_items:
+        flag: --max_items
+        type: int
+        required: false
+      variants:
+        flag: --variants
+        type: str
+        required: false
+      workdir:
+        flag: --workdir
+        type: path
+        required: false
+    max_timeout_sec: 21600
+    gpu_allowed: true
+    produces_artifact_families:
+      - prefix: format_normalized_
+    project_asset_replacements:
+      checkpoint_replacements:
+        - arg: ckpt
+          replace_with_known_checkpoint: cls_debug_best
+          when_missing_and_contains:
+            - cls_debug_best
+            - loupe_cls_debug
+            - checkpoint
+          reason: workspace_project_assets.known_checkpoints.cls_debug_best
+      dataset_replacements:
+        - arg: data_dir
+          replace_with_project_asset: loupe_smoke_parquet
+          when_missing_and_contains:
+            - loupe_smoke_parquet
+            - /datasets
+            - loupe_debug_eval_split
+          reason: workspace_project_assets.datasets.loupe_smoke_parquet
+      value_replacements:
+        - arg: split
+          replace_with: test
+          when_missing_path_contains:
+            - loupe_debug_eval_split
+            - loupe_smoke_parquet
+          reason: script_registry_split_name_for_loupe_smoke_parquet
+
+  loupe_seg_overfit:
+    description: Loupe segmentation overfit sanity check.
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_seg_overfit.py]
+    entrypoint_must_exist: true
+    allowed_stages:
+      - sanity
+      - probe
+      - overfit_check
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+        access: write
+        must_be_under: remote_task_dir
+      data_dir:
+        flag: --data_dir
+        type: path
+        required: false
+        must_exist: true
+        access: read
+      workdir:
+        flag: --workdir
+        type: path
+        required: false
+      sample_count:
+        flag: --sample_count
+        type: int
+        required: false
+      min_fake_samples:
+        flag: --min_fake_samples
+        type: int
+        required: false
+      max_epochs:
+        flag: --max_epochs
+        type: int
+        required: false
+      batch_size:
+        flag: --batch_size
+        type: int
+        required: false
+      seed:
+        flag: --seed
+        type: int
+        required: false
+      artifact_prefix:
+        flag: --artifact_prefix
+        type: str
+        required: false
+    max_timeout_sec: 28800
+    gpu_allowed: true
+    produces_artifact_families:
+      - prefix: seg_overfit_
+      - prefix: seg_micro_overfit_
+    access_contract:
+      reads_image_headers: true
+      reads_image_pixels: true
+      recursive_dataset_scan: false
+      bounded_raw_dataset_discovery: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    required_approvals:
+      - allow_image_header_scan
+      - allow_image_pixel_access
+    numeric_policy:
+      max_epochs:
+        default: 10
+        cap_without_flag: 20
+        fallback_cap: 10
+        override_flag: allow_long_training_epochs
+      sample_count:
+        default: 100
+        cap_without_flag: 200
+        override_flag: allow_large_sample_probe
+      min_fake_samples:
+        default: 50
+        cap_without_flag: 200
+        override_flag: allow_large_sample_probe
+    project_asset_replacements:
+      remove_args:
+        ckpt: loupe_seg_overfit_does_not_accept_ckpt
+      dataset_replacements:
+        - arg: data_dir
+          when_arg_equals_project_asset: loupe_smoke_parquet
+          when_min_arg:
+            min_fake_samples: 50
+          replace_with_project_asset: ddl_test_root
+          reason: loupe_seg_overfit_requires_50_plus_masks
+    expected_outputs:
+      required_files:
+        - seg_overfit_sample_manifest.csv
+        - seg_overfit_config.yaml
+        - seg_overfit_metrics.json
+        - seg_overfit_loss_curve.csv
+        - seg_overfit_train_eval.csv
+        - seg_overfit_visual_sheet.jpg
+        - seg_overfit_summary.md
+        - artifact_summary.md
+        - action_requests.json
+        - worker_notes.md
+      min_artifact_count: 9
+    expected_metrics:
+      file: seg_overfit_metrics.json
+      required_keys:
+        - train_iou
+        - train_loss_final
+      optional_keys:
+        - checkpoint_iou
+        - checkpoint_f1
+        - final_f1
+      numeric_keys:
+        - train_iou
+        - train_loss_final
+        - checkpoint_iou
+        - checkpoint_f1
+        - final_f1
+      finite_required: true
+    metric_extractors:
+      checkpoint_filename:
+        pattern: "seg-f1={checkpoint_f1}-iou={checkpoint_iou}.ckpt"
+    warning_rules:
+      weak_metric_result:
+        key: train_iou
+        lt: 0.1
+        recommended_action:
+          type: no_retry
+          message: Execution completed, but the finite IoU is weak; inspect model/task quality before retrying.
+    route_when:
+      output_prefixes:
+        - seg_overfit_
+        - seg_micro_overfit_
+      text_terms:
+        - segmentation overfit
+        - seg overfit
+        - fake-only segmentation
+    handoff_synthesis:
+      when_strategy_mentions: loupe_seg_overfit
+      output_prefixes:
+        - seg_overfit_
+        - seg_micro_overfit_
+      required_task_flags:
+        - allow_image_header_scan
+        - allow_image_pixel_access
+      project_asset_bindings:
+        data_dir:
+          path:
+            - workplace_init
+            - selected
+            - project_assets
+            - datasets
+            - ddl_test_root
+      workspace_arg: workdir
+      default_args:
+        batch_size: 4
+        seed: 42
+      text_int_args:
+        sample_count:
+          default: 100
+          pattern: "\\b(\\d+)\\s*[- ]?fake"
+          mirror_to:
+            - min_fake_samples
+        max_epochs:
+          default: 10
+          pattern: "\\b(\\d+)\\s*epochs?\\b"
+          phrase_overrides:
+            - phrase: more than 20
+              value: 30
+              requires_flag: allow_long_training_epochs
+      artifact_prefix:
+        default: seg_overfit
+        output_prefix_map:
+          seg_micro_overfit_: seg_micro_overfit
+          seg_overfit_: seg_overfit
+      extra_required_artifacts_by_artifact_prefix:
+        seg_micro_overfit:
+          - mask_alignment_contact_sheet.jpg
+          - prediction_contact_sheet_epoch_last.jpg
+      timeout:
+        default_sec: 14400
+        min_sec: 3600
+        max_sec: 28800
+        task_runtime_budget_hours_field: runtime_budget_hours
+      resources:
+        gpu_required: true
+        gpu_count: 1
+      success_criteria:
+        metrics_file_template: "{output_dir}/{artifact_prefix}_metrics.json"
+        metric_keys:
+          - train_iou
+          - train_loss_final
+          - execution_status
+          - contract_status
+          - science_status
+
+  loupe_protocol_report_writer:
+    entrypoint: [python, .codex-orchestrator/runtime/scripts/loupe/run_protocol_report_writer.py]
+    entrypoint_must_exist: true
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+      artifact_summary:
+        flag: --artifact_summary
+        type: path
+        required: false
+        must_exist: true
+      metadata_metrics:
+        flag: --metadata_metrics
+        type: path
+        required: false
+        must_exist: true
+      matched_group_split:
+        flag: --matched_group_split
+        type: path
+        required: false
+        must_exist: true
+    max_timeout_sec: 1800
+    gpu_allowed: false
+    produces_artifact_families:
+      - prefix: loupe_protocol_
+      - prefix: next_task_recommendations.
+
+  research_report_writer:
+    description: Draft one canonical evidence-grounded Markdown report with the fixed Bailian DeepSeek V4.1-Flash profile.
+    entrypoint: [python, scripts/harness/run_research_report_writer.py]
+    entrypoint_must_exist: true
+    args:
+      evidence_path:
+        flag: --evidence_path
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+      report_name:
+        flag: --report_name
+        type: str
+        required: false
+        default: report.md
+      rules_path:
+        flag: --rules_path
+        type: path
+        path_role: input
+        required: false
+        must_exist: true
+      destination_kind:
+        flag: --destination_kind
+        type: str
+        required: false
+        default: draft_only
+      destination_path:
+        flag: --destination_path
+        type: path
+        required: false
+      destination_record_id:
+        flag: --destination_record_id
+        type: str
+        required: false
+      expected_destination_sha256:
+        flag: --expected_destination_sha256
+        type: str
+        required: false
+      update_reason:
+        flag: --update_reason
+        type: str
+        required: false
+      max_input_bytes:
+        flag: --max_input_bytes
+        type: int
+        required: false
+        default: 524288
+      max_output_tokens:
+        flag: --max_output_tokens
+        type: int
+        required: false
+        default: 8192
+    max_timeout_sec: 600
+    gpu_allowed: false
+    expected_metrics:
+      file: report_writer_metrics.json
+      required_keys:
+        - execution_status
+        - contract_status
+        - science_status
+        - claims_used_count
+        - input_tokens
+        - output_tokens
+        - total_tokens
+      numeric_keys:
+        - claims_used_count
+        - input_tokens
+        - output_tokens
+        - total_tokens
+      finite_required: true
+    produces_artifact_families:
+      - suffix: .md
+
+  research_md_snapshot:
+    description: Build a deterministic, read-only Markdown snapshot for one mapped local or remote endpoint.
+    entrypoint: [python, scripts/harness/run_research_md_snapshot.py]
+    entrypoint_must_exist: true
+    args:
+      mapping_path:
+        flag: --mapping_path
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      entity_id:
+        flag: --entity_id
+        type: str
+        required: true
+      endpoint:
+        flag: --endpoint
+        type: str
+        required: true
+      workspace_root:
+        flag: --workspace_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+      max_input_bytes:
+        flag: --max_input_bytes
+        type: int
+        required: false
+        default: 524288
+    max_timeout_sec: 120
+    gpu_allowed: false
+    expected_metrics:
+      file: md_snapshot_metrics.json
+      required_keys:
+        - execution_status
+        - source_bytes
+        - block_count
+        - link_count
+        - source_sha256
+        - snapshot_fingerprint
+        - write_enabled
+      numeric_keys:
+        - source_bytes
+        - block_count
+        - link_count
+      finite_required: true
+    produces_artifact_families:
+      - prefix: md_snapshot
+
+  research_md_sync_plan:
+    description: Produce a read-only three-way Markdown sync plan plus bounded reader and Codex decision packets.
+    entrypoint: [python, scripts/harness/run_research_md_sync_plan.py]
+    entrypoint_must_exist: true
+    args:
+      mapping_path:
+        flag: --mapping_path
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      entity_id:
+        flag: --entity_id
+        type: str
+        required: true
+      local_snapshot_path:
+        flag: --local_snapshot_path
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      remote_snapshot_path:
+        flag: --remote_snapshot_path
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      base_path:
+        flag: --base_path
+        type: path
+        path_role: input
+        required: false
+        must_exist: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+      max_reader_tokens:
+        flag: --max_reader_tokens
+        type: int
+        required: false
+        default: 4096
+    max_timeout_sec: 120
+    gpu_allowed: false
+    expected_metrics:
+      file: md_sync_metrics.json
+      required_keys:
+        - execution_status
+        - write_enabled
+        - section_count
+        - conflict_count
+        - reader_task_count
+        - baseline_source_bytes
+        - candidate_decision_bytes
+        - candidate_estimated_tokens
+        - provider_usage_measured
+        - token_savings_claim_allowed
+      numeric_keys:
+        - section_count
+        - conflict_count
+        - reader_task_count
+        - baseline_source_bytes
+        - candidate_decision_bytes
+        - candidate_estimated_tokens
+      finite_required: true
+    produces_artifact_families:
+      - prefix: sync_plan.
+      - prefix: reader_input_packet.
+      - prefix: codex_decision_packet.
+      - prefix: base_candidate.
+      - prefix: md_sync_metrics.
+      - suffix: .md.writer.json
+      - suffix: report_writer_metrics.json
+      - suffix: publication_packet.json
+      - suffix: report_writer_failure.json
+
+  fsfm_s0_acquire:
+    description: Acquire the pinned original FSFM source and optionally exactly three VF2 ViT-B 400e assets with create-only SHA verification.
+    entrypoint: [python, scripts/harness/run_fsfm_s0_acquire.py]
+    entrypoint_must_exist: true
+    args:
+      checkout_dir:
+        flag: --checkout_dir
+        type: path
+        path_role: output
+        required: true
+      weights_dir:
+        flag: --weights_dir
+        type: path
+        path_role: output
+        required: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+      source_only:
+        flag: --source_only
+        type: bool
+        default: false
+    max_timeout_sec: 3600
+    gpu_allowed: false
+    access_contract:
+      permitted_sources:
+        - https://github.com/wolo-wolo/FSFM-CVPR25.git
+        - https://huggingface.co/Wolowolo/fsfm-3c/resolve/main/pretrained_models/VF2_ViT-B/
+      downloads_only_pinned_assets: true
+      verifies_sha256: true
+      source_only_supported: true
+      checkpoint_unpickled: false
+      modifies_raw_data: false
+    expected_metrics:
+      file: fsfm_s0_acquire_metrics.json
+      required_keys:
+        - execution_status
+        - contract_status
+        - science_status
+        - source_checkout_present
+        - source_only
+        - asset_count_expected
+        - asset_count_verified
+        - elapsed_seconds
+        - gpu_used
+        - checkpoint_unpickled
+      numeric_keys:
+        - asset_count_expected
+        - asset_count_verified
+        - elapsed_seconds
+      finite_required: true
+    produces_artifact_families:
+      - prefix: fsfm_s0_acquire
+
+  fsfm_s0_inventory:
+    description: Bounded metadata-only FAN FSFM source and dataset inventory.
+    entrypoint: [python, scripts/harness/run_fsfm_s0_inventory.py]
+    entrypoint_must_exist: true
+    args:
+      ffpp_root:
+        flag: --ffpp_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      dfdc_root:
+        flag: --dfdc_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      celeb_df_v2_root:
+        flag: --celeb_df_v2_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      repo_root:
+        flag: --repo_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+    max_timeout_sec: 300
+    gpu_allowed: false
+    access_contract:
+      reads_image_headers: false
+      reads_image_pixels: false
+      recursive_dataset_scan: false
+      bounded_workspace_inventory: true
+      modifies_raw_data: false
+      copies_raw_data: false
+    expected_metrics:
+      file: fsfm_s0_inventory_metrics.json
+      required_keys:
+        - execution_status
+        - contract_status
+        - science_status
+        - dataset_roots_observed
+        - dataset_roots_missing
+        - upstream_checkout_present
+        - image_pixels_read
+        - write_enabled
+      numeric_keys:
+        - dataset_roots_observed
+        - dataset_roots_missing
+      finite_required: true
+    produces_artifact_families:
+      - prefix: fsfm_s0_inventory.
+
+  fsfm_s0_boundary:
+    description: >-
+      CPU-only, read-only audit of the pinned FSFM checkout and bounded official
+      publisher metadata; it never reads target datasets or checkpoint tensors.
+    entrypoint: [python, scripts/harness/run_fsfm_s0_boundary.py]
+    entrypoint_must_exist: true
+    args:
+      repo_root:
+        flag: --repo_root
+        type: path
+        path_role: input
+        required: true
+        must_exist: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        path_role: output
+        required: true
+    max_timeout_sec: 2700
+    gpu_allowed: false
+    access_contract:
+      official_sources_only: true
+      permitted_sources:
+        - https://github.com/wolo-wolo/FSFM-CVPR25
+        - https://openaccess.thecvf.com/content/CVPR2025/html/Wang_FSFM_A_Generalizable_Face_Security_Foundation_Model_via_Self-Supervised_Facial_CVPR_2025_paper.html
+        - https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/
+      max_single_remote_bytes: 2097152
+      checkpoint_body_downloaded: false
+      checkpoint_unpickled: false
+      reads_target_results: false
+      reads_dataset_headers: false
+      reads_dataset_pixels: false
+      launches_training: false
+      writes_researchflow: false
+      modifies_source_checkout: false
+    expected_metrics:
+      file: fsfm_s0_boundary_metrics.json
+      required_keys:
+        - execution_status
+        - contract_status
+        - science_status
+        - source_commit_verified
+        - official_metadata_verified
+        - checkpoint_body_downloaded
+        - checkpoint_unpickled
+        - gpu_used
+        - target_results_read
+        - researchflow_write_enabled
+      finite_required: true
+    produces_artifact_families:
+      - prefix: fsfm_s0_boundary
+      - prefix: claim_evidence_boundary
+      - prefix: checkpoint_provenance
+      - prefix: d1_direct_eval_spec
+      - prefix: s0_data_handoff
+      - prefix: action_requests
+      - prefix: worker_notes
+      - prefix: artifact_summary

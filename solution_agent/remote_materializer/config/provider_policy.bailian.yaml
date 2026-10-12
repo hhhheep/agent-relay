@@ -1,0 +1,87 @@
+advisory:
+  provider: hermes_gemini_free
+  official_output: false
+  authority: advisory_only
+  allowed_tasks:
+    - task_split_discussion
+    - ambiguity_check
+    - work_order_draft
+    - diagnosis_summary
+
+primary_reader:
+  provider: bailian_openai_compatible
+  base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+  api_key_env: DASHSCOPE_API_KEY
+  model: qwen-flash
+  response_format: json_object
+  temperature: 0.0
+  max_tokens: 4096
+  timeout_seconds: 120
+  authority: schema_checked
+  max_retries: 1
+
+primary_materializer:
+  provider: bailian_openai_compatible
+  base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+  api_key_env: DASHSCOPE_API_KEY
+  model: qwen3-coder-next
+  backup_model: qwen3-coder-30b-a3b-instruct
+  temperature: 0.1
+  max_tokens: 8192
+  timeout_seconds: 180
+  authority: validator_checked
+  max_retries: 2
+
+reader_verifier:
+  provider: bailian_openai_compatible
+  base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+  api_key_env: DASHSCOPE_API_KEY
+  model: qwen3-coder-next
+  response_format: json_object
+  temperature: 0.0
+  max_tokens: 2048
+  timeout_seconds: 60
+  authority: advisory
+  enabled_when:
+    - reader_meta.requires_verifier
+    - reader_meta.confidence < 0.85
+    - task_type == patch_low_risk
+
+patch_materializer:
+  provider: bailian_openai_compatible
+  base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+  api_key_env: DASHSCOPE_API_KEY
+  model: qwen3-coder-30b-a3b-instruct
+  temperature: 0.1
+  max_tokens: 8192
+  timeout_seconds: 180
+  allowed_paths:
+    - tools/**
+    - validators/**
+    - templates/**
+    - scripts/parse_*.py
+    - scripts/build_*.py
+    - scripts/eval_*.py
+  forbidden_paths:
+    - models/**
+    - losses/**
+    - datasets/**
+    - checkpoints/**
+    - train.py
+  authority: validator_and_smoke_test_checked
+  max_retries: 1
+
+validator:
+  provider: local_python
+  authority: final
+
+fallback:
+  provider: codex
+  count_in_monthly_budget: false
+  allowed_when:
+    - ambiguous_after_reader_retry
+    - validator_failed_after_qwen_retries
+    - suspected_schema_or_parser_bug
+    - low_risk_patch_failed
+    - remote_failure_needs_diagnosis
+    - requires_loss_or_model_change

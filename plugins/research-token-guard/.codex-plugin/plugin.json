@@ -1,0 +1,21 @@
+{
+  "name": "research-token-guard",
+  "version": "0.2.0+codex.20260928150832",
+  "description": "Capture bounded, hash-verifiable receipts for predictably large command output while preserving exact raw streams on disk.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Research Token Guard",
+    "shortDescription": "Bound large command output with exact receipts.",
+    "longDescription": "Provides exact stdout and stderr receipts, bounded evidence retrieval, an append-only stage ledger, and controlled provider-usage evaluation for commands whose output would otherwise be large or repeatedly reread. It is not a universal shell wrapper.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Developer Tools"
+    ],
+    "defaultPrompt": "Use Research Token Guard for this predictably noisy command and preserve exact evidence."
+  }
+}

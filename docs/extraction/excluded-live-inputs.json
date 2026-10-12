@@ -1,0 +1,8 @@
+{
+  "excluded": [
+    "config/harness_remote_deploy_profiles.yaml",
+    "harness_specs/fan_fsfm_s0_boundary_20260928.yaml",
+    "state/integrated_focus_runtime/release_manifest.json"
+  ],
+  "reason": "no live workplace configuration, research execution plan or state copied; release allowlist adapted only in extracted project"
+}

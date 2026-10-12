@@ -1,0 +1,172 @@
+schema_version: 1
+
+failure_types:
+  plan_parse_error:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: repair_plan
+      message: Regenerate a syntactically valid execution_plan.json.
+
+  plan_schema_error:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: repair_plan
+      message: Regenerate the execution plan with the required schema fields.
+
+  gate_denied_missing_approval:
+    repairable: false
+    user_action_required: true
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: request_approval
+      message: Request explicit task approval or reduce the plan scope.
+
+  gate_denied_heavy_read:
+    repairable: false
+    user_action_required: true
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: request_approval
+      message: Raise max_planned_read_files_without_approval or split into a smaller bounded task.
+
+  invalid_dataset_path:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: repair_plan
+      message: Repair the plan using workspace_context/project asset dataset paths.
+
+  path_policy_violation:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: repair_plan
+      message: Rewrite paths so reads/writes stay inside the allowed workplace and run directories.
+
+  arg_policy_violation:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: repair_plan
+      message: Repair script arguments according to script_registry and policy_registry.
+
+  execution_failed_exit_code:
+    repairable: false
+    user_action_required: false
+    codex_recommended: true
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: escalate_to_codex_debug
+      message: Execution reached the script but failed; inspect stderr and code only if this is not a data/approval issue.
+
+  artifact_missing:
+    repairable: false
+    user_action_required: false
+    codex_recommended: true
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: escalate_to_codex_debug
+      message: Required artifacts were not produced; inspect wrapper/script contract rather than repairing the execution plan.
+
+  metrics_missing:
+    repairable: false
+    user_action_required: false
+    codex_recommended: true
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: escalate_to_codex_debug
+      message: Required metrics were missing; inspect wrapper, registry metric contract, or script output rather than repairing the execution plan.
+
+  metrics_invalid:
+    repairable: false
+    user_action_required: false
+    codex_recommended: true
+    execution_success: false
+    warn_only: false
+    recommended_action:
+      type: escalate_to_codex_debug
+      message: Required numeric metrics were invalid; inspect metric extraction or script output rather than repairing the execution plan.
+
+  weak_metric_result:
+    repairable: false
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: true
+    recommended_action:
+      type: no_retry
+      message: Execution succeeded but model result quality is weak; inspect the experiment conclusion before retrying.
+
+  proxy_model_fallback:
+    repairable: false
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: true
+    recommended_action:
+      type: no_retry
+      message: Execution succeeded with a proxy or fallback model; keep claims bounded and do not report formal model evidence.
+
+  missing_evidence:
+    repairable: false
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: false
+    recommended_action:
+      type: suggest_followup_probe
+      message: Execution succeeded, but the declared evidence is insufficient; continue the research flow with a bounded follow-up probe or logging/evidence task instead of rerunning the same plan.
+
+  invalid_model_execution_evidence:
+    repairable: true
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: false
+    recommended_action:
+      type: repair_result_contract
+      message: Execution succeeded, but model_execution_evidence is missing or inconsistent; repair the result contract before upgrading claims.
+
+  missing_capability:
+    repairable: false
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: false
+    recommended_action:
+      type: create_action_request
+      message: Execution reached a bounded limitation because the requested capability is unavailable; emit action_requests.json and continue non-dependent work.
+
+  gpu_runtime_oom:
+    repairable: false
+    user_action_required: false
+    codex_recommended: false
+    execution_success: true
+    warn_only: false
+    recommended_action:
+      type: create_action_request
+      message: Runtime hit GPU OOM after launch; request a smaller batch, lower memory profile, or different GPU capacity before retrying dependent claims.

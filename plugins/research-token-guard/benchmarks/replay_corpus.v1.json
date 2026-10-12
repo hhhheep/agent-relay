@@ -1,0 +1,102 @@
+{
+  "schema_version": "research-token-guard/replay-corpus/v1",
+  "cases": [
+    {
+      "id": "m1-summary-metrics",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/m1-numeric-checkpoint-20260925/M1/summary.json",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "\"basis_sha256\": \"5875e548d83e1eba27fe9ada6c147772ca3178cc0f10f94391aa5319fbd5a8d3\"",
+        "\"fpr_status\": \"NOT_RUN\"",
+        "\"status\": \"COMPLETE\""
+      ]
+    },
+    {
+      "id": "m1-counterexample-tail",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/m1-numeric-checkpoint-20260925/M1/counterexamples.json",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "elm_1floor_bathroom3"
+      ]
+    },
+    {
+      "id": "validation-warning-list",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/final-20260925/researchflow_final_validate.json",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "\"severity\": \"warning\"",
+        "RESULT-STATE-TRANSPORT-FORMAL"
+      ]
+    },
+    {
+      "id": "small-delivery-exact",
+      "mode": "file",
+      "path": "research-vault/Sources/real-cue-chain-validation-20260924/management_delivery_completion.json",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "\"local_delivery_status\": \"PASS\"",
+        "\"warnings\": 0"
+      ]
+    },
+    {
+      "id": "research-gate-decision",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/final-20260925/remote_research_record.md",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "Δ0=C0−C1=-.0140653",
+        "Δ2=C2−C1=+.0250233",
+        "未過預定進階門檻",
+        "M3未訓練"
+      ]
+    },
+    {
+      "id": "writer-savings-not-measured",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/final-20260925/snapshot/authoring/TOOL_FEEDBACK_FINAL.md",
+      "expected_exit_code": 0,
+      "required_literals": [
+        "10474只是已記錄成功呼叫合計",
+        "NOT_MEASURED"
+      ]
+    },
+    {
+      "id": "noisy-exact-failure",
+      "mode": "noisy-failure",
+      "expected_exit_code": 7,
+      "always_retrieve": true,
+      "required_literals": [
+        "RuntimeError: exact-fixture-failure"
+      ]
+    },
+    {
+      "id": "invalid-utf8",
+      "mode": "invalid-utf8",
+      "expected_exit_code": 0,
+      "required_literals": []
+    },
+    {
+      "id": "unchanged-repeat",
+      "mode": "file",
+      "path": "research-vault/Sources/multi-illumination-taskbook-20260924/m1-numeric-checkpoint-20260925/M1/summary.json",
+      "expected_exit_code": 0,
+      "repeat_group": "m1-summary",
+      "required_literals": [
+        "\"status\": \"COMPLETE\""
+      ]
+    },
+    {
+      "id": "one-byte-mutation-control",
+      "mode": "mutation",
+      "source_case": "unchanged-repeat",
+      "expected_exit_code": 0,
+      "repeat_group": "m1-summary",
+      "required_literals": [
+        "\"status\": \"COMPLETF\""
+      ]
+    }
+  ]
+}

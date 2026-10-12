@@ -1,0 +1,12 @@
+schema_version: 1
+fixture_id: b14_weak_metric_stop_01
+mission_id: B14_night_research_v1
+scenario_id: b14_weak_metric_001
+scenario_type: weak_metric_continue_or_stop
+parent_decision_id: null
+evidence:
+  scenario_type: weak_metric_continue_or_stop
+  weak_metric_score: 0.14
+  source_behavior_change_required: false
+expected: {}
+

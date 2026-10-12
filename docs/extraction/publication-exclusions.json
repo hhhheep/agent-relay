@@ -1,0 +1,205 @@
+{
+  "excluded_mapped_files": 40,
+  "files": [
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/answer.schema.json",
+      "source_sha256": "4ae67eeb4d1a018330f818cda700560d56928d6ed4b2bd34e1c38553cb1f9d7f",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/baseline-synthetic.prompt.txt",
+      "source_sha256": "42aafec9692e3a4598490cfdaba2c650ac7f23a694e1da649f39c25e040474d3",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/baseline.prompt.txt",
+      "source_sha256": "3da56e4a5dd705f636052cb832daa10d69ff8472134c5f2c83ac99792ccabee3",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/expected-answer.json",
+      "source_sha256": "f205f9e3b2c0dafb99c5c2413eab613ced44f83a348d0d816cec9fc210b56642",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/guarded-stage.json",
+      "source_sha256": "5ea031e4d79ae7f131c420dd7c3baf27066411cb014a08401063a753400e9845",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/guarded-synthetic.prompt.txt",
+      "source_sha256": "e1c43b22cb765fd2da7ba9fc84657a94303b64e7bc4bf9f7846f7c18d2589670",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/guarded.prompt.txt",
+      "source_sha256": "7948290744aeab38023448c6532fe3c70b9be9b24ed50d8880115fa9b8e339da",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/real-expected-answer.json",
+      "source_sha256": "7af44a7e3adf63943042b9590c7e0262e835192b4cd7bfa51f441738d3b019de",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/real-stage-atomic.json",
+      "source_sha256": "e7aa4c502cf99bb1ee5e1aaf60298dfe49dd3b3109ba30a347eacca29a090c9b",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/synthetic-stage-atomic.json",
+      "source_sha256": "bf2f6cd5de51771927245c2b715301a03f3e818a293e47cedeb57f73e0737271",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/synthetic-stage.json",
+      "source_sha256": "723c7c7ac075698bb8d31ff0b2887b9c9350babdbe407a143cca74f338a80616",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-real-answer.json",
+      "source_sha256": "5ed6345ea870e639ddfae1a257fd9295e30e633950cdbca5bdd655fc46309ba2",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-real-warm-answer.json",
+      "source_sha256": "d5c8047461132858777623c3fa2cde6ca81924b13b484e098305869b06a84d64",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-real-warm-v2-answer.json",
+      "source_sha256": "5ed6345ea870e639ddfae1a257fd9295e30e633950cdbca5bdd655fc46309ba2",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-real-warm-v2-usage.json",
+      "source_sha256": "f424c5e2d199cbec9eed8ec568f123f06ac44fb82c883111ca664e9e40429ecb",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-synthetic-answer.json",
+      "source_sha256": "ec669a178e9f8e6c04d727a8114812c2f7506dd7970167f6161f6f4242e05290",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-synthetic-valid-answer.json",
+      "source_sha256": "84c12a3cc6f0533cabf062fc6c3e25e888033f390880652179588012b5481d6a",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/baseline-synthetic-valid-usage.json",
+      "source_sha256": "db660a5f30be47ea9be5d713a31aa5012a867410089dc3c541733046de1ad438",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-real-answer.json",
+      "source_sha256": "5ed6345ea870e639ddfae1a257fd9295e30e633950cdbca5bdd655fc46309ba2",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-real-usage.json",
+      "source_sha256": "4a5cb3d8a4ae510bad798d45e92ed1ef3f84f7d139da5b4d39cbec698539e57f",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-synthetic-answer.json",
+      "source_sha256": "84c12a3cc6f0533cabf062fc6c3e25e888033f390880652179588012b5481d6a",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-synthetic-atomic-answer.json",
+      "source_sha256": "a0ecceb7f759f01d957333aa1cd24287b87c8cb08af7756053277d4342b133fe",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-synthetic-atomic-v2-answer.json",
+      "source_sha256": "84c12a3cc6f0533cabf062fc6c3e25e888033f390880652179588012b5481d6a",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/guarded-synthetic-atomic-v2-usage.json",
+      "source_sha256": "7871e5b567e4714874f0fb6c543fdd9f52adc4cc81e5288b4f049ba9bdad7619",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T065941Z-a2e8ac8a/receipt.json",
+      "source_sha256": "0b00e70d9f6d6824ac08ae018a0a10aab199f250fb0ac248c2367ecdafb19ea9",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T070745Z-3c709555/receipt.json",
+      "source_sha256": "d36971302d69f8e6a1848a840f7bc77fcd8ed8e72127ac1df7148a9108842a6e",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T070832Z-3e01fce8/receipt.json",
+      "source_sha256": "dd335a675296fff7151087833f6f60f322dbe0aa892a5628d777580d7c5bf2a5",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T070940Z-293e4dbc/receipt.json",
+      "source_sha256": "5aabb8355d993032d8b0ac83347c7aaa8c1d56cbce3067fd8e86c395e06512ad",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075004Z-8dca56e4/receipt.json",
+      "source_sha256": "39c3dd3a1728683015420d3446fc9f7635955741db53a64c4c37cc3062fb28ed",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075133Z-0342a271/receipt.json",
+      "source_sha256": "d19fa255d0d97d842cba32a238b5866c8e3a99580a1101ffd979e5d528ea548f",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075554Z-03467d26/receipt.json",
+      "source_sha256": "b477baaff4a036584780b663c7afa8d323d0f52f4e294f51c7d02b9c5ff24afb",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075655Z-e2bca194/receipt.json",
+      "source_sha256": "a3bcd3e67b8005fd438e296b8d0e440fd9830ffa7085b9d73c69782d2cd41a2d",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075802Z-0279e9ca/receipt.json",
+      "source_sha256": "649343000783d5f502053050c7165240aeba1282f88b2f96d7205120622c2054",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/outer-runs/20260926T075851Z-33d2099c/receipt.json",
+      "source_sha256": "bd269b7c04a8cac09271174b50900c64be6da3d0a77338af9f10793ed136a330",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/real-ledger-runs/20260926T075510Z-830e36a4/receipt.json",
+      "source_sha256": "28a09675f6b1a87ef1cfbffbd36bd059a036f938a4ed273f4eb890cbc5ea7f92",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/pilot/runtime/real-ledger-runs/20260926T075714Z-39d79679/receipt.json",
+      "source_sha256": "645f1de0d996bfaec951b65c68c764deb71d62274ae837695073cdd07ddab91d",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/results/local-offline-ledger-v1.json",
+      "source_sha256": "14c9f4bed2ba94f797218a2bcc473a63cecc92f6e4965263de6018bb82805fcc",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/results/local-offline-v1.json",
+      "source_sha256": "4641db656fb90283e7f3b3da9a6c1997411b07d794cf76d79ee535bb20c6ef15",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/results/provider-real-cache-confounded-v1.json",
+      "source_sha256": "ef766e7066136b54729c34181f251c8cb62af42c2991f00beee9c9e87198b458",
+      "reason": "Historical private benchmark output moved outside publication source."
+    },
+    {
+      "target": "plugins/research-token-guard/benchmarks/results/provider-synthetic-cold-v1.json",
+      "source_sha256": "791e7ba2f5ab70aa5b2d7ec04909171b4e0d0cb7b78a7d9be3c4c2f0156f6a43",
+      "reason": "Historical private benchmark output moved outside publication source."
+    }
+  ]
+}

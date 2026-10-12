@@ -1,0 +1,8 @@
+{
+  "name": "extracted-goal-routing",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0"
+  }
+}

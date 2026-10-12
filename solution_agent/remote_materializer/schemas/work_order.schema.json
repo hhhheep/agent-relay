@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Remote materializer work order",
+  "type": "object",
+  "required": [
+    "task_id",
+    "task_type",
+    "source_task_path",
+    "jobs",
+    "required_outputs",
+    "input_files",
+    "allowed_output_root",
+    "forbidden_actions",
+    "validation_steps",
+    "retry_policy",
+    "escalation_policy"
+  ],
+  "properties": {
+    "status": {
+      "enum": ["ready", "ambiguous"]
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_type": {
+      "enum": ["training_validation", "probe_inference", "material_regeneration", "failure_normalization"]
+    },
+    "source_task_path": {
+      "type": "string"
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 1
+    },
+    "required_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "input_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allowed_output_root": {
+      "type": "string",
+      "pattern": "^runs/[^/]+/?$"
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation_steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "required": ["reader_max_retries", "qwen_max_retries"]
+    },
+    "escalation_policy": {
+      "type": "object",
+      "required": ["escalate_if"]
+    }
+  },
+  "additionalProperties": true
+}
+

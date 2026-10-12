@@ -1,0 +1,11 @@
+schema_version: 1
+fixture_id: b14_p2_only_01
+mission_id: B14_night_research_v1
+scenario_id: b14_p2_only_bbox
+scenario_type: p2_only_not_final_bbox
+parent_decision_id: null
+evidence:
+  scenario_type: p2_only_not_final_bbox
+  p2_only_bbox_final: false
+  source_behavior_change_required: false
+expected: {}

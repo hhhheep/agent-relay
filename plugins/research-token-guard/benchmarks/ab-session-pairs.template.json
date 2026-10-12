@@ -1,0 +1,11 @@
+{
+  "schema_version": "research-token-guard/ab-session-pairs/v1",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "high",
+  "cases": {
+    "replace-with-case-id": {
+      "baseline_session": "path/to/fresh-baseline-session.jsonl",
+      "guarded_session": "path/to/fresh-guarded-session.jsonl"
+    }
+  }
+}

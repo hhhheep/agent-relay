@@ -1,0 +1,10 @@
+{
+  "task_id": "patch_validator_allowlist_0502",
+  "context_level": "patch_low_risk",
+  "needed_files": [
+    "tools/build_manifest.py",
+    "validators/validate_commands.py"
+  ],
+  "reason": "Patch only low-risk helper files referenced by validator failures."
+}
+

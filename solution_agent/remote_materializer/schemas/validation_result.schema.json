@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Remote materializer validation result",
+  "type": "object",
+  "required": ["task_id", "status", "validators", "failed_validators", "created_at"],
+  "properties": {
+    "task_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": ["pass", "fail"]
+    },
+    "validators": {
+      "type": "array"
+    },
+    "failed_validators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
+

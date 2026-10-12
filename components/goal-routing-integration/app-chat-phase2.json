@@ -1,0 +1,44 @@
+{
+  "synthetic": true,
+  "chatId": "synthetic-extraction-thread",
+  "marker": "synthetic-request",
+  "answer": "Synthetic receipt only; no live App operation",
+  "steps": [
+    {
+      "step": "create_goal",
+      "response": {
+        "goal": {
+          "threadId": "synthetic-extraction-thread",
+          "objective": "Verify synthetic receipt binding",
+          "createdAt": 1700000000,
+          "updatedAt": 1700000000,
+          "tokenBudget": null,
+          "tokensUsed": 0,
+          "timeUsedSeconds": 0,
+          "status": "active"
+        }
+      }
+    },
+    {
+      "step": "update_goal_complete",
+      "response": {
+        "goal": {
+          "threadId": "synthetic-extraction-thread",
+          "objective": "Verify synthetic receipt binding",
+          "createdAt": 1700000000,
+          "updatedAt": 1700000001,
+          "tokenBudget": null,
+          "tokensUsed": 0,
+          "timeUsedSeconds": 0,
+          "status": "complete"
+        }
+      }
+    },
+    {
+      "step": "get_goal",
+      "response": {
+        "goal": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "platform": "win32",
+  "python": "3.13.12",
+  "installation": "offline reconstruction from distribution file metadata; no live environment reused",
+  "system_site_packages": false,
+  "distributions": [
+    {
+      "name": "annotated-types",
+      "version": "0.6.0",
+      "files": 10,
+      "file_manifest_sha256": "00627f46833a2a09319c0d12074cdf31a0dbe923ac6865626110c8a8510e7139"
+    },
+    {
+      "name": "anyio",
+      "version": "4.10.0",
+      "files": 51,
+      "file_manifest_sha256": "0cac03196febebba1f8e066670e67199c351068ca29897170a4fa1834f77d6d1"
+    },
+    {
+      "name": "attrs",
+      "version": "26.1.0",
+      "files": 36,
+      "file_manifest_sha256": "b9aac8ee3fc1f2d8ed71c28aa9c36087b19c46869c47ac20c0e7833c5dd7c269"
+    },
+    {
+      "name": "cffi",
+      "version": "2.0.0",
+      "files": 33,
+      "file_manifest_sha256": "2508431651f0130ea4c7dfdee426aef7a65cb600c0cba095f81d5aa34b422674"
+    },
+    {
+      "name": "click",
+      "version": "8.2.1",
+      "files": 24,
+      "file_manifest_sha256": "e018c5bbe456639a827842f6533b3bc4663b3de820d1b65c62165f029ad5172c"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "files": 20,
+      "file_manifest_sha256": "01dabf61ea6244bf76339f9bfc4de24c071825fab8b3afb55428e3a998c736fe"
+    },
+    {
+      "name": "cryptography",
+      "version": "46.0.5",
+      "files": 217,
+      "file_manifest_sha256": "7dc583a276b64ec805ba80110ecb6ff94c2e7fe55fa531bbadfba4d2ead854e4"
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "files": 20,
+      "file_manifest_sha256": "67f55763a14ce1f21c8e82142b05caa13197f070556fb47e296f4dff90eb02bd"
+    },
+    {
+      "name": "httpcore2",
+      "version": "2.13.1",
+      "files": 37,
+      "file_manifest_sha256": "0455eae3d141c9e54fbe4b5ed82edc9f701fae9907a38082a2364201bf48733b"
+    },
+    {
+      "name": "httpx2",
+      "version": "2.13.1",
+      "files": 37,
+      "file_manifest_sha256": "4ef1b5788f01f91cd00a43f422e96aadb536b5f609148ace162f34360f54dc36"
+    },
+    {
+      "name": "idna",
+      "version": "3.20",
+      "files": 17,
+      "file_manifest_sha256": "679e8c7eb709ce0dd93cd3ece050cfef2ffd3e86adec984c1cfc3b6aa482f2a7"
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.3.0",
+      "files": 11,
+      "file_manifest_sha256": "e08d1c69f0ee73a7daab83e528d2b10d8750b3d113b50ca68bd219a786050b97"
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6",
+      "files": 33,
+      "file_manifest_sha256": "bae3c862df788ade715695966f737bf9beee65e2a147203e1179b58f8e7dc991"
+    },
+    {
+      "name": "jsonschema",
+      "version": "4.26.0",
+      "files": 44,
+      "file_manifest_sha256": "2d14cfab5e35332bb4b602ed7e8acff3f050b852b434fd8583750779a9cacd3a"
+    },
+    {
+      "name": "jsonschema-specifications",
+      "version": "2025.9.1",
+      "files": 29,
+      "file_manifest_sha256": "aad01c76485922487767cefa64a7ac3fdd7bdb390abffecfd7c0c589f2c0b161"
+    },
+    {
+      "name": "markdown-it-py",
+      "version": "4.0.0",
+      "files": 77,
+      "file_manifest_sha256": "ada265a2ff61ed84dacb2e279f46a10ec939670a5c6a327cb3d5b52eab6e55d1"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.3",
+      "files": 12,
+      "file_manifest_sha256": "d8d6fe5654157c2ef4658e2380456292a41ca161934631e152d0e1dc0ad8898b"
+    },
+    {
+      "name": "mcp",
+      "version": "2.2.0",
+      "files": 131,
+      "file_manifest_sha256": "25451c6ed76bc0b14108d4aba1dd8d1565d0c737c0c9354bbd84e98a7aa6f9e4"
+    },
+    {
+      "name": "mcp-types",
+      "version": "2.2.0",
+      "files": 14,
+      "file_manifest_sha256": "103306f2b4e3b18a946e48447b5915d359ce2e604b5d1556e95f970151182480"
+    },
+    {
+      "name": "mdurl",
+      "version": "0.1.2",
+      "files": 14,
+      "file_manifest_sha256": "132c2cd4972f7e0ac7518eb14af8cb37ed7fb6e9238fa2e3b11c5ec7d723014a"
+    },
+    {
+      "name": "opentelemetry-api",
+      "version": "1.45.0",
+      "files": 48,
+      "file_manifest_sha256": "793e5d26f78cccc5cac6b6d458d8ccf152156ff9d3380f396e19350e9d9ee65d"
+    },
+    {
+      "name": "packaging",
+      "version": "25.0",
+      "files": 26,
+      "file_manifest_sha256": "649d98d2b79c79e6c6a447717430df841694f62f7ada716db8ecf7038a2a68af"
+    },
+    {
+      "name": "pluggy",
+      "version": "1.5.0",
+      "files": 17,
+      "file_manifest_sha256": "f2d926d0e3c2548fa85ae9119271590a0840b990a50f885c6845856535d17a0c"
+    },
+    {
+      "name": "pycparser",
+      "version": "2.23",
+      "files": 26,
+      "file_manifest_sha256": "7160e17e3ff731815ddbc21ff1fde49ff762d314fe3e768d5bd79fa7437af677"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.12.4",
+      "files": 114,
+      "file_manifest_sha256": "e7987e3ff605ed4eb3a96e3be2aef12f5a1c8d673255248a06822b0011b5eb87"
+    },
+    {
+      "name": "pydantic_core",
+      "version": "2.41.5",
+      "files": 12,
+      "file_manifest_sha256": "691b21d7926db64967d4b44536cf8977839b3040499bf36c56e94e785c34ea26"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.19.2",
+      "files": 347,
+      "file_manifest_sha256": "98c4c3f0790cfe6e195d05df0c467a1a2ecf92436b40fd917f9cc30f84139114"
+    },
+    {
+      "name": "PyJWT",
+      "version": "2.10.1",
+      "files": 22,
+      "file_manifest_sha256": "1e66f4acd68b9008cf1ff6809f572b743c2d1b35bb9a0ee40c0922d8adb0195e"
+    },
+    {
+      "name": "pytest",
+      "version": "9.0.3",
+      "files": 84,
+      "file_manifest_sha256": "e9529dd5b75286e41b01dbd934900ad58995d46103b752411c042a2910cbb30c"
+    },
+    {
+      "name": "python-multipart",
+      "version": "0.0.27",
+      "files": 15,
+      "file_manifest_sha256": "e9afe53d62690e57835666e957233ad8c7e08be74be3cb216fde58cc07d0d06e"
+    },
+    {
+      "name": "pywin32",
+      "version": "312",
+      "files": 610,
+      "file_manifest_sha256": "85582e934094e19c84eabc98429b14e57899bd395921e9cc9a5176f9ab0c78fb"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3",
+      "files": 26,
+      "file_manifest_sha256": "41dcefbb02ec1b93845da651cd059cd8e7b0f2f41e578873f644c93a9d00b01b"
+    },
+    {
+      "name": "referencing",
+      "version": "0.37.0",
+      "files": 20,
+      "file_manifest_sha256": "c9034d8ed2f8edba5dd5c87d95f3cdf98388ff7ff75dd422873e48e8e02280a4"
+    },
+    {
+      "name": "rich",
+      "version": "14.2.0",
+      "files": 86,
+      "file_manifest_sha256": "972648118659101c69e4b1aa38acfd7668970d1a1efad56390b30d6e86a6b032"
+    },
+    {
+      "name": "rpds-py",
+      "version": "2026.5.1",
+      "files": 10,
+      "file_manifest_sha256": "eb0ac99e6cb09ffa4c73c751d727679bcc76b89deb4feafcbeb21de40310d061"
+    },
+    {
+      "name": "sniffio",
+      "version": "1.3.1",
+      "files": 16,
+      "file_manifest_sha256": "5802a01ad3a964e31be1e630096629d8ad7dc50ff7115313065ed60260466b4a"
+    },
+    {
+      "name": "sse-starlette",
+      "version": "3.4.11",
+      "files": 12,
+      "file_manifest_sha256": "54c6d328d2880f889394fef4bac523baed0787117b7557e4b2f325717c5d8576"
+    },
+    {
+      "name": "starlette",
+      "version": "1.0.0",
+      "files": 40,
+      "file_manifest_sha256": "242bcdaba2db8504fd9d9693cc08ab6e55b52e37c3f19350466dafcfd3627c3f"
+    },
+    {
+      "name": "truststore",
+      "version": "0.10.1",
+      "files": 14,
+      "file_manifest_sha256": "1cd854cfa8d7353ddb8fe88bf286687b3ec9afcd4441daac226798e6d4d10809"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.15.0",
+      "files": 8,
+      "file_manifest_sha256": "9044ff8d58737dd1e0d2f69b290f2149e71cdf64ae0990d9e8367bd3dc912d61"
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.2",
+      "files": 12,
+      "file_manifest_sha256": "30e6376d84174bf6b80267a81984f5503e7ed6916b762933782572f805d7c034"
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.46.0",
+      "files": 48,
+      "file_manifest_sha256": "419b03bdd6d0fbd20586839057346586260d2d1b2e1e58111da8b6449ec955cd"
+    }
+  ],
+  "files_copied": 2480
+}

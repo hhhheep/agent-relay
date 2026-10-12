@@ -1,0 +1,6 @@
+{
+  "name": "cross-agent-teams-channel",
+  "version": "0.1.0",
+  "description": "Claude Code channel proxy for cross-agent-teams-mcp daemon",
+  "entry": "dist/cli.js"
+}

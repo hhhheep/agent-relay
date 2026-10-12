@@ -1,0 +1,15 @@
+{
+  "schema_version": "research-stage-spec/v1",
+  "task_id": "replace-with-task-id",
+  "stage_id": "replace-with-stage-id",
+  "objective": "One bounded objective.",
+  "acceptance_checks": [
+    "One observable check backed by exact evidence."
+  ],
+  "budgets": {
+    "max_command_executions": 12,
+    "max_model_facing_bytes": 100000,
+    "max_retries_per_fingerprint": 1,
+    "max_wall_seconds": 7200
+  }
+}

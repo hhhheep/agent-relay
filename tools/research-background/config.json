@@ -1,0 +1,22 @@
+{
+  "poll_seconds": 180,
+  "stable_seconds": 180,
+  "max_source_bytes": 131072,
+  "max_batch_bytes": 180000,
+  "batch_files": 3,
+  "max_attempts": 3,
+  "retry_seconds": 180,
+  "extensions": [
+    ".md",
+    ".txt"
+  ],
+  "vault": "fixture-vault",
+  "state": "state",
+  "provider_module": "../../plugins/research-report-writer/lib/provider.mjs",
+  "credential_env_file": "credentials.local.env",
+  "watch_roots": [
+    "Sources"
+  ],
+  "exclude_roots": [],
+  "output": "Generated/Summaries"
+}

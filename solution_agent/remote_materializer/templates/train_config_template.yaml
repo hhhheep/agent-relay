@@ -1,0 +1,8 @@
+task_id: ""
+output_dir: "runs/<task_id>/generated"
+dataset:
+  manifest_csv: "runs/<task_id>/generated/data_manifest.csv"
+checkpoint: ""
+validation:
+  enabled: true
+

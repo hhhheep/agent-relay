@@ -1,0 +1,85 @@
+schema_version: 1
+
+execution_plan_gate:
+  approvals:
+    image_header_scan: allow_image_header_scan
+    image_pixel_access: allow_image_pixel_access
+    recursive_dataset_scan: allow_recursive_dataset_scan
+    bounded_raw_dataset_discovery: allow_bounded_raw_dataset_discovery
+    data_copy: allow_data_copy
+    dataset_modification: allow_dataset_modification
+    heavy_data_scan: allow_heavy_data_scan
+
+  defaults:
+    max_planned_read_files_without_approval: 5000
+
+  data_access_fields:
+    image_header_scan:
+      - opens_image_files
+      - opens_image_headers
+    image_pixel_access:
+      - opens_image_pixels
+    recursive_dataset_scan:
+      - full_recursive_dataset_scan
+    bounded_raw_dataset_discovery:
+      - bounded_raw_dataset_discovery
+    data_copy:
+      - copies_or_moves_data
+    dataset_modification:
+      - modifies_datasets
+
+  read_path_kinds:
+    image_header_scan:
+      - image_headers
+      - image_files
+    image_pixel_access:
+      - image_pixels
+      - pixel_data
+    recursive_dataset_scan:
+      - directory_scan
+      - image_headers
+      - image_files
+      - image_pixels
+      - dataset_root
+    bounded_raw_dataset_discovery:
+      - directory_scan
+      - dataset_root
+
+  path_policy:
+    output_dir_must_be_under: remote_task_dir
+
+  forbidden_by_default:
+    raw_dataset_copy_or_move: true
+    raw_dataset_modification: true
+
+numeric_policy:
+  max_epochs:
+    default: 10
+    cap_without_flag: 20
+    fallback_cap: 10
+    override_flag: allow_long_training_epochs
+
+one_shot_repair:
+  enabled: true
+  max_repair_attempts: 1
+  repair_model: qwen3-coder-next
+  repair_scope: execution_plan
+  allow_codex_fallback: false
+  allow_approval_changes: false
+  allow_real_world_state_changes: false
+  repairable_failure_types:
+    - plan_parse_error
+    - plan_schema_error
+    - arg_policy_violation
+    - path_policy_violation
+  non_repairable_failure_types:
+    - gate_denied_missing_approval
+    - gate_denied_heavy_read
+    - invalid_dataset_path
+    - execution_failed_exit_code
+    - artifact_missing
+    - metrics_missing
+    - metrics_invalid
+    - weak_metric_result
+    - missing_evidence
+    - missing_capability

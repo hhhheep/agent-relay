@@ -1,0 +1,16 @@
+schema_version: research-md-sync/v1
+entities:
+  - entity_id: TASK-OBJECT-PART-REAL-REFERENCE
+    local:
+      path: research-vault/Discussions/Object-Part Real Reference.md
+    remote:
+      path: research/records/object-part-real-reference.md
+    sections:
+      - section_id: execution-status
+        local_block: frontmatter:execution_status
+        remote_block: frontmatter:status
+        owner: remote
+        review_level: A1
+        required: true
+        priority: 100
+        mode: semantic

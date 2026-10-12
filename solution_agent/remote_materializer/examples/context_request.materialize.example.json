@@ -1,0 +1,7 @@
+{
+  "task_id": "probe_axis_tf_jpeg_0502",
+  "context_level": "materialize",
+  "needed_files": [],
+  "reason": "Materialization does not require source code."
+}
+

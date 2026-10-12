@@ -1,0 +1,24 @@
+{
+  "name": "agent-relay",
+  "stage": "independent-extraction",
+  "runtime": {
+    "python": "3.13.12",
+    "node": "24.19.0",
+    "verified_platform": "Windows x64"
+  },
+  "live_installation": false,
+  "formal_modularization": false,
+  "source_map": "docs/extraction/source-map.json",
+  "build": "scripts/extraction/rebuild.ps1",
+  "verify": "scripts/extraction/verify-source.py",
+  "local_git_initialized": true,
+  "source_baseline_committed": true,
+  "verification": "docs/extraction/VERIFICATION.md",
+  "known_test_failures": {
+    "initial_core": 1,
+    "additional_legacy_workspace_configuration": 9
+  },
+  "display_name": "Agent Relay",
+  "publication_privacy_checked": true,
+  "publication_visibility": "private"
+}

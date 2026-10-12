@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "solution_agent_harness": {
+      "command": "python",
+      "cwd": ".",
+      "args": [
+        "./scripts/server.py"
+      ],
+      "enabled": true,
+      "startup_timeout_sec": 20,
+      "tool_timeout_sec": 60,
+      "env_vars": [
+        "SOLUTION_AGENT_ROOT"
+      ],
+      "tools": {
+        "stage_execute": {
+          "approval_mode": "prompt"
+        },
+        "stage_status": {
+          "approval_mode": "approve"
+        },
+        "stage_collect": {
+          "approval_mode": "prompt"
+        },
+        "terminal_open": {
+          "approval_mode": "prompt"
+        },
+        "terminal_exec": {
+          "approval_mode": "prompt"
+        },
+        "terminal_send": {
+          "approval_mode": "prompt"
+        },
+        "terminal_read": {
+          "approval_mode": "approve"
+        },
+        "terminal_close": {
+          "approval_mode": "prompt"
+        },
+        "artifact_inspect": {
+          "approval_mode": "approve"
+        },
+        "artifact_store": {
+          "approval_mode": "prompt"
+        },
+        "artifact_apply": {
+          "approval_mode": "prompt"
+        }
+      }
+    }
+  }
+}

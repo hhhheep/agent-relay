@@ -1,0 +1,5 @@
+# Optional local features. Install only when you need the corresponding path.
+ollama>=0.4
+instructor>=1.7
+mlflow>=2.0
+dvc>=3.0

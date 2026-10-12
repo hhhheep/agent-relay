@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/paperclipai/paperclip",
+  "commit": "c8f874311c02eff7cdf5ab9e85dc37d80ed50147",
+  "sources": [
+    {
+      "path": "packages/paperclip-runner/src/drivers/codex/codex-thread-normalization.ts",
+      "sha256": "52ce60b264d8f4551c794cb4885b82210767d70edaab2151f36ed3bdda0a5876"
+    },
+    {
+      "path": "packages/paperclip-runner/src/drivers/codex/codex-harness-session.ts",
+      "sha256": "30f0d6268cccd18669a1cdecd1f2b9e7a4d6d771831876cd7b3432cd8c224db6"
+    }
+  ],
+  "output": "paperclip-goal.ts",
+  "sha256": "455c22212257e280a5a33dcd6ab0672ff79a499bb1690dfbb1a20ed820d67ed1",
+  "excluded": "Paperclip runner, session ownership, database and recovery services are not copied. Integration supplies these explicitly; no claim of equivalent full runner behavior."
+}

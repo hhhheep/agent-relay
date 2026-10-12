@@ -1,0 +1,741 @@
+{
+  "files": [
+    {
+      "path": "plugins/solution-agent-harness/scripts/remote_launcher.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "plugins/solution-agent-harness/scripts/server.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/scripts/lint_feedback.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/audit_profile_upgrade.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/build_bootstrap_release.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/build_deployment_bundle.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/build_profile_plugin.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/build_release_manifest.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/build_token_ab_fixtures.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/deploy_profile_bundle.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/install_bootstrap_release.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/install_overlay.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_fsfm_s0_acquire.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_fsfm_s0_boundary.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_research_md_snapshot.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_research_md_sync_plan.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_research_report_writer.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/run_token_ab.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/snapshot_profile_conflicts.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/validate_remote_deploy_profile.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "scripts/harness/verify_integrated_runtime.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/context_gateway.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/continuation/source_repair.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/collector.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/execution_wrapper.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/registry.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/safe_runner.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/spec.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/execution_port/spec_builder.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/__init__.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/ab_eval.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/artifact_apply.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/artifact_runtime.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/budget.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/codex_worker.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/context_budget.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/contracts.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/failure_fingerprint.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/help_bridge.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/help_channel.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/help_queue.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/help_resume.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/maintenance_completion.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/manifests.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/mcp_server.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/md_snapshot.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/md_sync.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/model_dispatch_guard.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/profile_deploy.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/protocol.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/publication_recovery.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/publication_registry.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/reader_ab.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/receipt_adapter.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/release_identity.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/remote_profile.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/remote_terminal.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/repo_map.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/task_capsule.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/task_md_sync.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/telemetry_contracts.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/terminal_commands.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/usage.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/usage_ledger.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/verification_runner.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/wait_contracts.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/wait_monitor.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/wait_runtime.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/harness/worker_help.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/orchestrator/core.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/orchestrator/prompt.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/orchestrator/retry_controller.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/orchestrator/schema.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/remote_materializer/api_metrics.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/remote_materializer/controller.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/small_task_worker/background_runner.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/small_task_worker/worktree_manager.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "solution_agent/utils/process_utils.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/conftest.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/helpers.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_api_metrics.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_build_profile_plugin.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_continuation_source_repair.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_execution_port_collector.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_execution_port_runner.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_execution_port_spec.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_fsfm_s0_boundary.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_ab_eval.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_artifact_apply.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_artifact_runtime.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_bootstrap_release.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_budget.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_codex_worker.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_context_loader.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_deployment.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_event_wait.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_managed_launch.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_mcp.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_md_sync.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_model_dispatch_guard.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_receipt.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_release_identity.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_remote_profile.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_repo_map.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_report_writer.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_runtime_portability.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_task_capsule.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_harness_token_ab.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_help_bridge_md.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_help_channel.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_help_resume.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_profile_deploy.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_publication_registry.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_remote_terminal.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_retry_controller.py",
+      "status": "same",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_routing_submission_recovery.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_skill_routing_contract.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_supervision_no_model.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_terminal_commands.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_verification_runner.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_worker_help_queue.py",
+      "status": "missing-in-original-core",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    },
+    {
+      "path": "tests/test_worktree_manager.py",
+      "status": "different",
+      "selected": "release-matched-source",
+      "original_core_preserved": true
+    }
+  ],
+  "counts": {
+    "same": 39,
+    "different": 34,
+    "missing-in-original-core": 49
+  }
+}

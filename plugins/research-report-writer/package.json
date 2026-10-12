@@ -1,0 +1,16 @@
+{
+  "name": "research-report-writer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local and SSH MCP tools for drafting evidence-grounded research reports with Bailian-hosted DeepSeek V4-Flash-0731.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "openai": "7.22.0",
+    "zod": "4.6.5"
+  }
+}

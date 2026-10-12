@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "task_id": "REAL-CUE-CHAIN-T1",
+  "title": "Candidate localization handoff",
+  "question": "Does the frozen candidate remain useful on families excluded from fitting?",
+  "report_type": "status",
+  "execution_status": "batch_interrupted",
+  "scientific_status": "candidate_frozen; held-out evaluation incomplete",
+  "claims": [
+    {
+      "claim_id": "OBS-001",
+      "kind": "observation",
+      "text": "The frozen candidate basis has rank 2.",
+      "source": "candidate_handoff.json",
+      "value": 2,
+      "scope": "candidate representation"
+    },
+    {
+      "claim_id": "LIM-001",
+      "kind": "limitation",
+      "text": "Held-out fold1 feature scoring was not completed in this batch.",
+      "source": "_worker_out/progress.json"
+    }
+  ],
+  "forbidden_claims": [
+    "A transferable real representation has been discovered.",
+    "Interrupted execution is a negative scientific result."
+  ],
+  "required_sections": [
+    "Question",
+    "Completed work",
+    "Measured observations",
+    "Interpretation and limits",
+    "Next action"
+  ],
+  "artifacts": [],
+  "next_action": "Complete held-out family scoring with the frozen candidate basis.",
+  "notes": [
+    "Keep execution completion separate from hypothesis support."
+  ]
+}

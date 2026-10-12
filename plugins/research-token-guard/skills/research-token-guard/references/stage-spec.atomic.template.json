@@ -1,0 +1,39 @@
+{
+  "schema_version": "research-stage-spec/v1",
+  "task_id": "replace-with-task-id",
+  "stage_id": "replace-with-stage-id",
+  "objective": "One bounded objective.",
+  "acceptance_checks": [
+    "One observable check backed by exact evidence."
+  ],
+  "budgets": {
+    "max_command_executions": 2,
+    "max_model_facing_bytes": 30000,
+    "max_retries_per_fingerprint": 1,
+    "max_wall_seconds": 900
+  },
+  "execution": {
+    "token_guard": "path/from/root/to/token_guard.py",
+    "cwd": ".",
+    "inputs": [
+      "path/from/root/to/declared-input.txt"
+    ],
+    "artifacts": ".token-guard/ledger-runs",
+    "inline_bytes": 2048,
+    "failure_inline_bytes": 4096,
+    "timeout": 0,
+    "command": [
+      "program",
+      "argument"
+    ],
+    "evidence_queries": [
+      {
+        "name": "decision_fact",
+        "stream": "stdout",
+        "query": "EXACT_LITERAL=",
+        "value_after_query": true,
+        "max_bytes": 2048
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solution Agent Harness"
+  short_description: "Operate declared remote workplaces and bounded stages."
+  default_prompt: "Use $solution-agent-harness for this declared remote workplace or bounded stage."

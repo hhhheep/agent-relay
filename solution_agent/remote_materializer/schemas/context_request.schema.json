@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Context request",
+  "type": "object",
+  "required": ["task_id", "context_level", "needed_files", "reason"],
+  "properties": {
+    "task_id": {
+      "type": "string"
+    },
+    "context_level": {
+      "enum": ["materialize", "prepare_config", "patch_low_risk", "unknown_or_high_risk"]
+    },
+    "needed_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
+

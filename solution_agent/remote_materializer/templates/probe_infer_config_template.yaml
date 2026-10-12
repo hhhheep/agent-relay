@@ -1,0 +1,6 @@
+task_id: ""
+output_dir: "runs/<task_id>/generated"
+checkpoint: ""
+samples_csv: "runs/<task_id>/generated/sample_manifest.csv"
+axes_csv: "runs/<task_id>/generated/probe_axes.csv"
+

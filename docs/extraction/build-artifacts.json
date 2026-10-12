@@ -1,0 +1,27 @@
+[
+  {
+    "path": ".verification/build/harness-extraction.zip",
+    "sha256": "950fab13c88647a438d187a823439a432c1522bbfafcf699609c634e400c7328",
+    "bytes": 591510,
+    "installed": false
+  },
+  {
+    "path": ".verification/build/xats-service.mjs",
+    "sha256": "2d5f810da64bd7d7649a9f288f43604c5e9ad69af097599c054c0bb7fbe71a13",
+    "bytes": 2257628,
+    "installed": false
+  },
+  {
+    "path": ".verification/build/NoConsoleLauncher.exe",
+    "sha256": "51c7c6648946104947b7965e54c1a4ff2100b3eefbb3657a2a87cfb62dd9b19c",
+    "bytes": 6656,
+    "installed": false
+  },
+  {
+    "path": "components/lifecycle/packages/router-2026-10-11T07-48-37-739Z",
+    "manifest_sha256": "ad1a2f98ac85b3998b2cec6706dcaedfec2776918b284ae8b892278b1646f749",
+    "files": 43,
+    "dependencies": 16,
+    "installed": false
+  }
+]

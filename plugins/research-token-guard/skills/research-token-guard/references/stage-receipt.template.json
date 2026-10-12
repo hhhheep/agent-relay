@@ -1,0 +1,38 @@
+{
+  "schema_version": "research-stage-receipt/v1",
+  "task_id": "replace-with-task-id",
+  "stage_id": "replace-with-stage-id",
+  "status": "needs_review",
+  "objective": "One bounded stage objective.",
+  "acceptance_checks": [
+    {
+      "name": "Define an observable acceptance check.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "gate": "Name the scientific or engineering gate.",
+    "result": "defer",
+    "rationale": "State only what the evidence supports.",
+    "evidence": []
+  },
+  "commands": {
+    "total": 0,
+    "guarded": 0,
+    "unguarded": 0,
+    "unguarded_reasons": []
+  },
+  "token_guard": {
+    "run_ids": [],
+    "verified_run_ids": [],
+    "raw_bytes": 0,
+    "returned_bytes": 0
+  },
+  "artifacts": [],
+  "handoff": {
+    "next_action": "State the next bounded action or why no action remains.",
+    "required_inputs": [],
+    "do_not_assume": []
+  }
+}

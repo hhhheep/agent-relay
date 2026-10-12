@@ -1,0 +1,14 @@
+schema_version: 1
+fixture_id: b14_bounded_smoke_01
+mission_id: B14_night_research_v1
+scenario_id: b14_bounded_smoke_available
+scenario_type: bounded_decoder_smoke
+parent_decision_id: null
+evidence:
+  scenario_type: bounded_decoder_smoke
+  bounded_decoder_smoke_available: true
+  bounded_probe_safe: true
+  source_behavior_change_required: false
+expected:
+  allowed: true
+

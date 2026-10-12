@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "research_report_writer": {
+      "args": [
+        "./server.mjs"
+      ],
+      "command": "node",
+      "enabled": true,
+      "cwd": ".",
+      "env_vars": [
+        "REPORT_WRITER_ALLOWED_ROOTS",
+        "REPORT_WRITER_ENV_FILE",
+        "DASHSCOPE_API_KEY",
+        "BAILIAN_BASE_URL",
+        "REPORT_WRITER_REMOTE_ALIAS",
+        "REPORT_WRITER_REMOTE_SCRIPT",
+        "REPORT_WRITER_REMOTE_ROOTS",
+        "REPORT_WRITER_REMOTE_TIMEOUT_MS",
+        "REPORT_WRITER_SSH_CONFIG"
+      ]
+    }
+  }
+}

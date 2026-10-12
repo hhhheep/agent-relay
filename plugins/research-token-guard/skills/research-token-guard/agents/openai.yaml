@@ -1,0 +1,6 @@
+interface:
+  display_name: "Research Token Guard"
+  short_description: "Bound large command output with verifiable receipts."
+  default_prompt: "Use $research-token-guard for this predictably noisy command and preserve exact evidence."
+policy:
+  allow_implicit_invocation: true

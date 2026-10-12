@@ -1,0 +1,28 @@
+scripts:
+  test_sleep:
+    entrypoint: [python, tests/fixtures/sleep.py]
+    args:
+      seconds:
+        flag: --seconds
+        type: int
+        required: true
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: false
+    max_timeout_sec: 10
+    gpu_allowed: false
+
+  test_write_metrics:
+    entrypoint: [python, tests/fixtures/write_metrics.py]
+    args:
+      output_dir:
+        flag: --output_dir
+        type: path
+        required: true
+      fail:
+        flag: --fail
+        type: bool
+        default: false
+    max_timeout_sec: 10
+    gpu_allowed: false

@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-11T07:55:23.451148+00:00",
+  "files_checked": 137,
+  "unchanged": true,
+  "changed_file_names": [],
+  "live_hooks_modified": false,
+  "live_services_started_or_stopped": false,
+  "plugins_registered": false,
+  "remote_operations": false,
+  "note": "configuration/source fingerprints; active runtime DBs may evolve normally and were neither copied nor overwritten"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-28T05:08:00Z",
+  "capture_method": "bounded HTTPS fetch from publisher URLs; payload bytes retained by SHA-256",
+  "sources": {
+    "paper_html": {
+      "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Wang_FSFM_A_Generalizable_Face_Security_Foundation_Model_via_Self-Supervised_Facial_CVPR_2025_paper.html",
+      "payload_bytes": 6667,
+      "payload_sha256": "8b004a1fa91fae61cb3e5fac0a50cf9e3869ec00a6086d1c8e9c84600d20ad87",
+      "content": "FSFM: A Generalizable Face Security Foundation Model via Self-Supervised Facial Representation Learning; Proceedings of CVPR 2025; experiments on 10 publicly available datasets."
+    },
+    "checkpoint_pointer": {
+      "url": "https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/checkpoint-min_val_loss.pth",
+      "payload_bytes": 135,
+      "payload_sha256": "25122f5507dde9c948a3041fb14cfe0880599d3214376a9dd70ce8dafe2ef530",
+      "content": "version https://git-lfs.github.com/spec/v1\noid sha256:74defa99ab77225ed5ba2db34c9e19f2b4707f17c49b06c8396ee638db2e7575\nsize 1029798945"
+    },
+    "release_readme": {
+      "url": "https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/README.md",
+      "payload_bytes": 829,
+      "payload_sha256": "f6cda066adfc70618ef627b2395426a5f66c1dc2ab5d3e24525f264d0d56ac52",
+      "content": "Official fine-tuning recipe for FSFM-3C: FF++ c23, 32 frames, vit_base_patch16."
+    },
+    "test_readme": {
+      "url": "https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/experiments_test/README.md",
+      "payload_bytes": 487,
+      "payload_sha256": "471ddbf37d12052ee03145870a2e39a58f8d33c5a5270d997d123706a9cc0839",
+      "content": "Official cross-dataset testing command for checkpoint-min_val_loss.pth."
+    },
+    "test_results": {
+      "url": "https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/experiments_test/test_results.txt",
+      "payload_bytes": 2545,
+      "payload_sha256": "d281e39141a6ccbf06508bf40ce0bf6c289dc118143362c41f3b5e7bf1abed36",
+      "content": "apply_simple_augment=False; raw video AUC CDFv2=91.443, DFDC=83.475, DFDCP=89.706, WDF=86.956; rounded report=91.44,83.47,89.71,86.96; frame AUC=85.046,80.204,85.503,85.256."
+    },
+    "normalization": {
+      "url": "https://huggingface.co/Wolowolo/fsfm-3c/raw/main/finetuned_models/FF%2B%2B_c23_32frames/pretrain_ds_mean_std.txt",
+      "payload_bytes": 284,
+      "payload_sha256": "3a644bdeebe9396ddd59fc22b0fc1b4cc31b42a658e4eef8c794426d1824daa5",
+      "content": "mean=[0.5482207536697388,0.42340534925460815,0.3654651641845703]; std=[0.2789176106452942,0.2438540756702423,0.23493893444538116]"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "research-report-writer",
+  "version": "0.1.0+codex.20260928150832",
+  "description": "Draft one evidence-grounded research report from an approved compact packet with a fixed DeepSeek V4.1-Flash profile.",
+  "author": {
+    "name": "Local developer"
+  },
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "report",
+    "markdown",
+    "bailian",
+    "deepseek"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Research Report Writer",
+    "shortDescription": "Write grounded reports with DeepSeek V4.1-Flash.",
+    "longDescription": "Validates an approved compact evidence packet and drafts one canonical Markdown report locally or in place on an SSH workplace, recording provenance without returning the full report to Codex. It does not perform scientific reasoning or ordinary Markdown editing.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Write",
+      "Research"
+    ],
+    "defaultPrompt": [
+      "Draft a report from this evidence packet.",
+      "Draft a report in place on the remote workplace."
+    ]
+  }
+}

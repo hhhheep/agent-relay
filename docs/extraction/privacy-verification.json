@@ -1,0 +1,14 @@
+{
+  "project_name": "agent-relay",
+  "source_files_checked_before_this_receipt": 939,
+  "privacy_findings": [],
+  "source_archive_contents_verified": true,
+  "mapped_source_files": 904,
+  "private_historical_mapped_files_excluded": 40,
+  "original_live_files_checked": 137,
+  "original_live_files_unchanged": true,
+  "node_dependency_files_hash_verified": 10726,
+  "internal_dependency_junctions": 343,
+  "live_installation_changed": false,
+  "github_uploaded": false
+}

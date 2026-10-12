@@ -1,0 +1,10 @@
+schema_version: 1
+fixture_id: b14_invalid_scenario_01
+mission_id: B14_night_research_v1
+scenario_id: b14_invalid_scenario_type
+scenario_type: not_a_known_scenario
+evidence:
+  scenario_type: not_a_known_scenario
+  bounded_decoder_smoke_available: false
+  source_behavior_change_required: false
+expected: {}

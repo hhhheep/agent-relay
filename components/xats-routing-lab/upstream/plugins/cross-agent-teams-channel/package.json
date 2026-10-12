@@ -1,0 +1,22 @@
+{
+  "name": "cross-agent-teams-channel",
+  "version": "0.1.0",
+  "description": "Claude Code channel proxy for cross-agent-teams-mcp",
+  "type": "module",
+  "bin": {
+    "cross-agent-teams-proxy": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

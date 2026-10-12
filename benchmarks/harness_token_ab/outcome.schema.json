@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "execution_status", "scientific_status", "metric_value", "summary"],
+  "properties": {
+    "case_id": {"type": "string"},
+    "execution_status": {"enum": ["succeeded", "failed"]},
+    "scientific_status": {"enum": ["go", "stop", "defer"]},
+    "metric_value": {"type": ["number", "null"]},
+    "summary": {"type": "string"}
+  }
+}

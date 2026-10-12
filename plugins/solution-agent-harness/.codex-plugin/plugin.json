@@ -1,0 +1,26 @@
+{
+  "name": "solution-agent-harness",
+  "version": "0.6.0+codex.routing.20261006",
+  "description": "Operate declared remote workplaces and bounded research stages with durable receipts and event-driven waiting.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Solution Agent Harness",
+    "shortDescription": "Operate declared workplaces and bounded stages.",
+    "longDescription": "Provides one focused workflow across bounded stages, deterministic command results, selective artifact reading, and atomic artifact application. Waiting is handled by a deterministic sidecar; profile routing is disclosed only when relevant.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Execute"
+    ],
+    "defaultPrompt": [
+      "Run one bounded research stage and collect its evidence.",
+      "Store large evidence once, inspect a selection, then apply it atomically.",
+      "Run a short remote command with exact stdout, stderr, and exit status."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

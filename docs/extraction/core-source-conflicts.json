@@ -1,0 +1,100 @@
+[
+  {
+    "path": "solution_agent/context_gateway.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "c146a52dfda58248bf311af84a241ebe636f5709f27f56acfe1b36429ad1e508",
+    "selected_sha256": "c662684b0ade899eac77b97a5f6bb39dab184c422ff35cb7cae91ee4cfe017e5",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/continuation/bounded_wait.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "9d6d87e76641168b6edfc03b0f99b78b6293e10ed1b5ff0d7d8a70dcd2931677",
+    "selected_sha256": "64cedd541ff0e0bbb141700f1453e8e53d4919e74ee2818bf4f0b438768c4fd4",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/continuation/source_repair.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "68f3c665cbac1c1a67231eae09e0583b94ab3c730e67bd07428e220f99a1fb65",
+    "selected_sha256": "968e0928830c90781888db8850fe634ba151c1cf50f0f3e5baf07754c9655d98",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/execution_port/execution_wrapper.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "b8e38dffd789322e6458630b07c9a69584d3daf9d0287d63c3b16171303621b9",
+    "selected_sha256": "548bd45691a5028444d7afbf04cf5ffbab32f063e3541d297e4cd6c76539706a",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/execution_port/monitor.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "6a633ca9ae06909e6f670e311a1cd0e660f917fcd7489076aac9b6b641cd5ed3",
+    "selected_sha256": "44daa30740cd0b9fbb7ce77e7b3011fef5e0757bdd212f93c4753c2b9c7b0a9b",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/budget.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "81152ca460bbeb43eb7e8b8b3d0ccf06fa3eff6bfc8d6f25e39b184d585d772b",
+    "selected_sha256": "9b0d0f01bcf35589e643009d57bbf83e447e138603e82b5c6f4876e19cc610f0",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/mcp_server.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "060ed58fbb67ad0f00fd74ebc3615998ce5835dfff13a23ce69e38d6d91f5690",
+    "selected_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/profile_deploy.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "7afc7c081c4b89a9dfedb2546db11962d3dd4837218d7ce74c60092de9f22cb5",
+    "selected_sha256": "5c782a129de361f89580374014ec00ab6970bdefa0e54e8e21fac0eb368b0d75",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/remote_profile.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "66bc6ef82fe2d824edfb09543bb5e1ac8c6fedc58e4a31c172e1c0c872b30bcb",
+    "selected_sha256": "f5132f2557481251ce60a0e8e2e12f47b4cd1586f9979204e59584eb3ea70330",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/remote_terminal.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "cf2af51affbcff6c624ba38246a680075d48d677c2724c75982166d91720c26d",
+    "selected_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/harness/__init__.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "90343bce49cbe25a2e5bd5bb2fd2f6e6797facf0ec57811b4ae7caa7bf3253b2",
+    "selected_sha256": "abfc2fd046545102a61b87ac0981ad73d02e7b2b66116ef274785154d5baa4a4",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/orchestrator/core.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "9f3e1aaf3a3dbba3560525d3f32a90bfd91cc4c7c6ba1a81d9c4645ae177c1c1",
+    "selected_sha256": "35b571891b9dc822409623fb590bdfb9c0d398557429526c0b4dc29e419cc20a",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/small_task_worker/background_runner.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "d3b4fd9c611c67d51fd877d068d5723731b8a6cedaeccfec7041de5c09aa2094",
+    "selected_sha256": "b5167d7727c501a223c121fa7b9c32b9f8a99f2f607c607317f61dae0e44f59c",
+    "original_core_preserved": true
+  },
+  {
+    "path": "solution_agent/small_task_worker/worktree_manager.py",
+    "retained_source": "harness-release-source",
+    "core_sha256": "9bea35b28e837e64bb491bccea9b8c87db92c9eff81ab918dcc9fd804cdb4746",
+    "selected_sha256": "632540d770627f1e4482e0ca46e8d4fe9034a94f749f6d869fffdcf0cc8f9b94",
+    "original_core_preserved": true
+  }
+]

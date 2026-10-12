@@ -1,0 +1,57 @@
+schema_version: 1
+fixture_id: b14_local_execution_lineage_01
+mission_id: B14_night_research_v1
+scenario_id: b14_graph_lineage_replay
+scenario_type: bounded_decoder_smoke
+parent_decision_id: null
+evidence:
+  scenario_type: bounded_decoder_smoke
+  bounded_decoder_smoke_available: true
+  bounded_probe_safe: true
+  source_behavior_change_required: false
+expected:
+  lineage_cases:
+    - case_id: cache_reextraction_path_known
+      execution_task: bounded_smoke
+      checkpoint_path: /ssd6/B14/checkpoints/pt_checkpoint.pt
+      cache_path: /ssd6/B14/cache/token_cache
+      script_path: /home/agent/train_graph.py
+      script_cache_mapping_confirmed: false
+      branch_override: cache_reextraction
+      expected:
+        branch: cache_reextraction
+        preflight_status: pass
+        judge_next_action_when_success: run
+    - case_id: graph_training_confirmed_mapping
+      execution_task: bounded_smoke
+      checkpoint_path: /ssd6/B14/checkpoints/pt_checkpoint.pt
+      cache_path: /ssd6/B14/cache/token_cache
+      script_path: /home/agent/train_graph.py
+      script_cache_mapping_confirmed: true
+      branch_override: ""
+      expected:
+        branch: graph_training
+        preflight_status: pass
+        judge_next_action_when_success: inspect
+    - case_id: graph_training_missing_script_path_blocked
+      execution_task: bounded_smoke
+      checkpoint_path: /ssd6/B14/checkpoints/pt_checkpoint.pt
+      cache_path: /ssd6/B14/cache/token_cache
+      script_path: ""
+      script_cache_mapping_confirmed: true
+      branch_override: graph_training
+      expected:
+        branch: graph_training
+        preflight_status: blocked
+        preflight_reason: missing_script_path
+    - case_id: graph_training_unconfirmed_blocked
+      execution_task: bounded_smoke
+      checkpoint_path: /ssd6/B14/checkpoints/pt_checkpoint.pt
+      cache_path: /ssd6/B14/cache/token_cache
+      script_path: /home/agent/train_graph.py
+      script_cache_mapping_confirmed: false
+      branch_override: graph_training
+      expected:
+        branch: graph_training
+        preflight_status: blocked
+        preflight_reason: cache_script_mapping_not_confirmed
