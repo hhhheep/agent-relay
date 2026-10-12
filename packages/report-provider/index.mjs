@@ -170,4 +170,3 @@ export async function createStructured({ schema, system, user, config = provider
     }
   };
 }
-
