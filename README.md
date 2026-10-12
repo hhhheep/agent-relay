@@ -51,3 +51,11 @@ The known initial cancellation failure, nine additional legacy workspace-configu
 Private repository: https://github.com/hhhheep/agent-relay
 
 Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A clean GitHub clone reproduced all 941 baseline source files byte for byte; clone-owned offline dependencies passed the Harness 11-tool check, router/XATS build, and Writer/background tests. Online reinstall and Linux-native validation remain unverified.
+
+## 正規化設計（2026-10-12）
+
+最新版：[正規化施工任務書](docs/planning/normalization-20261012/TASKBOOK.md)。已完成指定聊天的四輪架構及維護審查、941基線檔案遷移計劃（904映射來源）、接口/相容/交付包規格及擴展台帳。以固定模組邊界和漸進更新維護；uv/Hatchling、pnpm/esbuild，Nx後延。
+
+這是Design Ready文件，尚未執行source migration、正式locks/updater、Architecture Freeze或livecutover。[歷史計劃索引](docs/planning/README.md)保留原四份文件，舊結構與估算由最新版取代。
+
+下一個 agent 的必讀規範：[根 AGENTS.md](AGENTS.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)，包含最小完整修復、唯一來源、契約/state保護、按影響驗證、完成/發布 gates 和交接要求；僅此專案適用，專案經驗不自動上升全域規則。

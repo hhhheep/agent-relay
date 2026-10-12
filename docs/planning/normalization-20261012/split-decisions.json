@@ -1,0 +1,29 @@
+{
+  "schema":"agent-relay-source-split-design/v1",
+  "status":"planned-not-migrated",
+  "rules":"Migration rows give the primary destination. Named symbol splits below have one authority per symbol; no second editable implementation.",
+  "splits":[
+    {
+      "baseline_path":"plugins/research-report-writer/lib/provider.mjs",
+      "primary_destination":"packages/report-provider/src/provider.mjs",
+      "shared_symbols":["readBailianSettingsFromEnvFile","resolvedProviderEnv","validateBailianBaseURL","providerStatus","providerConfig","jsonObjectFormat","structuredRequestBody","createStructured"],
+      "shared_rule":"Accept caller-selected config/schema; no Writer import or autonomous model selection.",
+      "business_symbols":["draftWithProvider"],
+      "business_destination":"apps/report-writer/lib/draft.mjs",
+      "business_owner":"report-writer",
+      "gate":"C3 dual-consumer golden request/body/schema/usage/config checks"
+    },
+    {
+      "baseline_path":"plugins/research-report-writer/lib/core.mjs",
+      "primary_destination":"apps/report-writer/lib/core.mjs",
+      "shared_symbols":["safeProviderStatus"],
+      "shared_destination":"packages/report-provider/src/status.mjs",
+      "shared_rule":"Only credential-safe transport/config status is common. Writer-specific policy stays caller-owned.",
+      "preset_values":["REPORT_WRITER_MODEL","REPORT_WRITER_MODEL_FAMILY"],
+      "preset_destination":"packages/report-provider/profiles/research-writing-default.json",
+      "preset_rule":"One versioned data authority; caller explicitly selects compatible preset. Legacy constants generated/read from it, never hand-maintained duplicates.",
+      "retained_symbols":["ClaimSchema","EvidencePacketSchema","DraftResponseSchema"],
+      "gate":"C3 explicit permitted caller values override preset; existing env/env-file priority unchanged"
+    }
+  ]
+}

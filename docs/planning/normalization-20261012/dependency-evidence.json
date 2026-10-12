@@ -1,0 +1,430 @@
+{
+  "baseline_commit": "6337753ed436e9d230b50c2e1c2356f6c8bf4ee5",
+  "analysis_limit": "Python absolute solution_agent imports and Node literal imports only; relative/dynamic runtime closure not fully proven.",
+  "python_absolute_import_edges": {
+    "continuation": [
+      "context_index",
+      "orchestrator",
+      "remote_materializer",
+      "tools"
+    ],
+    "harness": [
+      "execution_port",
+      "harness",
+      "orchestrator",
+      "tools",
+      "utils"
+    ],
+    "orchestrator": [
+      "context_gateway",
+      "context_index",
+      "execution_port",
+      "remote_materializer",
+      "small_task_worker",
+      "utils"
+    ],
+    "remote_materializer": [
+      "context_gateway",
+      "harness"
+    ],
+    "small_task_worker": [
+      "remote_materializer"
+    ]
+  },
+  "node_literal_imports": [
+    {
+      "file": "components/goal-routing-integration/app-receipt.ts",
+      "static_literal_imports": [
+        "./vendor/paperclip-goal.ts"
+      ]
+    },
+    {
+      "file": "components/goal-routing-integration/native-dispatch.ts",
+      "static_literal_imports": [
+        "./store.ts",
+        "./app-receipt.ts"
+      ]
+    },
+    {
+      "file": "components/goal-routing-integration/store.ts",
+      "static_literal_imports": [
+        "node:sqlite",
+        "node:crypto",
+        "./vendor/paperclip-goal.ts"
+      ]
+    },
+    {
+      "file": "components/goal-routing-integration/xats.ts",
+      "static_literal_imports": [
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/streamableHttp.js"
+      ]
+    },
+    {
+      "file": "components/lifecycle/build-router-package.mjs",
+      "static_literal_imports": [
+        "esbuild",
+        "node:fs",
+        "node:path",
+        "node:url",
+        "node:crypto",
+        "node:module"
+      ]
+    },
+    {
+      "file": "components/lifecycle/controller-authority.ts",
+      "static_literal_imports": [
+        "node:sqlite",
+        "node:fs",
+        "node:path",
+        "../goal-routing-integration/store.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/controller-cli.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:sqlite",
+        "./native-app-port.ts",
+        "./controller-authority.ts",
+        "./session-app-context.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/harness-port.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/stdio.js",
+        "node:crypto"
+      ]
+    },
+    {
+      "file": "components/lifecycle/inbox-pump.ts",
+      "static_literal_imports": [
+        "./publisher-route.ts",
+        "../goal-routing-integration/store.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/lifecycle-handoff.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:crypto"
+      ]
+    },
+    {
+      "file": "components/lifecycle/mailbox-cli.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "./mailbox-driver.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/mailbox-driver.ts",
+      "static_literal_imports": [
+        "node:child_process",
+        "node:fs",
+        "node:path",
+        "node:timers/promises",
+        "./stable-inbox.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/manager-cli.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "./manager-driver.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/manager-driver.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:timers/promises",
+        "./reviewed-store.ts",
+        "./publisher-route.ts",
+        "./routing-service.ts",
+        "./native-app-port.ts",
+        "./stable-inbox.ts",
+        "./harness-port.ts",
+        "./resume-controller.ts",
+        "./resume-scheduler.ts",
+        "./task-publisher.ts",
+        "node:crypto",
+        "./lifecycle-handoff.ts",
+        "./controller-authority.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/native-app-port.ts",
+      "static_literal_imports": [
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/stdio.js",
+        "./publisher-route.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/production-session-entry-20261008.mjs",
+      "static_literal_imports": [
+        "node:fs",
+        "node:child_process"
+      ]
+    },
+    {
+      "file": "components/lifecycle/production-xats-service-20261008.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "../xats-routing-lab/upstream/src/daemon/server.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/publication-service.ts",
+      "static_literal_imports": [
+        "./task-publisher.ts",
+        "./publisher-route.ts",
+        "node:path",
+        "./harness-port.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/publish-cli.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "./native-app-port.ts",
+        "./harness-port.ts",
+        "./task-publisher.ts",
+        "./reviewed-store.ts",
+        "./publisher-route.ts",
+        "./publication-service.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/publisher-route.ts",
+      "static_literal_imports": [
+        "../goal-routing-integration/store.ts",
+        "../goal-routing-integration/native-dispatch.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/resume-controller.ts",
+      "static_literal_imports": [
+        "./mailbox-driver.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/resume-scheduler.ts",
+      "static_literal_imports": [
+        "../goal-routing-integration/store.ts",
+        "./resume-controller.ts",
+        "./publisher-route.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/reviewed-store.ts",
+      "static_literal_imports": [
+        "../goal-routing-integration/store.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/router-api.ts",
+      "static_literal_imports": [
+        "./task-publisher.ts",
+        "./native-app-port.ts",
+        "./harness-port.ts",
+        "./manager-driver.ts",
+        "./mailbox-driver.ts",
+        "./publication-service.ts",
+        "./controller-authority.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/routing-service.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "../goal-routing-integration/store.ts",
+        "../goal-routing-integration/native-dispatch.ts",
+        "./publisher-route.ts",
+        "./inbox-pump.ts",
+        "./reviewed-store.ts",
+        "./controller-authority.ts",
+        "./manager-task-protocol.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/session-acceptance-notify.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:http"
+      ]
+    },
+    {
+      "file": "components/lifecycle/session-app-context.ts",
+      "static_literal_imports": [
+        "node:path",
+        "node:timers/promises",
+        "./native-app-port.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/session-context-probe.ts",
+      "static_literal_imports": [
+        "node:path",
+        "node:fs",
+        "node:path",
+        "node:crypto",
+        "./native-app-port.ts",
+        "./session-app-context.ts",
+        "./session-acceptance-notify.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/session-lifecycle-cli.ts",
+      "static_literal_imports": [
+        "node:fs",
+        "node:child_process",
+        "node:path",
+        "node:crypto",
+        "node:url",
+        "./session-lifecycle.ts",
+        "./session-context-probe.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/session-lifecycle.ts",
+      "static_literal_imports": [
+        "node:path",
+        "node:timers/promises",
+        "./session-app-context.ts",
+        "./native-app-port.ts",
+        "./manager-driver.ts",
+        "./lifecycle-handoff.ts",
+        "./controller-authority.ts"
+      ]
+    },
+    {
+      "file": "components/lifecycle/stable-inbox.ts",
+      "static_literal_imports": [
+        "node:sqlite",
+        "node:crypto",
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/streamableHttp.js"
+      ]
+    },
+    {
+      "file": "components/lifecycle/task-publisher.ts",
+      "static_literal_imports": [
+        "node:sqlite",
+        "node:crypto",
+        "./publisher-route.ts",
+        "node:path",
+        "./harness-port.ts"
+      ]
+    },
+    {
+      "file": "plugins/research-report-writer/lib/core.mjs",
+      "static_literal_imports": [
+        "node:crypto",
+        "node:fs",
+        "node:path",
+        "zod/v4"
+      ]
+    },
+    {
+      "file": "plugins/research-report-writer/lib/provider.mjs",
+      "static_literal_imports": [
+        "openai",
+        "node:fs",
+        "node:path",
+        "./core.mjs"
+      ]
+    },
+    {
+      "file": "plugins/research-report-writer/lib/remote.mjs",
+      "static_literal_imports": [
+        "node:child_process",
+        "node:fs",
+        "node:path",
+        "./provider.mjs"
+      ]
+    },
+    {
+      "file": "plugins/research-report-writer/server.mjs",
+      "static_literal_imports": [
+        "node:path",
+        "node:url",
+        "@modelcontextprotocol/server",
+        "@modelcontextprotocol/server/stdio",
+        "zod/v4",
+        "./lib/core.mjs",
+        "./lib/provider.mjs",
+        "./lib/remote.mjs",
+        "node:fs"
+      ]
+    },
+    {
+      "file": "tools/research-background/cli.mjs",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:url",
+        "./service.mjs"
+      ]
+    },
+    {
+      "file": "tools/research-background/provider.mjs",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:module",
+        "node:url",
+        "openai"
+      ]
+    },
+    {
+      "file": "tools/research-background/service.mjs",
+      "static_literal_imports": [
+        "node:fs",
+        "node:path",
+        "node:crypto",
+        "node:sqlite",
+        "./provider.mjs"
+      ]
+    },
+    {
+      "file": "tools/research-background/tests.mjs",
+      "static_literal_imports": [
+        "node:test",
+        "node:assert/strict",
+        "node:fs",
+        "node:path",
+        "node:child_process",
+        "node:url",
+        "./service.mjs"
+      ]
+    },
+    {
+      "file": "tools/research-background/worker-fixture.mjs",
+      "static_literal_imports": [
+        "./service.mjs"
+      ]
+    }
+  ],
+  "manual_dynamic_dependencies": [
+    {
+      "file": "tools/research-background/provider.mjs",
+      "dependency": "config.provider_module -> writer lib/provider.mjs; createRequire(openai) from that module",
+      "decision": "C3 common package, caller-owned schema/preset, runtime allowlist/fixtures"
+    }
+  ],
+  "vendor_facts": {
+    "xats": "0.8.6 CLI/channel bins; no declared startServer library export; one vendor-port internal import exception",
+    "paperclip": "Derived adapter with local structural type/RPC function adaptation; keep attribution/provenance"
+  }
+}
