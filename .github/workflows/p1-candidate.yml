@@ -32,6 +32,8 @@ jobs:
         run: npm ci --prefix packages/report-provider --ignore-scripts --no-audit --no-fund
       - name: Legacy synthetic workspace regression
         run: .venv/Scripts/python.exe -m pytest tests/test_remote_status_worker_agnostic.py tests/test_continuation_three_agent_flow.py tests/test_workflow_profile.py tests/test_linux_namespace_acceptance.py -q
+      - name: Token Guard receipt and ledger regression
+        run: .venv/Scripts/python.exe -m pytest plugins/research-token-guard/tests -q
       - name: Writer frozen dependencies
         run: |
           npx --yes pnpm@11.25.0 --dir plugins/research-report-writer install --frozen-lockfile --ignore-scripts
@@ -41,6 +43,18 @@ jobs:
         run: |
           npm ci --prefix components/lifecycle --ignore-scripts --no-audit --no-fund
           npm ci --prefix components/goal-routing-integration --ignore-scripts --no-audit --no-fund
+      - name: Target-native XATS dependencies and smoke build
+        run: |
+          npx --yes pnpm@11.25.0 --dir components/xats-routing-lab/upstream install --frozen-lockfile --ignore-scripts
+          npm rebuild --prefix components/xats-routing-lab/upstream better-sqlite3
+          node scripts/extraction/build-local.mjs
+      - name: Lifecycle and goal integration
+        working-directory: components/lifecycle
+        run: |
+          $env:PYTHONPATH = (Resolve-Path ../..).Path
+          npm test
+          node --import tsx --test ../goal-routing-integration/app-receipt.test.ts ../goal-routing-integration/native-dispatch.test.ts
+          npm run build
       - name: Source-only candidate build
         run: |
           .venv/Scripts/python.exe scripts/release/build_candidate.py
