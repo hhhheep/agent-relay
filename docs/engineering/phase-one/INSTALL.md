@@ -6,7 +6,7 @@ Status: P1 engineering candidate. Current isolated Windows/Linux archive install
 
 Windows x64 client: Python 3.13, Node 24, Git, npm and pnpm 11.25. Linux x64 Worker candidate: Python 3.13, Git, OpenSSH, bash, tmux; systemd user support when selecting systemd_transient jobs; external Codex CLI where worker dispatch is used. The exact Python pins have passed isolated Linux x64 / Python 3.13.16 installation and pip check, including a fresh no-cache installation. Lifecycle/XATS requires Node 24 and a native better-sqlite3 build matching OS/arch/ABI. Linux x64 / Node 24.19.0 frozen installation, native rebuild and memory SQLite check now pass. Do not copy Windows native modules to Linux.
 
-Clone the private repository using your own GitHub authorization, checkout the reviewed engineering commit, and keep it separate from research state. Source baseline bf8db034ee0e72967296b916968dfe2460e35cbe is historical provenance, not a supported installed release.
+Clone the public repository and checkout the reviewed engineering commit, and keep it separate from research state. Source baseline bf8db034ee0e72967296b916968dfe2460e35cbe is historical provenance, not a supported installed release.
 
 From any current directory (replace checkout with your checkout path):
 

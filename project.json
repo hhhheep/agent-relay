@@ -21,7 +21,7 @@
   },
   "display_name": "Agent Relay",
   "publication_privacy_checked": true,
-  "publication_visibility": "private",
+  "publication_visibility": "public",
   "repository": "https://github.com/hhhheep/agent-relay",
   "phase_one_verified": false,
   "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",

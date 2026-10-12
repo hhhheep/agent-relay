@@ -1,77 +1,59 @@
 # Agent Relay
 
-Agent Relay 把 Windows 上的插件、MCP 工具與遠端 Linux Worker 接起來，讓本地助手把工作交給指定的遠端環境執行，再取回可核對的結果。它也整理了報告撰寫、背景工作、任務路由與執行紀錄所需的共用程式，讓這些工具可以從同一個來源維護、打包和重建。
+**讓本地 Codex 與遠端 Linux 工作環境協作，並把任務進度、文件和結果帶回本地。**
 
-這個 repository 是共用工具的開發來源。研究專案的資料、環境、工作目錄與執行狀態仍由各研究專案管理；安裝包不攜帶研究資料或帳號金鑰。
+Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在本地安排工作，把命令或 Codex 任務交給指定的遠端環境執行，再查詢進度、檢視結果和接續處理。它適合工作主要在本地安排、程式與運算環境卻放在遠端主機上的使用者，尤其是需要反覆執行、整理證據與撰寫報告的工作。
 
-## 怎麼工作
+## 這個工具包的特色
 
-1. 在 Windows 客戶端選擇已配置的 workplace 與 Linux Worker。Harness 先核對兩端的 release、工具契約和 workplace 身份。
-2. 本地助手透過 Harness MCP 提交終端命令或遠端 Codex 工作。Worker 在指定的工作目錄執行，留下 command ID、狀態和回執。
-3. 客戶端用同一個 ID 查詢進度、恢復連線並取回結果。傳送結果不確定時，先查原 ID，避免重複執行。
-4. 文件與執行結果透過 Harness 的 artifact／回執機制交付，核對來源與雜湊後，再進行本地檢視或後續處理。
+- **本地安排，遠端執行。** 透過 Harness MCP 連接已配置的 workplace，使用遠端既有的程式、依賴與工作目錄；本地助手可以提交終端命令或遠端 Codex 工作，並取回執行結果。
+- **中斷後可以接續查詢。** 每次執行留下 command ID、狀態與回執。連線中斷或傳送結果不確定時，可以先查原 ID，確認工作是否已執行，避免把同一件事重做一遍。
+- **文件和結果有來源可查。** Harness 以 artifact 與回執交付文件和輸出，支援雜湊核對、差異檢視及受控提交，讓助手與使用者能確認收到的是哪一份結果。
+- **大型輸出也能保留證據。** Token Guard 擷取有界的輸出摘要，保留完整紀錄的雜湊與回執，方便後續核對，不必把大量終端文字反覆塞進對話。
+- **報告工具共用模型配置。** Report Writer 根據整理好的證據撰寫 Markdown，Background 管理背景規則與工作佇列；兩者共用 Provider 配置與版本化模型 preset，減少重複維護。
+- **任務與對話有明確對應。** Lifecycle 與路由元件串接任務狀態和訊息，透過 Codex 原生查詢與既有路由 ID 核對來源與去向，讓工作有可追蹤的對話上下文。
+- **工具與你的工作環境分開配置。** 共用程式可以打包、安裝和重建；SSH、workplace、金鑰與工作資料由你自己的環境管理。換一個工作環境時，使用對應的私有配置接線。
 
-Report Writer 可以根據已整理的證據撰寫 Markdown；Background 管理自己的背景規則與佇列。它們共用同一套 Provider 配置和模型 preset。Lifecycle 與路由整合負責工具間的工作生命週期與訊息接線，Token Guard 提供大型命令輸出的有界紀錄與可核對回執。
+## 可以怎麼用
 
-## 專案裡有哪些部分
+例如，你在 Windows 上與 Codex 討論一項程式修改，而程式的 Linux 依賴和測試環境位於遠端主機。Agent Relay 可以把測試工作交給那台主機，讓你在本地查詢進度、取回日誌與產物，再根據結果修改程式。需要形成報告時，可以整理證據後交給 Report Writer。
 
-| 部分 | 用途 | 維護來源 |
-| --- | --- | --- |
-| Core / Harness | 遠端命令、Worker 派送、身份檢查、狀態查詢及 artifact 交付 | `solution_agent/`、`scripts/harness/` |
-| Harness 插件 | 把既有 Harness 工具提供給本地 MCP 客戶端 | `plugins/solution-agent-harness/` |
-| Lifecycle / Routing / XATS | 任務生命週期、路由與訊息服務整合 | `components/lifecycle/`、`components/goal-routing-integration/`、`components/xats-routing-lab/` |
-| Report Writer | 證據檢查、報告撰寫與 Markdown 交付 | `plugins/research-report-writer/` |
-| Report Provider | Writer 與 Background 共用的傳輸、配置與版本化模型 preset | `packages/report-provider/` |
-| Background | 背景工作規則、佇列、狀態及 Windows 啟動入口 | `tools/research-background/` |
-| Token Guard | 大型輸出的有界擷取、雜湊與回執 | `plugins/research-token-guard/` |
+一次典型工作流程：
 
-既有 `solution_agent` namespace、插件名稱與 MCP 工具名稱保留。新增功能時，先找到表中的來源修改，再重新打包；生成的安裝副本不作為永久修改來源。
+1. 配置並選擇自己的 workplace 和 Worker，核對兩端身份與工具版本。
+2. 本地助手提交遠端命令或 Codex 工作，取得可持續查詢的任務 ID。
+3. 查詢進度，遇到中斷時用原 ID 恢復查詢。
+4. 取回文件、日誌或產物，核對回執與雜湊後進行檢視、修改或後續工作。
 
-## 這次整理完成了什麼
+## 工具包裡有哪些部分
 
-原先分散在工具與部署目錄中的程式，現在有獨立、可追溯的開發來源。主要模組沿用既有布局，Writer 與 Background 的 Provider 已抽成真正共用的模組；部署配置可以放在機器私有位置，依賴按 Windows 客戶端與 Linux Worker 分別重建。
+| 工具 | 提供的能力 |
+| --- | --- |
+| Harness / Worker | 遠端命令、Codex 工作派送、狀態查詢與 artifact 交付 |
+| Lifecycle / Routing / XATS | 任務生命週期與訊息路由接線 |
+| Report Writer | 證據檢查、Markdown 報告撰寫與交付 |
+| Background | 背景工作規則、佇列與狀態管理 |
+| Report Provider | Writer 與 Background 共用的模型傳輸、配置與 preset |
+| Token Guard | 大型輸出的有界擷取與可核對紀錄 |
 
-目前可以產生客戶端來源包、Worker 安裝包及獨立 Writer 插件包。安裝器會檢查包的雜湊和目標目錄，客戶端包帶有配對所需的 Harness release manifest。取消工作時的競態已修復；原先依賴私人研究目錄的九項測試已改用完整的合成測試資料並通過，保留原有行為檢查。
+## 開始使用
 
-乾淨安裝也補齊了之前遺漏的依賴：goal-routing 現在有完整的 registry 鎖檔並由客戶端安裝器安裝，XATS 鎖檔與精確版本一致。Linux 已實測重新下載依賴、重建 SQLite 原生模組、建置 Router／XATS，以及獨立 Writer 插件啟動。這讓新的測試目錄可以重建這些元件，不必借原開發目錄的依賴。
+目前提供 **P1 工程候選版**，主要部署組合是 Windows 客戶端與 Linux Worker。使用前需要配置自己的遠端連線、workplace 和插件入口；報告撰寫另需配置 Provider。
 
-## 從來源開始
-
-Windows 開發與打包使用 Python 3.13、Node 24、Git、npm 與 pnpm 11.25。Linux Worker 使用 Python 3.13；SSH、tmux、systemd user 與 Codex CLI 的需求取決於選用的執行方式。XATS 的 SQLite 原生模組需要在目標 OS、架構與 Node ABI 下建置。
-
-取得 repository 後，在根目錄執行：
+從來源重建 Windows 客戶端與安裝包，需要 Python 3.13、Node 24、Git、npm 和 pnpm 11.25。在 repository 根目錄執行：
 
 ```powershell
 python scripts/release/install_dependencies.py --role windows-client
 python scripts/release/build_candidate.py
 ```
 
-依賴安裝到專案自己的環境。打包前會核對來源追溯與發布邊界，產物位於 `dist/p1-candidate/`：
+產物位於 `dist/p1-candidate/`，包含 Windows 客戶端來源包、Linux Worker 包、獨立 Report Writer 插件包，以及安裝／更新工具。依照[安裝指南](docs/engineering/phase-one/INSTALL.md)完成依賴安裝、私有配置、兩端配對與啟動。
 
-| 產物 | 使用方式 |
-| --- | --- |
-| `windows-client-source.zip` | 解壓到新的客戶端目錄，再安裝客戶端依賴並配置插件；包含配對 manifest |
-| `harness-worker.zip` | 用隨附的 bootstrap 安裝器安裝到新的 Worker 目錄，再重建 Linux 依賴 |
-| `research-report-writer.zip` | 獨立 Writer 插件包，包含共用 Provider、SDK 與依賴授權文件 |
-| `install_bootstrap_release.py` / `install_overlay.py` | 分別處理全新目錄安裝與受控 overlay 更新 |
-| `candidate.json` | 記錄來源 commit、runtime identity、產物雜湊和驗收狀態 |
+Windows／Linux 的乾淨安裝及 Harness 更新／回退已完成隔離驗收。實機覆蓋範圍、版本相容性與仍未執行的項目，見[工程狀態](docs/engineering/phase-one/STATUS.md)；候選版仍需依自己的環境配置與驗證。
 
-這些產物還需要機器配置與插件接線。完整的安裝、dry run、更新和回退步驟見[安裝指南](docs/engineering/phase-one/INSTALL.md)。
+## 進一步閱讀
 
-## 連線與私有配置
-
-Harness 客戶端需要自己的 workplace 宣告、SSH 連線設定與 Worker binding。兩端的 `.solution-agent/workplace.id` 必須相同，客戶端 manifest 必須對應實際載入的 Worker release；只複製原始插件目錄不足以完成配對。現有 Launcher 使用控制目錄中的 `remote-workplaces/connection-policy.yaml` 與所選 workplace 宣告。
-
-Worker 部署 profile 可參考 `config/harness_remote_deploy_profiles.example.json`。透過執行環境中的 `SOLUTION_AGENT_PROFILES_FILE` 選取私有配置，或使用既有私有 checkout 配置位置；各啟動入口需明確提供所需環境變數。範例值必須換成實際授權的目標。
-
-Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background 需要自己的 vault、state、rules 與 credential 引用。這些設定、workplace 身份、執行 DB、佇列與回執不放進 Git，也不隨共用安裝包分發。
-
-## 目前可以用到哪裡
-
-目前是 **P1 工程候選版**。Windows 客戶端與 Linux Worker 已從交付 ZIP 完成乾淨安裝；Linux 與 Windows 都已重建 SQLite 原生依賴，通過 Writer／Background／Provider 的 23 項測試及 Lifecycle／goal 的 77 項測試。
-
-Harness 的 M1–M4 隔離跨端驗收已通過：新客戶端連舊 Worker、兩端全新安裝、既有客戶端新增 Worker binding，以及舊版 → 候選版 → 舊版更新／回退。回退保留十三份配置、歷史與結果檔案，兩版完成的命令仍可用原 ID 查回；artifact 審核與 CAS 提交也有實際回執。舊包固定路徑的問題已透過 Linux 私有 namespace 解決，原包內容與身份保持一致。
-
-Windows 證據來自同一台電腦的全新隔離安裝，Linux 使用固定且標註為測試用的 workplace 目錄。Codex 原生 App 的身份核對與讀取已用官方入口實測；Writer 也已用自己的 SSH adapter 完成遠端證據驗證。跨 chat 發訊息及付費模型撰寫未在這次工程驗收中執行，整套系統仍以工程候選版交付。現用部署未切換，GitHub 推送與 Actions 執行尚未完成。路由沿用 Codex 原生查詢與既有 ID；沒有新增 transport owner 執行鎖。
-
-具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。
+- [安裝、配置、更新與回退](docs/engineering/phase-one/INSTALL.md)
+- [驗收結果與目前狀態](docs/engineering/phase-one/STATUS.md)
+- [維護規則與程式來源](AGENTS.md)
+- [開發計劃](docs/planning/README.md)
