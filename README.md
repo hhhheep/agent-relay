@@ -1,63 +1,61 @@
-# Agent Relay — independent source baseline
+# Agent Relay
 
-This is a separate development project for the shared system: Python core/Harness MCP, lifecycle/router, XATS messaging/MCP upstream, remote-worker and artifact/Markdown delivery code, Writer MCP/provider, Token Guard, and background/Windows tooling. Existing services and plugin bindings remain on their original installation. See [the functional inventory](docs/extraction/ENTRYPOINTS.md) for each capability and its verification boundary.
+**讓本地 Codex 與遠端 Linux 工作環境協作，並把任務進度、文件和結果帶回本地。**
 
-## Included source
-- `solution_agent/`, `scripts/harness/`, `tests/`: release-matched Python core/Harness and existing source-only additions.
-- `components/lifecycle/`: router/manager and lifecycle entry sources.
-- `components/goal-routing-integration/vendor/`, `components/xats-routing-lab/upstream/`: required selected upstream source and licenses.
-- `plugins/`: Harness, current report writer/provider and Token Guard maintenance source.
-- `tools/research-background/`: background worker and Windows launcher source, synthetic development config.
-- `docs/extraction/`: source mapping, adjustments and verification results.
-- `docs/planning/`: later architecture and maintenance task specifications.
+Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在本地安排工作，把命令或 Codex 任務交給指定的遠端環境執行，再查詢進度、檢視結果和接續處理。它適合工作主要在本地安排、程式與運算環境卻放在遠端主機上的使用者，尤其是需要反覆執行、整理證據與撰寫報告的工作。
 
-No research corpus, active state, credentials, old venv/node_modules or existing Git history is copied into the source tree.
-Development dependencies are reconstructed separately under ignored `.venv/` and `.deps/`; no external links to the original runtime are allowed.
+## 這個工具包的特色
 
-## Scope
-Independent source baseline for private GitHub version control. Source publication does not register plugins, change hooks, deploy services, or migrate the live system.
-Original runtime and research locations are preserved. Do not execute installation/start/stop scripts against the current system.
-The background `config.json` addresses only this project's empty fixture vault and a nonexistent local credential file.
+- **本地安排，遠端執行。** 透過 Harness MCP 連接已配置的 workplace，使用遠端既有的程式、依賴與工作目錄；本地助手可以提交終端命令或遠端 Codex 工作，並取回執行結果。
+- **中斷後可以接續查詢。** 每次執行留下 command ID、狀態與回執。連線中斷或傳送結果不確定時，可以先查原 ID，確認工作是否已執行，避免把同一件事重做一遍。
+- **文件和結果有來源可查。** Harness 以 artifact 與回執交付文件和輸出，支援雜湊核對、差異檢視及受控提交，讓助手與使用者能確認收到的是哪一份結果。
+- **大型輸出也能保留證據。** Token Guard 擷取有界的輸出摘要，保留完整紀錄的雜湊與回執，方便後續核對，不必把大量終端文字反覆塞進對話。
+- **報告工具共用模型配置。** Report Writer 根據整理好的證據撰寫 Markdown，Background 管理背景規則與工作佇列；兩者共用 Provider 配置與版本化模型 preset，減少重複維護。
+- **任務與對話有明確對應。** Lifecycle 與路由元件串接任務狀態和訊息，透過 Codex 原生查詢與既有路由 ID 核對來源與去向，讓工作有可追蹤的對話上下文。
+- **工具與你的工作環境分開配置。** 共用程式可以打包、安裝和重建；SSH、workplace、金鑰與工作資料由你自己的環境管理。換一個工作環境時，使用對應的私有配置接線。
 
-## Verification
-See `docs/extraction/VERIFICATION.md` and machine-readable receipts.
-Python uses `.venv/Scripts/python.exe` on Windows; invoke project scripts from this root.
-Router build: `node components/lifecycle/build-router-package.mjs` (writes candidate artifacts inside this project).
-Writer: `node --test plugins/research-report-writer/tests/core.test.mjs`.
-Background: `node --test tools/research-background/tests.mjs` (mock provider, synthetic state only).
-Formal Nx/uv/pnpm modularization, GitHub publication, Linux-native validation and live cutover are subsequent phases.
+## 可以怎麼用
 
-## Extraction results
+例如，你在 Windows 上與 Codex 討論一項程式修改，而程式的 Linux 依賴和測試環境位於遠端主機。Agent Relay 可以把測試工作交給那台主機，讓你在本地查詢進度、取回日誌與產物，再根據結果修改程式。需要形成報告時，可以整理證據後交給 Report Writer。
 
-904 mapped publication source files (40 private historical files excluded from the original 944-file extraction); router/writer/background/Guard checks pass. The initial Python core check has one cancellation failure and two skips; additional legacy checks have nine failures involving workspace configuration, documented in verification; see [verification](docs/extraction/VERIFICATION.md). Linux-native validation and online dependency reinstall remain unverified.
+一次典型工作流程：
 
+1. 配置並選擇自己的 workplace 和 Worker，核對兩端身份與工具版本。
+2. 本地助手提交遠端命令或 Codex 工作，取得可持續查詢的任務 ID。
+3. 查詢進度，遇到中斷時用原 ID 恢復查詢。
+4. 取回文件、日誌或產物，核對回執與雜湊後進行檢視、修改或後續工作。
 
+## 工具包裡有哪些部分
 
-## Publication boundary
+| 工具 | 提供的能力 |
+| --- | --- |
+| Harness / Worker | 遠端命令、Codex 工作派送、狀態查詢與 artifact 交付 |
+| Lifecycle / Routing / XATS | 任務生命週期與訊息路由接線 |
+| Report Writer | 證據檢查、Markdown 報告撰寫與交付 |
+| Background | 背景工作規則、佇列與狀態管理 |
+| Report Provider | Writer 與 Background 共用的模型傳輸、配置與 preset |
+| Token Guard | 大型輸出的有界擷取與可核對紀錄 |
 
-The source project is named **Agent Relay**; existing Python namespaces, MCP tool identities and plugin names remain compatible. Private historical receipts are outside this source tree. Dependencies, local configuration and generated artifacts are excluded by Git rules.
+## 開始使用
 
-Only variable names, relative paths and clearly synthetic examples belong in the source release. Configure actual workplace/SSH/provider paths and credentials through per-machine overrides outside Git. Security tests assemble explicitly fake credential-shaped values to exercise redaction.
+目前提供 **P1 工程候選版**，主要部署組合是 Windows 客戶端與 Linux Worker。使用前需要配置自己的遠端連線、workplace 和插件入口；報告撰寫另需配置 Provider。
 
-Run `python scripts/extraction/check-publication.py` before staging. Run `python scripts/extraction/package-source.py` to create a checked source-only ZIP under ignored `.verification/`; do not archive the entire development directory. This check supplements review of staged changes and any reachable Git history.
+從來源重建 Windows 客戶端與安裝包，需要 Python 3.13、Node 24、Git、npm 和 pnpm 11.25。先取得候選分支，再在 repository 根目錄執行：
 
+```powershell
+git clone --branch codex/phase-one-restructure https://github.com/hhhheep/agent-relay.git
+cd agent-relay
+python scripts/release/install_dependencies.py --role windows-client
+python scripts/release/build_candidate.py
+```
 
-## Baseline publication — 2026-10-12
+產物位於 `dist/p1-candidate/`，包含 Windows 客戶端來源包、Linux Worker 包、獨立 Report Writer 插件包，以及安裝／更新工具。依照[安裝指南](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/docs/engineering/phase-one/INSTALL.md)完成依賴安裝、私有配置、兩端配對與啟動。
 
-Agent Relay coordinates MCP tools, task routing, remote workers and artifact delivery, with shared writer, output-guard and background utilities. This repository preserves the independent extraction baseline before formal architecture normalization.
+Windows／Linux 的乾淨安裝及 Harness 更新／回退已完成隔離驗收。實機覆蓋範圍、版本相容性與仍未執行的項目，見[工程狀態](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/docs/engineering/phase-one/STATUS.md)；候選版仍需依自己的環境配置與驗證。
 
-The known initial cancellation failure, nine additional legacy workspace-configuration failures and two initial skips remain documented in `docs/extraction/VERIFICATION.md`. Online dependency reinstall, Linux-native rebuild and live cutover have not been verified. Local receipts and dependency environments are excluded from the repository.
+## 進一步閱讀
 
-Private repository: https://github.com/hhhheep/agent-relay
-
-Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A clean GitHub clone reproduced all 941 baseline source files byte for byte; clone-owned offline dependencies passed the Harness 11-tool check, router/XATS build, and Writer/background tests. Online reinstall and Linux-native validation remain unverified.
-
-## 正規化與分期（2026-10-12）
-
-當前工程範圍：[第一期與按需分期](docs/planning/normalization-20261012/PHASED_DELIVERY.md)。先整理來源、Windows客戶端/Linux Worker兩端可重建安裝，驗證新/舊、新/新、舊/新、舊/舊更新；保留真實擴展位置及原插件/MCP用法。
-
-第一期保留現有主要目錄；原941完整遷移map/apps/packages布局只是候選分析，非搬檔指令。[主任务書](docs/planning/normalization-20261012/TASKBOOK.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)已分清P1範圍。功能擴展、更新自動化、研究工作台各按實際使用需求觸發，不自動全部做；第一期暫估9–15基礎/約12–19含餘量人日，非日曆承諾。
-
-已完成四輪架構/維護討論及使用者後續分期修訂；本次只形成設計，P1實作/四情境安裝/現用切換尚未執行。[歷史計劃索引](docs/planning/README.md)保留追溯。
-
-下一個agent必讀[根AGENTS](AGENTS.md)、[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。最小完整修復、唯一來源、原契約/state、必要驗證及交接仍須遵守；專案經驗留所屬project，不自動上升全域或其他repo。
+- [安裝、配置、更新與回退](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/docs/engineering/phase-one/INSTALL.md)
+- [驗收結果與目前狀態](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/docs/engineering/phase-one/STATUS.md)
+- [維護規則與程式來源](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/AGENTS.md)
+- [開發計劃](https://github.com/hhhheep/agent-relay/blob/codex/phase-one-restructure/docs/planning/README.md)
