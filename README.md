@@ -70,6 +70,6 @@ Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background �
 
 目前是 **P1 工程候選版**。已完成隔離 Linux Worker 安裝，以及 M1 新客戶端／舊 Worker、M2 新／新、M3 舊客戶端／新 Worker 的 Harness 跨端檢查。這些檢查使用同一台 Windows 的隔離環境，涵蓋 Harness 元件，完整四情境驗收仍未完成。
 
-M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。Linux 又已通過 23 項 Writer／Background／Provider 與 77 項 Lifecycle／goal 測試，包含合成 mailbox 與 XATS 的實際訊息往返。更新後安裝包及完整四情境覆蓋核對仍在進行；尚無另一台 Windows 實體設備的證據。現用部署未切換，GitHub 推送與 CI 執行尚未完成。
+M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。Linux 又已通過 23 項 Writer／Background／Provider 與 77 項 Lifecycle／goal 測試，包含合成 mailbox 與 XATS 的實際訊息往返。兩端已從更新後 ZIP 完成乾淨安裝，並通過新身份的 M2 Harness 配對、結果回收與 artifact 提交。M1、M3、M4 尚需對此新發布身份重新核對；尚無另一台 Windows 實體設備的證據。現用部署未切換，GitHub 推送與 CI 執行尚未完成。
 
 具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。
