@@ -1,6 +1,6 @@
 # Agent Relay 維護入口
 
-目前為P1 engineering candidate，已有實際Provider分拆、安裝/打包及取消修復；**尚未P1 Verified或Engineering Verified**。最新實作與驗證見[工程狀態](docs/engineering/phase-one/STATUS.md)與`project.json`；舊extraction與完整apps/packages布局是歷史基線/候選。Linux Worker隔離安裝與M1–M3的Harness跨端檢查已完成；M4隔離Harness更新回退已通過，完整四情境驗收仍未完成，MUST以實際Git/回執核對，不把本機合成驗證當跨端完成。
+目前為P1 engineering candidate，已有實際Provider分拆、安裝/打包及取消修復；**尚未P1 Verified或Engineering Verified**。最新實作與驗證見[工程狀態](docs/engineering/phase-one/STATUS.md)與`project.json`；舊extraction與完整apps/packages布局是歷史基線/候選。兩端乾淨安裝與當前版本M1–M4隔離Harness跨端檢查已通過；Native App及Writer遠端業務adapter的整套接線仍未驗證，MUST以實際Git/回執核對，不把本機合成驗證當跨端完成。
 
 最新使用者已授權第一期首次框架整理，見[FIRST_RESTRUCTURE_EXECUTION](docs/planning/normalization-20261012/FIRST_RESTRUCTURE_EXECUTION.md)。MAY在本獨立repo集中調整結構、模組、程式與打包接線；首次不受小步diff限制，不能只停在方案。工程自治逐批驗證，不逐批重新批准；仍不授權現用切換、破壞性state遷移或新的Worker研究政策。
 

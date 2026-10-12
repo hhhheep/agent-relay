@@ -62,6 +62,17 @@ def main():
         manifest['targets']['linux-x64-worker']='ISOLATED_INSTALL_AND_HARNESS_STDIO_VERIFIED'
         manifest['matrix']=project['deployment_matrix']
         manifest['prior_component_acceptance']=acceptance
+    current=project.get('fresh_archive_acceptance',{})
+    if (current.get('release_id')==worker['manifest']['release_id'] and
+        current.get('source_root_sha256')==worker['manifest']['source_root_sha256']):
+        manifest['targets']={
+            'windows-x64-client':'SAME_HOST_CLEAN_INSTALL_COMPONENTS_VERIFIED',
+            'linux-x64-worker':'ISOLATED_CLEAN_INSTALL_COMPONENTS_VERIFIED'}
+        manifest['matrix']=project['deployment_matrix']
+        manifest['prior_runtime_acceptance']=current
+        # These receipts describe the matching runtime, not the bytes of a
+        # rebuilt archive. Keep the tested artifact hashes and source commit.
+        # No component receipt promotes the whole system to P1 Verified.
     # A previous component receipt never upgrades this artifact to P1 Verified.
     (out/'candidate.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(manifest))

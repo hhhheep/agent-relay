@@ -1,5 +1,7 @@
 # Workplace acceptance follow-up — 2026-10-12
 
+Current result: **M1–M4 isolated Harness PASSED for runtime 6f9532ef91a5cdae**. The current archive and follow-up sections below supersede earlier PARTIAL rows and old candidate identities. Remaining whole-system coverage is listed in [STATUS.md](STATUS.md).
+
 Status: partial P1 acceptance. User explicitly authorized installation packages and isolated workplace installation/testing/update/rollback. Existing installed plugins, global control profiles and live Worker installation were not switched. Private paths, original deployment configuration and raw receipts remain outside Git.
 
 ## Legacy regression repair

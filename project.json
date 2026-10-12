@@ -26,10 +26,10 @@
   "phase_one_verified": false,
   "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
   "deployment_matrix": {
-    "M1": "PARTIAL: Harness cross-end passed; same-host Windows isolation",
-    "M2": "PARTIAL: fresh dependencies, Harness cross-end and artifact CAS passed",
-    "M3": "PARTIAL: isolated binding switch, history preservation and artifact CAS passed",
-    "M4": "PARTIAL: isolated original/candidate/original Harness activation, update, rollback and state preservation passed"
+    "M1": "PASSED (isolated Harness): clean Windows client / exact supported old Worker",
+    "M2": "PASSED (isolated Harness): clean archive-installed Windows client / Linux Worker, receipt and artifact CAS",
+    "M3": "PASSED (isolated Harness): additive existing-client binding, original configuration/history preserved",
+    "M4": "PASSED (isolated Harness): exact old/current/old activation, 13 preserved hashes, SQLite backup and original-ID recovery"
   },
   "workplace_acceptance": {
     "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
@@ -54,6 +54,19 @@
     "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
     "windows_native": "PASSED: 255 packages freshly downloaded, SQLite/XATS memory build, 77 Lifecycle/goal",
     "router_harness_adapter": "PASSED: real SDK connection to isolated Worker and original command recovery",
-    "whole_system": "FINAL_AUDIT_PENDING"
+    "whole_system": "PARTIAL: native Codex App bridge deployment and Writer remote business adapter not exercised end-to-end",
+    "tested_artifacts": {
+      "harness-worker.zip": "17a4c55043b46bd8234d4f275b1a04ae67adcfe4d94d3f3855d82020f3227b17",
+      "windows-client-source.zip": "02f3261f8885687f56f274ab8b9e0d5ed2427c315360f318bbbd280c3ff4ba74",
+      "install_bootstrap_release.py": "fcaf6c4bb06bea25db8c561638b0be7a569661f3ff51f3f823a070b978d50ff5",
+      "install_overlay.py": "154b2e07e2cd5a777d799d73f9c88252f1a0bca655ae1d9e40e382227f18dd08",
+      "research-report-writer.zip": "fb7476770e3a523bbae3bc39ce64ef5a9e11ea6f689f73b47c3cb33c53b9bf26"
+    },
+    "unverified": [
+      "NativeAppPort against a declared genuine native App stdio server",
+      "Writer remote business adapter over its own SSH route",
+      "Another physical Windows computer; same-host clean installation is the actual tested target",
+      "GitHub Actions execution; workflow is configured only"
+    ]
   }
 }

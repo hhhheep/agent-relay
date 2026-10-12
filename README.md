@@ -68,8 +68,10 @@ Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background �
 
 ## 目前可以用到哪裡
 
-目前是 **P1 工程候選版**。已完成隔離 Linux Worker 安裝，以及 M1 新客戶端／舊 Worker、M2 新／新、M3 舊客戶端／新 Worker 的 Harness 跨端檢查。這些檢查使用同一台 Windows 的隔離環境，涵蓋 Harness 元件，完整四情境驗收仍未完成。
+目前是 **P1 工程候選版**。Windows 客戶端與 Linux Worker 已從交付 ZIP 完成乾淨安裝；Linux 與 Windows 都已重建 SQLite 原生依賴，通過 Writer／Background／Provider 的 23 項測試及 Lifecycle／goal 的 77 項測試。
 
-M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。Linux 又已通過 23 項 Writer／Background／Provider 與 77 項 Lifecycle／goal 測試，包含合成 mailbox 與 XATS 的實際訊息往返。兩端已從更新後 ZIP 完成乾淨安裝，並通過新身份的 M2 Harness 配對、結果回收與 artifact 提交。M1、M3、M4 也已對目前發布身份完成 Harness 隔離驗收：新客戶端連舊 Worker、既有客戶端新增 binding，以及原舊版 → 目前候選 → 原舊版更新／回退均有實際回執。回退保留十三份配置、歷史及結果檔案，並能查回两版的原命令。Windows 客戶端亦完成 XATS 全新依賴下載、原生 SQLite 與 77 項整合測試。整套支持範圍仍在最後核對；設備證據是同一台 Windows 的全新隔離安裝。現用部署未切換，GitHub 推送與 CI 執行尚未完成。
+Harness 的 M1–M4 隔離跨端驗收已通過：新客戶端連舊 Worker、兩端全新安裝、既有客戶端新增 Worker binding，以及舊版 → 候選版 → 舊版更新／回退。回退保留十三份配置、歷史與結果檔案，兩版完成的命令仍可用原 ID 查回；artifact 審核與 CAS 提交也有實際回執。舊包固定路徑的問題已透過 Linux 私有 namespace 解決，原包內容與身份保持一致。
+
+Windows 證據來自同一台電腦的全新隔離安裝，Linux 使用固定且標註為測試用的 workplace 目錄。Codex 原生 App 接線與 Writer 自己的遠端業務 adapter 尚未完成完整實機驗證，因此整套系統仍未宣稱 P1 Verified。现用部署未切換，GitHub 推送與 Actions 執行尚未完成。路由沿用 Codex 原生查詢與既有 ID；沒有新增 transport owner 執行鎖。
 
 具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。
