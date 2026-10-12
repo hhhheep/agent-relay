@@ -17,11 +17,11 @@ Scope: authorized first restructuring in this independent repository. Stage: P1 
 
 The last row is a deployment boundary, not a claim that all legacy source is broken or removed. The original 40 passed / 9 failed reproduction depended on research checkout inputs that extraction intentionally excluded. The follow-up repairs those test fixtures: temporary synthetic conda profiles/bootstrap inputs and an explicit bounded-probe staging policy. Original assertions remain intact; no private policies are shipped or runtime defaults introduced. The two legacy suites plus missing-bootstrap-policy regressions now pass: 55 passed. This verifies their tested behavior, not authorization or readiness to dispatch a real research project through the legacy CLI.
 
-Windows x64 / Python 3.13 / Node 24 client is exercised in isolated same-host environments. At the user's explicit authorization, an isolated test directory was created in the declared Linux workplace. Python 3.13.16 and exact Worker pins install there; dependency integrity and real Windows-to-Linux Harness stdio checks pass. The original old install artifact is available, but its unchanged hash-bound configuration prevents activation at another absolute runtime root. Detailed scope and private receipt hashes are summarized in WORKPLACE_ACCEPTANCE.md; whole-system P1 remains unverified.
+Windows x64 / Python 3.13 / Node 24 client is exercised in isolated same-host environments. At the user's explicit authorization, an isolated test directory was created in the declared Linux workplace. Python 3.13.16 and exact Worker pins install there; dependency integrity and real Windows-to-Linux Harness stdio checks pass. The immutable original package now activates at its original paths in a private Linux namespace; isolated Harness old/candidate/old update and rollback passed. Detailed scope and private receipt hashes are summarized in WORKPLACE_ACCEPTANCE.md; whole-system P1 remains unverified.
 
 ## Implemented engineering
 
-Compact real-consumer layout, Provider authority migration, fixed preset and safe numeric usage; external profiles path injection shared by terminal/worker; repaired valid generic profile template; early cancellation handshake and deterministic pre-spawn regression; source-only client/Worker candidates using existing builder; frozen Node install inputs, Windows exact pins, explicitly unverified Linux pins; dependency setup and update/rollback instructions; immutable extraction map plus new change provenance. XATS build replaces an absolute native-module URI with a repo-relative runtime bridge.
+Compact real-consumer layout, Provider authority migration, fixed preset and safe numeric usage; external profiles path injection shared by terminal/worker; repaired valid generic profile template; early cancellation handshake and deterministic pre-spawn regression; source-only client/Worker candidates using existing builder; frozen Node install inputs, Windows exact pins, Linux pins verified by isolated installation; dependency setup and update/rollback instructions; immutable extraction map plus new change provenance. XATS build replaces an absolute native-module URI with a repo-relative runtime bridge.
 
 ## Verified and pending
 
@@ -40,13 +40,13 @@ Detailed machine receipts stay ignored under .verification. Remote component evi
 | M1 new client / existing Worker | PARTIAL; Harness cross-end passed | Same Windows host isolated client, not another physical Windows device; complete required component coverage pending |
 | M2 new client / new Worker | PARTIAL; fresh dependencies and Harness cross-end passed | Full required component/runtime coverage and independent Windows device pending |
 | M3 existing client / new Worker | PARTIAL; binding switch and preservation passed | Isolated old-client configuration/history exercise, not live-client activation |
-| M4 existing client / existing Worker update | BLOCKED at original isolated activation | Old profile is identity-hashed and requires original absolute runtime root; no live update performed |
+| M4 existing client / existing Worker update | PARTIAL whole-system; isolated Harness update/rollback PASSED | Original paths preserved in a private Linux namespace with private systemd; wider component/device coverage remains |
 
 Local builder dry-run/install, original-command recovery, cancellation/lease/CAS tests cannot stand in for these rows. Unknown peer remains blocked by unchanged verify_pair. No arbitrary old/new software-version interoperability is promised.
 
 ## Next acceptance steps
 
-The declared Linux workplace now provides an authorized isolated test target. Retain the immutable old ZIP and paired Client manifest. Resolve how to activate that exact old release in a genuine isolated environment despite its hash-bound absolute root, then complete M4 both-end activation/update/rollback. Complete remaining component/device coverage for M1–M3. Only then freeze P1 and advertise a supported release. No paid research execution or live cutover is included.
+The declared Linux workplace now provides an authorized isolated test target. Retain the immutable old ZIP and paired Client manifest. Exact original/candidate/original Harness activation, update and rollback now pass in a private namespace. Retain this bounded acceptance method and complete wider required coverage. Complete remaining component/device coverage for M1–M3. Only then freeze P1 and advertise a supported release. No paid research execution or live cutover is included.
 
 
 ## Final local component evidence
@@ -58,3 +58,9 @@ Preferred original installation: `harness-0.6-cdf4c9cbb9e48fb2`, SHA256 `067da35
 Standalone Writer plugin closure builds from the unique shared Provider source, with preset bundled and dependency licenses/source hashes. Real stdio handshake from an unrelated working directory lists exactly the original six tools and reports no provider credential configured. It does not need adjacent source packages/node_modules. The new Windows-only CI workflow is configured for required local candidate gates; remote Actions execution remains pending until pushed/run. No Linux/remote acceptance claim is derived from CI configuration.
 
 Historical design checker `build-plan-inventory.py --check` was executed and intentionally reports worktree/baseline differences once engineering changes exist. Its immutable design maps were not rewritten. The replacement engineering provenance gate verifies the original source-map against the baseline Git blob and records every changed extraction hash; candidate builder additionally verifies Git publication candidates and artifact bytes. This preserves the old check as historical evidence rather than pretending the worktree is unchanged.
+
+## Namespace follow-up
+
+The original absolute-root blocker is resolved without editing the old payload or weakening protocol checks. Linux namespace/private-systemd old/candidate/old stdio activation, supervised command recovery, unchanged configuration/state/receipts and SQLite-consistent backup passed. The rolled-back old release also recovered a candidate-release command. M2/M3 and the rolled-back M4 environment passed real artifact store/inspect/materialize plan and CAS commit. Linux core/legacy/install/namespace regression: 153 passed; Windows namespace boundary tests: 3 passed. Method and evidence: [WORKPLACE_ACCEPTANCE.md](WORKPLACE_ACCEPTANCE.md), [NAMESPACE_ACCEPTANCE.md](NAMESPACE_ACCEPTANCE.md). Whole-system P1 remains partial.
+
+Linux Token Guard suite also passed: **37 passed** (190 Linux tests across the two suites). Final checks confirmed all seven original hashes and the immutable old ZIP remained unchanged, with no acceptance transient units left running.

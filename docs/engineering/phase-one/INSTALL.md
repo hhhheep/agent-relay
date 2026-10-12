@@ -1,6 +1,6 @@
 # Install, update and extend the P1 candidate
 
-Status: P1 engineering candidate. Isolated Linux Worker installation and Harness cross-end checks for M1–M3 passed; whole-system rows remain PARTIAL. M4 is BLOCKED because the original package binds its deployment root into release identity. See [workplace acceptance](WORKPLACE_ACCEPTANCE.md). No live installation was switched.
+Status: P1 engineering candidate. Isolated Linux Worker installation and Harness cross-end checks for M1–M3 passed; whole-system rows remain PARTIAL. The original-root blocker is resolved: isolated Harness old/candidate/old activation, update and rollback passed using a private Linux namespace/systemd manager. Whole-system M4 remains PARTIAL. See [workplace acceptance](WORKPLACE_ACCEPTANCE.md). No live installation was switched.
 
 ## Requirements and source
 
@@ -62,4 +62,4 @@ Run `python scripts/release/rehearse_harness_update.py --old-archive <original-i
 
 ## Current isolated acceptance boundary
 
-M1–M3 have actual Harness stdio, identity, workplace and original command lookup evidence, using isolated clients on the same Windows device. They remain partial whole-system scenarios. Installing the original old package at a different Linux root fails its hash-bound profile check; editing that profile would change the original release identity. Full M4 needs an isolation method preserving the original paths or a separately verified relocatable baseline. Details and retained receipts are described in [WORKPLACE_ACCEPTANCE.md](WORKPLACE_ACCEPTANCE.md).
+M1–M3 have actual Harness stdio, identity, workplace and original command lookup evidence, using isolated clients on the same Windows device. They remain partial whole-system scenarios. Installing the original old package at a different Linux root fails its hash-bound profile check; editing that profile would change the original release identity. The implemented namespace method preserves those paths and has passed original/candidate/original Harness activation, update and rollback; see [NAMESPACE_ACCEPTANCE.md](NAMESPACE_ACCEPTANCE.md). Wider whole-system coverage remains separate. Details and retained receipts are described in [WORKPLACE_ACCEPTANCE.md](WORKPLACE_ACCEPTANCE.md).

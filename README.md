@@ -68,6 +68,6 @@ Writer 需要允許寫入的目錄及 Provider 金鑰／環境檔。Background �
 
 目前是 **P1 工程候選版**。已完成隔離 Linux Worker 安裝，以及 M1 新客戶端／舊 Worker、M2 新／新、M3 舊客戶端／新 Worker 的 Harness 跨端檢查。這些檢查使用同一台 Windows 的隔離環境，涵蓋 Harness 元件，完整四情境驗收仍未完成。
 
-M4 舊／舊更新與回退尚有阻礙：原舊包把部署根目錄納入身份雜湊，直接搬到隔離目錄後無法啟用原身份。需要能保留原路徑的隔離環境，或另行建立經驗證的可搬移基線。現用部署尚未切換；GitHub 分支推送與 CI 執行也尚未完成。
+M4 舊／舊的 Harness 更新與回退已在 Linux 隔離 namespace 跑通：保留原包身份與它看到的部署路徑，用私有 systemd 執行命令，完成原舊版 → 候選版 → 原舊版的啟用核對。原配置、SQLite 歷史與命令回執均保留，回退後也能查回候選版完成的命令。M2、M3 另已通過 artifact 存取、審核與 CAS 提交。完整系統验收仍有其他元件與設備範圍待補；現用部署、GitHub 推送與 CI 執行尚未完成。
 
 具體結果與剩餘工作見[工程狀態](docs/engineering/phase-one/STATUS.md)及[workplace 驗收紀錄](docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md)。維護前讀 [AGENTS.md](AGENTS.md)；後續範圍與分期見[計劃入口](docs/planning/README.md)。歷史抽取結果保存在 `docs/extraction/`，供來源追溯。

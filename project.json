@@ -27,15 +27,17 @@
   "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
   "deployment_matrix": {
     "M1": "PARTIAL: Harness cross-end passed; same-host Windows isolation",
-    "M2": "PARTIAL: fresh dependencies and Harness cross-end passed",
-    "M3": "PARTIAL: isolated binding switch and synthetic history preservation passed",
-    "M4": "BLOCKED: original old release requires its hash-bound absolute deployment root"
+    "M2": "PARTIAL: fresh dependencies, Harness cross-end and artifact CAS passed",
+    "M3": "PARTIAL: isolated binding switch, history preservation and artifact CAS passed",
+    "M4": "PARTIAL: isolated original/candidate/original Harness activation, update, rollback and state preservation passed"
   },
   "workplace_acceptance": {
     "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
     "linux_worker": "isolated Linux x64 / Python 3.13.16 / pinned dependencies and stdio verified",
     "candidate_release_id": "harness-0.6-4e69022edc545f89",
     "candidate_source_root_sha256": "4e69022edc545f89b24c206c9a260e9be719752088901f00deeb937e521b27b2",
-    "whole_system_verified": false
+    "whole_system_verified": false,
+    "isolated_harness_M4": "PASSED: original paths preserved using Linux namespace and private systemd",
+    "linux_regression": "153 core/legacy/install/namespace + 37 Token Guard passed"
   }
 }

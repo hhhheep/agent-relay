@@ -31,7 +31,7 @@ jobs:
         # Legacy suites use explicit synthetic workspace inputs; no private policies.
         run: npm ci --prefix packages/report-provider --ignore-scripts --no-audit --no-fund
       - name: Legacy synthetic workspace regression
-        run: .venv/Scripts/python.exe -m pytest tests/test_remote_status_worker_agnostic.py tests/test_continuation_three_agent_flow.py tests/test_workflow_profile.py -q
+        run: .venv/Scripts/python.exe -m pytest tests/test_remote_status_worker_agnostic.py tests/test_continuation_three_agent_flow.py tests/test_workflow_profile.py tests/test_linux_namespace_acceptance.py -q
       - name: Writer frozen dependencies
         run: |
           npx --yes pnpm@11.25.0 --dir plugins/research-report-writer install --frozen-lockfile --ignore-scripts

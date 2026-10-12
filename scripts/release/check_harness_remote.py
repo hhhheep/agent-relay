@@ -1,15 +1,18 @@
 """Explicit stdio acceptance through the existing release-owned SSH launcher.
 
 Does not install plugins or alter bindings. All control inputs are supplied by
-the caller. The probe command only prints its cwd; Harness owns its receipt.
+the caller. The command prints cwd; optional synthetic artifact acceptance uses
+the existing diff-review/CAS tools against an explicit new test target.
 """
 from __future__ import annotations
 
 import argparse
 import asyncio
 import hashlib
+import importlib.util
 import json
 import os
+import shlex
 import sys
 from pathlib import Path
 
@@ -38,6 +41,25 @@ async def check(args):
               '--control-root', str(args.control_root), '--profile', args.profile],
         cwd=str(args.control_root), env=environment,
     )
+    if args.namespace_config:
+        # Reuse the release-owned route and its exact protocol/workplace env.
+        # Only the explicit acceptance transport wraps it in an isolated FS.
+        script = args.plugin / 'scripts/remote_launcher.py'
+        spec = importlib.util.spec_from_file_location('acceptance_route', script)
+        launcher = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(launcher)
+        alias, remote_command = launcher.route(args.control_root, args.profile, args.plugin)
+        pieces = shlex.split(remote_command)
+        split = next(i for i, piece in enumerate(pieces[1:], 1) if '=' not in piece)
+        identity_env = [piece for piece in pieces[1:split] if piece.split('=', 1)[0] in {
+            'SOLUTION_AGENT_PROTOCOL_REQUIRED', 'SOLUTION_AGENT_EXPECTED_IDENTITY_B64',
+            'SOLUTION_AGENT_WORKPLACE_IDENTITY_B64'}]
+        wrapped = ['env', *identity_env, args.remote_python, args.namespace_helper,
+                                   '--config', args.namespace_config, '--'] + pieces[split:]
+        parameters = StdioServerParameters(
+            command='ssh', args=['-T', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10',
+                                 alias, shlex.join(wrapped)],
+            cwd=str(args.control_root), env=environment)
     # Harness retains its initialize-era MCP surface. Select that documented
     # SDK handshake explicitly; Harness protocol 0.6 identity checks are separate.
     async with Client(parameters, read_timeout_seconds=60, mode='legacy') as client:
@@ -89,12 +111,46 @@ async def check(args):
         replay = recovered.structured_content
         if replay['command_id'] != command_id or replay['stdout']['sha256'] != stdout['sha256']:
             raise RuntimeError('Original command recovery changed result identity')
+        artifact_receipt = None
+        if args.artifact_source:
+            async def call(name, values):
+                response = await client.call_tool(name, {'task_id': args.task_id, **values})
+                data = response.structured_content
+                if not data or not data.get('ok'):
+                    raise RuntimeError(f'{name} acceptance failed: {data or response.content}')
+                return data
+            stored = await call('artifact_store', {'path': args.artifact_source})
+            artifact = stored['manifest']
+            expected_bytes = b'agent-relay-artifact-acceptance\n'
+            expected_hash = hashlib.sha256(expected_bytes).hexdigest()
+            if artifact['sha256'] != expected_hash:
+                raise RuntimeError('Artifact source is not the explicit synthetic acceptance fixture')
+            planned = await call('artifact_apply', {'mode': 'materialize', 'request': {
+                'target': args.artifact_target, 'artifact_id': artifact['artifact_id'],
+                'expected_target_sha256': None}})
+            plan = planned['plan']
+            reviewed = await call('artifact_inspect', {'artifact_id': plan['diff_artifact_id'],
+                'mode': 'read', 'selector': {'type': 'whole'}, 'max_output_bytes': 4096})
+            if reviewed.get('truncated') or '+agent-relay-artifact-acceptance' not in reviewed.get('content', ''):
+                raise RuntimeError('Artifact apply diff does not match the synthetic fixture')
+            committed = await call('artifact_apply', {'mode': 'materialize', 'commit': True,
+                'plan_id': plan['plan_id'], 'writer_lease_id': planned['writer_lease_id']})
+            artifact_receipt = committed['receipt']
+            if artifact_receipt['after_sha256'] != expected_hash:
+                raise RuntimeError('Committed artifact hash differs from reviewed source')
+            target = await call('artifact_store', {'path': args.artifact_target})
+            if target['manifest']['sha256'] != expected_hash:
+                raise RuntimeError('Materialized target does not match its receipt')
         report = {'status': 'PASSED', 'scope': 'EXPLICIT_WINDOWS_LINUX_STDIO_COMPONENT_ACCEPTANCE',
                   'profile': args.profile, 'canonical_tools': names,
                   'server': result['server'], 'command_id': command_id,
                   'execution_release': result['runtime_release_id'],
                   'stdout_sha256': stdout['sha256'], 'cwd': decoded['cwd'],
                   'original_id_recovered_without_resubmit': True}
+        if args.namespace_config:
+            report['isolation'] = 'LINUX_NAMESPACE_PRIVATE_SYSTEMD'
+        if artifact_receipt:
+            report['artifact_roundtrip'] = artifact_receipt
         args.receipt.parent.mkdir(parents=True, exist_ok=True)
         args.receipt.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(report))
@@ -110,7 +166,16 @@ def main():
     parser.add_argument('--expected-cwd', required=True)
     parser.add_argument('--command-id')
     parser.add_argument('--receipt', type=Path, required=True)
+    parser.add_argument('--namespace-config', help='Explicit remote private acceptance config')
+    parser.add_argument('--namespace-helper', help='Explicit remote namespace acceptance helper')
+    parser.add_argument('--remote-python', help='Explicit remote isolated Python with YAML support')
+    parser.add_argument('--artifact-source', help='Remote synthetic fixture with fixed acceptance content')
+    parser.add_argument('--artifact-target', help='Explicit new remote test target; create-only CAS')
     args = parser.parse_args()
+    if any((args.namespace_config, args.namespace_helper, args.remote_python)) and not all((args.namespace_config, args.namespace_helper, args.remote_python)):
+        parser.error('Namespace acceptance needs config, helper and remote Python together')
+    if bool(args.artifact_source) != bool(args.artifact_target):
+        parser.error('Artifact acceptance needs source and a new target together')
     args.python = args.python.resolve()
     args.plugin = args.plugin.resolve()
     args.control_root = args.control_root.resolve()
