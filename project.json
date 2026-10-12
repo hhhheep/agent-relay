@@ -50,7 +50,10 @@
     "linux_worker": "PASSED: delivered bootstrap dry-run/apply, fresh venv/pins, pip check and loaded identity",
     "standalone_writer": "PASSED: archive installation and six-tool stdio from unrelated cwd",
     "M2_harness": "PASSED: matched archive-installed endpoints, original command recovery and artifact review/CAS",
-    "M1_M3_M4_current_release": "NOT RUN; retained prior release evidence remains separate",
-    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md"
+    "M1_M3_M4_current_release": "PASSED: matched old baseline M1; existing-client binding/history M3; hash-bound old/current/old M4 with command recovery and 13 preserved files",
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
+    "windows_native": "PASSED: 255 packages freshly downloaded, SQLite/XATS memory build, 77 Lifecycle/goal",
+    "router_harness_adapter": "PASSED: real SDK connection to isolated Worker and original command recovery",
+    "whole_system": "FINAL_AUDIT_PENDING"
   }
 }
