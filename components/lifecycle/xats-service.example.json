@@ -1,0 +1,6 @@
+{
+  "dbPath": "C:/example/agent-relay-private/xats.sqlite",
+  "port": 49321,
+  "tokenFile": "C:/example/agent-relay-private/xats-token.txt",
+  "receiptPath": "C:/example/agent-relay-private/xats-service.local.json"
+}

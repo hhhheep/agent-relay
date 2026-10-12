@@ -31,3 +31,7 @@ CI is a reproducibility check of the declared Windows target; it does not replac
 Wrong workplace/release/schema, unknown state ownership, overlay conflicts, dirty/untraceable artifacts or failed required tests stop the relevant action. Query original command IDs after uncertainty; do not resubmit to make a receipt green. Roll back code/binding only using the verified retained baseline and preserve state/receipts. Do not narrow the system claim to whichever component happens to pass.
 
 The next delivery decision must be based on the concrete source diff, generated artifact hashes and CI evidence, rather than the existence of this document. Current evidence and known exclusions remain in [STATUS.md](STATUS.md).
+
+## Current review input after runtime repair
+
+Candidate repair commit `d0481c629085a7b09bc4483f82bfa3ba1040788c` has green [CI run 38228079618](https://github.com/hhhheep/agent-relay/actions/runs/38228079618), fresh Windows/Linux Python archive checks, Linux 194-test regression, current bd M1–M4 and a real default-adapter production Manager connection tick. The [workplace record](WORKPLACE_ACCEPTANCE.md) distinguishes prior runtime evidence and retained failed acceptance configurations. Two private-configuration examples now document actual Manager/XATS entrypoints without enabling services. Final review must audit the rebuilt clean-commit archives, source provenance and S1–S5 handoff before changing the candidate delivery claim. Main received only its separately authorized README update, not candidate code.

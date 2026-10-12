@@ -1,0 +1,15 @@
+{
+  "stateRoot": "C:/example/agent-relay-private/manager",
+  "url": "http://127.0.0.1:49321/mcp",
+  "name": "example-relay-manager",
+  "team": "example-workplace",
+  "appServerPath": "C:/example/Codex/app/resources/plugins/openai-bundled/plugins/codex-app-tools/server.mjs",
+  "intervalMs": 1000,
+  "appLifecycle": {"healthIntervalMs": 1000, "exitWhenAwaitingApp": true},
+  "resume": {
+    "python": "C:/example/agent-relay/.venv/Scripts/python.exe",
+    "rpcScript": "C:/example/agent-relay/components/lifecycle/resume-rpc.py",
+    "installedConfig": "C:/example/agent-relay-private/harness-mcp.json",
+    "contexts": []
+  }
+}

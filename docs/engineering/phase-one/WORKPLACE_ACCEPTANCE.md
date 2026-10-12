@@ -1,6 +1,6 @@
 # Workplace acceptance follow-up — 2026-10-12
 
-Current result: **M1–M4 isolated Harness PASSED for runtime 6f9532ef91a5cdae**. The current archive and follow-up sections below supersede earlier PARTIAL rows and old candidate identities. Remaining whole-system coverage is listed in [STATUS.md](STATUS.md).
+Current result: **M1–M4 isolated Harness PASSED for runtime bd6c131ec6a770e5**. The terminal-publication follow-up at the end is the current runtime evidence; 6f records are retained as history. The current archive and follow-up sections below supersede earlier PARTIAL rows and old candidate identities. Remaining whole-system coverage is listed in [STATUS.md](STATUS.md).
 
 Status: partial P1 acceptance. User explicitly authorized installation packages and isolated workplace installation/testing/update/rollback. Existing installed plugins, global control profiles and live Worker installation were not switched. Private paths, original deployment configuration and raw receipts remain outside Git.
 
@@ -82,3 +82,20 @@ Fresh archive-installed Windows XATS downloads 255 packages with zero reuse, reb
 ## Native App and Writer remote closure
 
 Production NativeAppPort used the installed official Codex app-tools stdio entry with the current genuine executor context. Caller/host identity and exact thread read passed; no send or pipe discovery occurred. Standalone Writer also validated a synthetic evidence packet through its own real SSH adapter, returning verified SHA256 and rejecting outside-root paths. Remote script bytes match source; no credential/model invocation occurred. Scope, hashes and diagnostics: [STATUS.md](STATUS.md). These close the previous adapter checks; live activation, cross-chat sends and paid drafting remain NOT RUN.
+
+## Current bd runtime matrix after terminal publication repair
+
+Source commit `d0481c629085a7b09bc4483f82bfa3ba1040788c`, runtime `harness-0.6-bd6c131ec6a770e5`, source root `bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591`. Fresh client/Worker Python archive installation, Linux 194-test regression and all steps of GitHub run 38228079618 passed. Node source for the production bridge was checked byte-for-byte against the prior clean installed archive; current clean-host CI rebuilds its locked dependencies and native modules.
+
+| Row | Actual result | Private evidence |
+| --- | --- | --- |
+| M1 | Fresh client Python and exact supported old plugin/Worker pairing; original ID recovered, immutable old archive unchanged | package-bd-M1-old-before.local.json |
+| M2 | Fresh paired bd endpoints, original ID recovery, artifact source hash, reviewed diff and create-only CAS | package-bd-M2.local.json |
+| M3 | Existing client adds bd binding; prior bindings and original profile/receipt/SQLite bytes unchanged | package-bd-M3.local.json; existing-client/bd-preservation.local.json |
+| M4 | Loaded old → bd → old; original old command readable on bd, bd command readable on old; reviewed artifact CAS on both versions | package-bd-M4-old-recovered/candidate/rollback-old/rollback-candidate.local.json |
+
+M4 forward archive SHA256 `f388a4afe7e159486713566ec657ddfbe85e6eee8a16498cd001d0655ab16eb1`, plan `08d9d50e2b1d8434d277cc39dcf081c7362ace0d31cc378e3184f4366741cc4d`. Reverse archive SHA256 `03628f71362ab6f432ecf33769b224ebc9867a32fc12b7fdedd97a8c8e026479`, plan `b6d582d5672280bdaae2e8837a0ce041249a8e6c1f164e4285b02bb4a7490751`. Both plans were conflict-free and applied with the exact reviewed plan hash. Sixteen configuration/history/receipt/output hashes and SQLite-consistent backup contents survived; the original supported ZIP bytes are unchanged. The bd synthetic task has no remaining writer lease.
+
+Production Manager used its default NativeAppPort, stable inbox and HarnessPort simultaneously: genuine current Codex context, actual official server identity/health read, independent loopback XATS `/mcp`, and bd paired Worker. Active state was running/online/connected/ready with zero pending items and connection failures; the one-tick Manager then stopped and disconnected, and XATS closed. Private receipt: manager-stack-bd-real.local.json. No fake App, injected adapter, message send, task dispatch or global startup entry was used. Installation examples document the actual configuration fields.
+
+Retained diagnostics: the first M2 artifact fixture was outside the allowed source root; moving the synthetic fixture inside the installed root and querying the original successful ID completed acceptance. M4 first targeted the namespace's read-only code mount; no target was published. Its failed plan lease was explicitly released through the existing TaskCapsule API after verifying the target absent, with a private abandonment receipt. The same command ID completed CAS using the writable private state mount. The first Manager test omitted `/mcp` in its private URL and reported offline; the corrected declared endpoint passed in a new private state directory. These are acceptance configuration corrections, not runtime permission relaxations or hidden retries.

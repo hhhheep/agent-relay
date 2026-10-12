@@ -1,6 +1,6 @@
 # Install, update and extend the P1 candidate
 
-Status: P1 engineering candidate. Current isolated Windows/Linux archive installation and Harness M1–M4 passed, including exact old/current/old activation, configuration/state preservation and rollback. Native App identity/read and Writer remote validation also passed. Remote CI and formal activation are separate pending steps; see [current status](STATUS.md). No live installation was switched.
+Status: P1 engineering candidate. Current isolated Windows/Linux archive installation and Harness M1–M4 passed, including exact old/current/old activation, configuration/state preservation and rollback. Native App identity/read and Writer remote validation also passed. Remote CI passed on the stated repair commit; formal activation is separate. See [current status](STATUS.md). No live installation was switched.
 
 ## Requirements and source
 
@@ -50,6 +50,26 @@ Copy `config/harness_remote_deploy_profiles.example.json` to a private per-machi
 Use the existing workplace init and identity/preflight helpers only against an explicitly selected project. Client and Worker `.solution-agent/workplace.id` must be identical canonical UTF-8 bytes. Preserve protocol 0.6 exact protocol_version/release_id/payload_sha256/mcp_schema_sha256 equality and workplace checks. Unknown or mismatched peers must not submit jobs or apply artifacts.
 
 Writer: supply `REPORT_WRITER_ALLOWED_ROOTS` plus Bailian environment values or `REPORT_WRITER_ENV_FILE`. Environment values win over file values; fixed model/preset remains unchanged. No API key is shipped. Start the Writer with an absolute path to `plugins/research-report-writer/server.mjs`, or install the plugin with its normal plugin-relative cwd. Harness also supports absolute script invocation from arbitrary cwd. Background configuration is explicit: copy config.example.json to private config, supply vault/state/rules/credential references, then use `node tools/research-background/cli.mjs --config <private-config> status`. Relative config paths resolve beside that config. Provider module is optional; direct shared provider is the default; an existing explicit legacy helper override still works. Do not register startup or schedules without deployment authorization.
+
+## Optional Lifecycle / XATS connection check
+
+After target-native Node dependencies and build are complete, copy `components/lifecycle/manager.example.json` and `components/lifecycle/xats-service.example.json` to your own private configuration directory. Replace every example path, name, team and port. Use an independent state directory and XATS database. Generate a private random XATS token file; provide the same value through `HARNESS_XATS_TOKEN` to the Manager. The URL must include the existing MCP endpoint `/mcp`, not just the server origin.
+
+`appServerPath` must point to the actual installed official native-tools server described below. Run the Manager only inside a genuine Codex execution context supplying `CODEX_THREAD_ID` and `CODEX_APP_TOOLS_PIPE_PATH`; do not copy another chat's identity or pipe into config. `resume.installedConfig` is a private MCP JSON declaration with `mcpServers.solution_agent_harness.command`, `args` and `cwd`, pointing to your installed paired client launcher and selected control/profile. Keep `resume.contexts` empty for a connection-only check. The example does not register routes or submit work.
+
+From the installed `components/lifecycle` directory, in your explicitly selected test environment:
+
+```powershell
+node --import tsx production-xats-service-20261008.ts <private-xats-config.json>
+```
+
+Keep that loopback service running and invoke this command from a genuine Codex execution context, with the private token available:
+
+```powershell
+node --import tsx manager-cli.ts <private-manager-config.json> --once
+```
+
+Inspect `<stateRoot>/status.json`: an active tick must have `state=running`, `appAvailability=online`, `transport=connected`, `resumeState=ready` and `pending=0`. The final single-tick status has `lifecycle=stopped` and `transport=disconnected`; it retains the preceding connection fields. `app_rebootstrap_required`, `offline` or `harness_reconnect_required` means the connection check failed. Stop the separately launched test XATS service with Ctrl+C when finished. This manual check installs no startup entry or schedule and does not prove native message delivery or paid report generation.
 
 ## Update and rollback without changing state format
 
