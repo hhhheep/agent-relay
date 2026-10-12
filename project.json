@@ -1,6 +1,6 @@
 {
   "name": "agent-relay",
-  "stage": "phase-one-engineering-candidate",
+  "stage": "phase-one-engineering-verified",
   "runtime": {
     "python": "3.13.12",
     "node": "24.19.0",
@@ -23,7 +23,7 @@
   "publication_privacy_checked": true,
   "publication_visibility": "public",
   "repository": "https://github.com/hhhheep/agent-relay",
-  "phase_one_verified": false,
+  "phase_one_verified": true,
   "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
   "deployment_matrix": {
     "M1": "PASSED: fresh Windows Python/client paired to supported immutable old Worker; original ID recovery",
@@ -68,7 +68,7 @@
       "install_overlay.py": "154b2e07e2cd5a777d799d73f9c88252f1a0bca655ae1d9e40e382227f18dd08",
       "research-report-writer.zip": "f34c8e9af8d6601407dafcf174f0f8cf212bb535835f9d49891479aa89b65359"
     },
-    "whole_system": "CURRENT_ISOLATED_MATRIX_AND_CONNECTIONS_PASSED; full delivery review pending",
+    "whole_system": "P1_S1_S5_ENGINEERING_DELIVERY_VERIFIED; excluded live/paid/message actions NOT RUN",
     "unverified": [
       "Native App send: no test destination authorized",
       "Paid report generation: outside engineering scope; mock consumer tests passed",
@@ -81,7 +81,7 @@
     "release_id": "harness-0.6-bd6c131ec6a770e5",
     "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
     "local_core": "97 passed, 2 native POSIX skips on Windows",
-    "current_linux_and_matrix": "PASSED: current bd M1-M4 and Manager stack; final delivery audit pending",
+    "current_linux_and_matrix": "PASSED: bd M1-M4, Manager stack and S1-S5 engineering delivery review",
     "remote_ci": "PASSED: run 38228079618, job 114740438554, all required steps",
     "evidence": "docs/engineering/phase-one/STATUS.md",
     "source_commit": "d0481c629085a7b09bc4483f82bfa3ba1040788c",
@@ -117,5 +117,26 @@
     ],
     "native_app_bridge": "PASSED: production NativeAppPort with installed official stdio server, trusted current caller/pipe, exact identity and read destination; no send",
     "writer_remote_adapter": "PASSED: standalone MCP to actual SSH remote validation; synthetic evidence SHA256 verified and outside-root rejected; no credentials/model call"
+  },
+  "delivery_verification": {
+    "status": "S1_S5_VERIFIED",
+    "requirements": {
+      "S1": "PASSED",
+      "S2": "PASSED",
+      "S3": "PASSED",
+      "S4": "PASSED",
+      "S5": "PASSED"
+    },
+    "release_id": "harness-0.6-bd6c131ec6a770e5",
+    "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
+    "reviewed_source_commit": "691ba2cc49c0ddb104e5dc59b353783430a94906",
+    "evidence": "docs/engineering/phase-one/DELIVERY.md",
+    "scope": "Windows x64 client / Ubuntu 22.04 x64 Worker; exact supported old baseline; isolated installation/update/rollback and production adapter startup",
+    "exclusions": [
+      "native cross-chat send",
+      "paid report generation",
+      "live deployment/research",
+      "other physical Windows devices or arbitrary OS/releases"
+    ]
   }
 }

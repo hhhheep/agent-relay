@@ -1,6 +1,6 @@
 # P1 implementation decisions — 2026-10-12
 
-Status: engineering in progress; no live activation, no P1 Verified claim.
+Historical implementation decisions; current S1–S5 engineering verification and scope are recorded in [DELIVERY.md](DELIVERY.md). No live activation is included.
 Baseline: bf8db034ee0e72967296b916968dfe2460e35cbe.
 
 The compact layout retains Python solution_agent/, first-party plugins/, lifecycle + its actual goal integration, selected XATS upstream, and tools/research-background/. Only the real two-consumer provider becomes packages/report-provider/. This avoids mechanical migration of legacy prototypes and preserves all public names. No state format changes.
@@ -31,3 +31,7 @@ The source-only client archive also needs the generated release manifest consume
 ## Acceptance-only path-preserving isolation
 
 Use Linux namespaces and a delegated private systemd manager to activate the immutable original Harness package at its original paths. This is an explicit acceptance helper, not a new deployment transport or relaxed identity. Existing builders, exact-hash overlay plans, paired Client manifests, protocol/workplace checks and original IDs remain authoritative. Source stays read-only during execution; private mounts hold synthetic state. Real remote old/candidate/old and backward command reads passed; wider P1 coverage remains separate.
+
+## Final delivery classification
+
+The completed S1–S5 review classifies the declared target/baseline scope as engineering verified. The candidate builder may expose this classification only for a clean producer, an explicit completed five-batch review, all four matrix rows and exact matching current/runtime source identities. Dirty, incomplete or mismatched builds keep the unverified candidate status. This changes delivery metadata only; protocol 0.6, MCP schemas, runtime source hash and state formats are unchanged. Component receipts alone do not certify the whole delivery, and live/paid/message exclusions remain explicit.

@@ -7,6 +7,16 @@ sys.path.insert(0,str(ROOT))
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,ROOT/path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+
+def delivery_verified(project, identity, dirty):
+    review=project.get('delivery_verification',{})
+    current=project.get('fresh_archive_acceptance',{})
+    return (not dirty and project.get('phase_one_verified') is True
+        and review.get('status')=='S1_S5_VERIFIED'
+        and all(review.get('requirements',{}).get(key)=='PASSED' for key in ['S1','S2','S3','S4','S5'])
+        and all(str(project.get('deployment_matrix',{}).get(key,'')).startswith('PASSED') for key in ['M1','M2','M3','M4'])
+        and review.get('release_id')==current.get('release_id')==identity['release_id']
+        and review.get('source_root_sha256')==current.get('source_root_sha256')==identity['source_root_sha256'])
 def main():
     guard=load('publication','scripts/extraction/check-publication.py')
     names=guard.publication_files(); report=guard.inspect(names)
@@ -73,7 +83,11 @@ def main():
         # These receipts describe the matching runtime, not the bytes of a
         # rebuilt archive. Keep the tested artifact hashes and source commit.
         # No component receipt promotes the whole system to P1 Verified.
-    # A previous component receipt never upgrades this artifact to P1 Verified.
+    # Component acceptance alone cannot promote the delivery. Only a completed
+    # S1-S5 review of the matching runtime, full matrix and clean producer can.
+    if delivery_verified(project,manifest['harness_identity'],dirty):
+        manifest['status']='P1_ENGINEERING_VERIFIED'
+        manifest['delivery_verification']=project['delivery_verification']
     (out/'candidate.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(manifest))
 if __name__=='__main__': main()

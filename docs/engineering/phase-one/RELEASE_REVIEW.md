@@ -1,6 +1,6 @@
 # P1 delivery review
 
-This review continues the completed isolation checks toward a reproducible P1 delivery. Status remains **engineering candidate** until required publication/host checks have actual receipts. Existing isolated Harness M1–M4 results are retained; live cutover is a separate decision.
+Final engineering review is complete for the scope in [DELIVERY.md](DELIVERY.md): S1–S5, current bd matrix, clean install/build and production connection checks. Source and package publication retain their actual commit/hash/CI identities. Live cutover is a separate decision.
 
 ## What a recipient receives
 

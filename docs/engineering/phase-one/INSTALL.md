@@ -1,6 +1,6 @@
 # Install, update and extend the P1 candidate
 
-Status: P1 engineering candidate. Current isolated Windows/Linux archive installation and Harness M1–M4 passed, including exact old/current/old activation, configuration/state preservation and rollback. Native App identity/read and Writer remote validation also passed. Remote CI passed on the stated repair commit; formal activation is separate. See [current status](STATUS.md). No live installation was switched.
+Status: P1 engineering verified for the declared Windows x64 / Linux x64 and supported-baseline scope; see [DELIVERY.md](DELIVERY.md). Current isolated Windows/Linux archive installation and Harness M1–M4 passed, including exact old/current/old activation, configuration/state preservation and rollback. Native App identity/read and Writer remote validation also passed. Remote CI passed on the stated repair commit; formal activation is separate. See [current status](STATUS.md). No live installation was switched.
 
 ## Requirements and source
 
@@ -44,6 +44,8 @@ Worker bootstrap packaging is available via `python checkout/scripts/release/bui
 For a fresh isolated Worker directory use the bundled existing `install_bootstrap_release.py --archive harness-worker.zip --expected-sha256 <verified SHA> --target-root <new-directory>`; inspect the dry run, then repeat with `--apply`. It refuses nonempty targets. The candidate also delivers `install_overlay.py` separately. For existing managed overlays use `scripts/harness/install_overlay.py` dry-run/plan hash handling; never use force overwrite. Follow the existing ownership/conflict gates.
 
 ## External configuration
+
+For a complete minimal pair, including Worker profile, exact workplace identity bytes, client control files, MCP declaration and preflight, follow [CLIENT_CONFIGURATION.md](CLIENT_CONFIGURATION.md). Use generated paired packages and replace every synthetic host/path with your own authorized configuration.
 
 Copy `config/harness_remote_deploy_profiles.example.json` to a private per-machine location and supply your own values. Export `SOLUTION_AGENT_PROFILES_FILE` to that file and `SOLUTION_AGENT_PROFILE_ID` to the chosen entry. Both terminal service and Codex worker resolve the same file. The legacy checkout config path remains a fallback. The example is not an authorized SSH destination and is never auto-activated. MCP declaration passes through these variable names, without secret values. Keep the Python package root accessible as `SOLUTION_AGENT_ROOT` where discovery cannot locate it.
 
