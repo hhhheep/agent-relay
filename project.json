@@ -41,5 +41,16 @@
     "linux_regression": "153 core/legacy/install/namespace + 37 Token Guard passed",
     "linux_node_components": "PASSED: fresh Node 24.19.0 dependencies, 23 consumers + 77 Lifecycle/goal; native SQLite/XATS and standalone Writer stdio",
     "linux_node_evidence": "docs/engineering/phase-one/STATUS.md"
+  },
+  "fresh_archive_acceptance": {
+    "source_commit": "3b010b1d3873cd0571062ce47a44ff9e1ee472df",
+    "release_id": "harness-0.6-6f9532ef91a5cdae",
+    "source_root_sha256": "6f9532ef91a5cdaec9cfc345f888039b64f29f39472d4c1288f3ecc0f44efe91",
+    "windows_client": "PASSED: fresh archive, no-cache Python, empty npm/pnpm store, 23 consumers, delivered installer and 11-tool check",
+    "linux_worker": "PASSED: delivered bootstrap dry-run/apply, fresh venv/pins, pip check and loaded identity",
+    "standalone_writer": "PASSED: archive installation and six-tool stdio from unrelated cwd",
+    "M2_harness": "PASSED: matched archive-installed endpoints, original command recovery and artifact review/CAS",
+    "M1_M3_M4_current_release": "NOT RUN; retained prior release evidence remains separate",
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md"
   }
 }
