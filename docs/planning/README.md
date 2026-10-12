@@ -1,6 +1,8 @@
 # 正規化計劃入口
 
-目前唯一最新入口：[2026-10-12 Agent Relay 正規化施工任務書](normalization-20261012/TASKBOOK.md)。已完成四輪指定聊天討論，配套來源/模組/交付包映射、擴展需求、契約/相容、維護準則、根AGENTS、ADR及工程預算。
+當前範圍：[第一期與按需分期](normalization-20261012/PHASED_DELIVERY.md)，以整理、Windows×Linux新/舊四組合、舊/舊更新及真實擴展基礎為準。[ADR-002](normalization-20261012/ADR-002-PHASED-DELIVERY.md)已取代全面搬目錄/一次做完全部工程的預設。
+
+主文件入口：[2026-10-12 Agent Relay 正規化施工任務書](normalization-20261012/TASKBOOK.md)。已完成四輪指定聊天討論，配套來源/模組/交付包映射、擴展需求、契約/相容、維護準則、根AGENTS、ADR及工程預算。
 
 | 歷史文件 | 目前定位 |
 | --- | --- |

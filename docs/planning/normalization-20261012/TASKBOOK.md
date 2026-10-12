@@ -2,6 +2,8 @@
 
 日期：2026-10-12。狀態：經跨聊天審查的設計包；未開始程式遷移，未切換現用安裝。這是本次正規化的最新主文件，取代 10/10–10/11 文件中未落實的結構、Nx 必選及工程估算建議。歷史盤點仍保留。
 
+最新範圍已依使用者要求分期：[第一期及按需路線](PHASED_DELIVERY.md)是施工範圍權威；[ADR-002](ADR-002-PHASED-DELIVERY.md)取代下面完整布局/C1–C6一次做完的預設。第一期只做來源整理、Windows/Linux四種新舊情境安裝與受控更新、真實擴展基礎。當前仍僅文件。
+
 ## 1. 交付目的與範圍
 
 一次確立共用程式、插件、第三方來源、配置及狀態的責任邊界，之後沿公開接口、小範圍修復與增量功能維護。最小修正是完整解決問題所需的最小影響範圍，不是最少行數，也不是反覆新增補件。
@@ -12,9 +14,9 @@
 
 不把研究 Conda/GPU 環境、vault、真實 credentials、運行 DB、queue、leases、workplace 身份帶進共用程式 repo。研究文件沿原本權威來源保存；OS clipboard 不代替 Harness Artifact Clipboard。
 
-## 2. 固定布局與責任
+## 2. 完整設計候選與模組責任
 
-以下是目標布局。施工只建立有真實程式或契約消費者的模組；未來位置先以本文件預留，不建空 package。
+以下樹是先前完整設計候選，非第一期搬遷清單，也不要求後期一定全面採用。第一期物理布局/owner以PHASED_DELIVERY第4節為準，保留現有主要目錄，只做移植和真共享必要改動；未來增量擴展不再整體搬遷。
 
 ```text
 agent-relay/
@@ -84,7 +86,7 @@ XATS 只有 CLI/channel CLI 的正式構建入口，未宣告可直接使用的 
 
 ## 3. 工具、依賴與資源
 
-Python 使用 uv 管 metadata/lock，Hatchling 產生 wheel；Node 使用 pnpm workspace/lock、既有 TS/ESM、esbuild。Nx 改為可後加的構建編排工具，不是本轮前提。固定 target IDs、inputs、dependencies、outputs，可日後包成 Nx targets而不搬目錄。發布權威始終是既有 builders + 唯一 release plan/manifest。
+完整候選選型為uv/Hatchling、pnpm workspace及既有TS/ESM/esbuild；第一期可保留各component現有工具，先鎖定支持目標與重建依賴，不把root workspace或wheel拆包列為先決條件。Nx 改為可後加的構建編排工具，不是本轮前提。固定 target IDs、inputs、dependencies、outputs，可日後包成 Nx targets而不搬目錄。發布權威始終是既有 builders + 唯一 release plan/manifest。
 
 Python baseline 3.13.12、Node 24.19.0 是已觀察的 Windows 環境，非宣稱已驗證 Linux。工具精確 patch/build backend 版本於 C2 隔離安裝測試後鎖定；不追 latest。XATS 固定 0.8.6，native better-sqlite3 12.9.0 必須按 OS/arch/Node ABI 出包。Writer 與 Harness 不同 MCP SDK 代際各自鎖定，不為了共用 workspace 強升到同一版。
 
@@ -99,7 +101,7 @@ uv workspace 僅包含相容的系統 Python packages；有不相容依賴時使
 | Plugin launcher | 正式 package/交付入口；不讀研究 checkout 或另一插件 cache |
 | Builders、schema generators | 明示 source/locks/contracts；build-only 依賴不成為 runtime 反向依賴 |
 
-Python Import Linter、Node exports/ESLint 規則與構建輸入掃描聯合檢查；絕對檔案路徑可以繞過 exports，必須拒絕跨 module 路徑偷讀。動態 import/`provider_module` 另有 allowlist 與 runtime fixtures，不能聲稱 AST 捕捉所有依賴。
+完整候選可用Python Import Linter、Node exports/ESLint及構建輸入掃描；第一期先以明確owner/必要入口檢查及consumer驗證守邊界，不要求先建全套lint。絕對檔案路徑可以繞過 exports，必須拒絕跨 module 路徑偷讀。動態 import/`provider_module` 另有 allowlist 與 runtime fixtures，不能聲稱 AST 捕捉所有依賴。
 
 從 src layout/installed wheel 啟動不能依賴 `__file__.parents[n]` 找 repo、研究 `.solution` 或相鄰 scripts。C2 明定 code/resource/state/profile roots，resources 用 package data/標準資源 API；舊 SOLUTION_AGENT_ROOT 等 override 可受測保留，但不再借原研究環境。RPC helpers 歸 runtime 的 `harness/integration_rpc`，legacy filepath wrapper 只由 builder 生成。
 
@@ -138,11 +140,20 @@ init/check 只建立模板、核對相對路徑及版本要求，不註冊插件
 
 Execution、Review、Research decision 是三種語義，引用原 task/workunit/command/artifact/source revision；沿現有 receipts、review/events 和研究 vault，不造平行主 DB。程序退出、ACK、回答核對、科學主張成立各自不能代替另一項。新增自主行為和共同流程仍屬後續提案，不因正規化自動批准。
 
-## 6. 分批施工與 gates
+## 6. 當前分期與第一期驗收
 
-D0 是本次設計包完成條件：來源映射完整、owner/接口/擴展/交付/gates/估算明確，完成實質回讀審查，未決問題有責任批次。D0 不等於已完成實作的 Architecture Freeze。
 
-未來使用者授權整個隔離正規化工程後，依此範圍自主逐批推進；每批 gate 是技術驗收與停止條件，不新增逐批批准。擴大架構/共同研究流程/成本/存取或未授權 live cutover 才交使用者判斷。
+本次設計修訂完成不等於第一期工程完成。當前施工範圍見[PHASED_DELIVERY](PHASED_DELIVERY.md)：S1支持/來源；S2移植/打包；S3兩端重建/配置；S4四情境及舊端受控更新；S5交付/小型擴展驗證。
+
+M1新Windows/舊Worker、M2新/新、M3舊Windows/新Worker、M4舊/舊更新均為P1必驗，不能以M2替代另外三列。P1 Verified須在聲明targets通過四列、配置/state保全、原身份/工具面及回退；支持入口的cancel/legacy失敗不能為縮期後延。
+
+P2功能擴展、P3多端更新自動化、P4研究工作台按實際使用問題觸發，不是所有下一期自動必做。日常修復不需開新期。根AGENTS作用域及授權原則不變，現在只修計劃，不實作/部署。
+
+### 原完整C1–C6：保留技術工作目錄，不作P1全選門檻
+
+以下D0/F/C1–C6為先前完整設計的定義，不取代新的P1 Verified；D0 是該設計包完成條件：來源映射完整、owner/接口/擴展/交付/gates/估算明確，完成實質回讀審查，未決問題有責任批次。D0 不等於已完成實作的 Architecture Freeze。
+
+未來使用者明確授權具體期別後，依該期範圍自主逐批推進；每批 gate 是技術驗收與停止條件，不新增逐批批准。擴大架構/共同研究流程/成本/存取或未授權 live cutover 才交使用者判斷。
 
 | 批次 | 工作與不可變條件 | 輸出與通過條件 | 停止／回復 |
 | --- | --- | --- | --- |
@@ -163,9 +174,11 @@ CI cache 僅用於已宣告輸入的確定性構建/合成測試。API/SSH/live 
 
 現存10個失敗分類：cancel 1項為命令啟動與立即取消的待定位競態，C5重現並修復或證明語義後驗證；remote_status_worker_agnostic 3項為缺舊bootstrap/conda配置；continuation_three_agent_flow 6項為缺被排除的workspace policy/config。後9項在C1界定支持範圍，再以合成配置修正測試假設；若非支持入口，保留明示legacy-suite及證據，不能抹除失敗或導入live設定。移出required suite須有支持範圍理由，若入口仍支持就必須修到通過。
 
-## 7. 剩餘工程預算
+## 7. 分期工程預算
 
-以下是在來源獨立/GitHub 已完成後的規劃人日（每人日6–8工作小時），不包含未來新擴展，非 Codex 日曆時間承諾。
+当前P1暫估S1 1–2、S2 3–4、S3 2–3、S4 2–4、S5 1–2，基礎9–15、含约25%餘量约12–19人日。S1核對實際Linux target及舊包起點後重估。未承諾日曆工期；若state破壞性遷移/native/核心缺陷需要額外工程，明示重估。
+
+下表保留先前完整設計的預算背景，不是現在P1成本，也不是各期必然相加。以下是在來源獨立/GitHub 已完成後的舊規劃人日（每人日6–8工作小時），不包含未來新擴展，非 Codex 日曆時間承諾。
 
 | 預算 | 工作 | 人日 |
 | --- | --- | --- |
@@ -182,11 +195,11 @@ CI cache 僅用於已宣告輸入的確定性構建/合成測試。API/SSH/live 
 
 ## 8. 定版後更新規則
 
-F之後固定頂層布局、模組owner、公開入口與來源權威。普通修復只改受影響模組及必要consumer；禁止附帶改namespace/目錄/框架、全面升依賴或增加人工副本。
+P1 Verified後固定實際來源布局、模組owner、公開入口與來源權威；不因後期採用新工具再全面搬目錄。舊完整F要求不作P1先決條件。普通修復只改受影響模組及必要consumer；禁止附帶改namespace/目錄/框架、全面升依賴或增加人工副本。
 
 PATCH維持既有契約；MINOR新增能力需實際consumer相容測試；破壞性行為明示MAJOR或協議轉換。strict schema新增optional字段也可能使旧receiver拒绝，不能機械當MINOR安全。改模組責任/依賴方向是ADR例外，需說明為何現有擴展點不足、對消費端與遷移成本的影響。
 
-每次更新回到唯一repo來源，生成payload和manifest，逐端核對磁碟hash及實際載入release。維護入口 `python deployment/maintain.py status|plan|apply|resume|verify|rollback` 待C4實作，沿既有IDs/receipts，不另建部署資料庫。舊版本在無活動引用且回退已驗證前保留，保留期限於C4按容量/長任務需求定值。
+每次更新回到唯一repo來源，生成payload和manifest，逐端核對磁碟hash及實際載入release。通用維護入口 `python deployment/maintain.py status|plan|apply|resume|verify|rollback` 後延到有實際多端更新需求的P3，不是P1交付條件；P1沿既有helpers/明確流程驗證M4，沿既有IDs/receipts，不另建部署資料庫。舊版本在無活動引用且回退已驗證前保留，保留期限於C4按容量/長任務需求定值。
 
 本專案 Worker/Skill 流程改變正式採用前交使用者審查；已授權的普通修復不逐次詢問。專案經驗沿本專案既有紀錄去重、保留適用條件，不自動變成強制規則或提升全域 Codex/個人 Skill/其他 repo；全域推廣須另有明確獨立任務，不屬此正規化工程。
 

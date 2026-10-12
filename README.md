@@ -52,10 +52,12 @@ Private repository: https://github.com/hhhheep/agent-relay
 
 Baseline tag: `extraction-baseline-2026-10-12` (source commit `458b54db0326`). A clean GitHub clone reproduced all 941 baseline source files byte for byte; clone-owned offline dependencies passed the Harness 11-tool check, router/XATS build, and Writer/background tests. Online reinstall and Linux-native validation remain unverified.
 
-## 正規化設計（2026-10-12）
+## 正規化與分期（2026-10-12）
 
-最新版：[正規化施工任務書](docs/planning/normalization-20261012/TASKBOOK.md)。已完成指定聊天的四輪架構及維護審查、941基線檔案遷移計劃（904映射來源）、接口/相容/交付包規格及擴展台帳。以固定模組邊界和漸進更新維護；uv/Hatchling、pnpm/esbuild，Nx後延。
+當前工程範圍：[第一期與按需分期](docs/planning/normalization-20261012/PHASED_DELIVERY.md)。先整理來源、Windows客戶端/Linux Worker兩端可重建安裝，驗證新/舊、新/新、舊/新、舊/舊更新；保留真實擴展位置及原插件/MCP用法。
 
-這是Design Ready文件，尚未執行source migration、正式locks/updater、Architecture Freeze或livecutover。[歷史計劃索引](docs/planning/README.md)保留原四份文件，舊結構與估算由最新版取代。
+第一期保留現有主要目錄；原941完整遷移map/apps/packages布局只是候選分析，非搬檔指令。[主任务書](docs/planning/normalization-20261012/TASKBOOK.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)已分清P1範圍。功能擴展、更新自動化、研究工作台各按實際使用需求觸發，不自動全部做；第一期暫估9–15基礎/約12–19含餘量人日，非日曆承諾。
 
-下一個 agent 的必讀規範：[根 AGENTS.md](AGENTS.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)，包含最小完整修復、唯一來源、契約/state保護、按影響驗證、完成/發布 gates 和交接要求；僅此專案適用，專案經驗不自動上升全域規則。
+已完成四輪架構/維護討論及使用者後續分期修訂；本次只形成設計，P1實作/四情境安裝/現用切換尚未執行。[歷史計劃索引](docs/planning/README.md)保留追溯。
+
+下一個agent必讀[根AGENTS](AGENTS.md)、[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)及[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。最小完整修復、唯一來源、原契約/state、必要驗證及交接仍須遵守；專案經驗留所屬project，不自動上升全域或其他repo。

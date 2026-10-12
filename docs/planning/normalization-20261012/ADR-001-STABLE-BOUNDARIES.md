@@ -2,6 +2,8 @@
 
 日期：2026-10-12。狀態：經討論收斂的設計決策；待授權施工和驗收，尚未實際 Architecture Freeze。
 
+最新修訂：[ADR-002](ADR-002-PHASED-DELIVERY.md)與[分期交付](PHASED_DELIVERY.md)已取代本文件的全面布局/C1–C6一次施工預設。以下保留完整候選及當時理由；來源權威/原接口/身份與專案作用域不變，apps/packages全面搬遷不再是必做承諾。
+
 ## 決策
 
 採用單repo，apps/packages/plugins/schemas/templates/deployment/vendor/tests/docs的固定分工。現有Python solution_agent保留一個distribution及原內部namespace；Harness MCP實作留runtime；lifecycle吸收goal-routing；XATS第三方daemon與我方入口分開；Writer業務/remote adapter留Writer，共用provider下沉；Guard以實際CLI內容成立package；schema-bindings只生成consumer。

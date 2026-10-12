@@ -2,6 +2,8 @@
 
 2026-10-12。設計規格，非已生成的schemas/已完成的updater。owner是維護責任，不指定另一個Agent或新資料庫。既有契約的版本/required/default/枚舉以原程式為準，C1導出fingerprint；文檔不擅自升protocol。
 
+最新範圍以[PHASED_DELIVERY](PHASED_DELIVERY.md)為準。P1只做S1–S5與M1–M4；現有契約/身份不放寬。本文件完整schema生成/manifest/update編排是後期候選，非P1一律實作要求。
+
 ## 1. 單一契約權威
 
 | ID/範圍 | 基線唯一編輯來源 | 消費者／衍生物 | 必須保留 |
@@ -19,17 +21,17 @@
 | Writer remote payload | Writer lib/remote.mjs + remote/report_writer.py | Node↔Python | C1標出每種payload的owner，從主authority生成/驗證，不能兩端各改 |
 | Guard receipt/stage ledger | token_guard.py + stage_ledger.py + validate_stage_receipt.py | local/remote skill及Harness usage adapter | research-token-guard/v1、raw stream/hash、執行/驗收區分；並非新MCP |
 | Background config/queue/output | tools/research-background/service.mjs + provider.mjs + rules.md | local background/CLI | 檔案穩定/hash/rules/provider版本、候選與審查、重啟去重 |
-| 新project descriptor / release / update plan | schemas/authored，C1/C4才建立 | Python/TS validators與maintain工具 | 禁秘密值，未知字段按契約拒絕，scope/bindings明示 |
+| 新project descriptor / release / update plan | schemas/authored，按實際consumer於P2/P3才建立 | Python/TS validators與maintain工具 | 禁秘密值，未知字段按契約拒絕，scope/bindings明示 |
 
 現有Python模型搬到src後維持模組路徑；原Zod模型仍由Writer擁有，不強制全部轉Python。每個contract ID有authority path、owner、版本、fingerprint、generation task、outputs、consumer fixtures。在C1建立機械清單；主表是其輸入規格，尚未假造schema hash。
 
-Python authority → schemas/generated → schema-bindings；新schemas/authored → generated validators/bindings。runtime不得反向依賴自己的生成步驟。生成檔只讀、帶來源/工具版本/hash，CI重新生成檢查diff。禁止從生成檔反向修改authority。
+以下為有跨語言consumer時的後期生成候選，P1不強制先建：Python authority → schemas/generated → schema-bindings；新schemas/authored → generated validators/bindings。runtime不得反向依賴自己的生成步驟。生成檔只讀、帶來源/工具版本/hash，CI重新生成檢查diff。禁止從生成檔反向修改authority。
 
 ## 2. 相容矩陣與拒絕條件
 
 | sender／receiver組合 | 本輪政策 | 必測／拒絕 |
 | --- | --- | --- |
-| 同一正式release的精確組合 | C5通過後才支持 | tool/schema fingerprint、正負fixtures、實際載入身份 |
+| 同一正式release的精確組合 | P1四情境/聲明targets通過後才支持 | tool/schema fingerprint、正負fixtures、實際載入身份 |
 | 抽取基線 ↔ 正規化候選 | 遷移必測，現在未宣稱支持 | 每方向old/new capsule/receipt/tool/error；啟動與resource path |
 | 新receiver接受舊payload | 按契約逐項驗證 | required/default/enum/validation不得意外收緊 |
 | 舊receiver接受新payload | 不默認支持 | extra=forbid下新增optional字段也可拒絕；sender須只發peer確認能讀的格式 |
@@ -40,7 +42,11 @@ Python authority → schemas/generated → schema-bindings；新schemas/authored
 
 維持strict extra=forbid。新增欄位按實際發送方向分類，不以optional或MINOR代替相容測試。必要sender投影只能是已知peer格式、且不丟關鍵身份/lease資訊；不建泛用降版框架。
 
-## 3. Release與部署回執
+## 3. 第一期間交付與後期Release候選
+
+P1沿既有builders/identity記錄source commit、實際版本、artifact hashes、支持平台/runtime及必要配置/state前置條件；兩端M1–M4核對loaded identity，M4實測受控更新與退回。不需先建立通用schema-bindings、新部署DB或全功能maintain CLI。下面完整manifest及自動更新流程屬P3候選；不能以後延自動化為由取消P1保全/回退。
+
+### 後期完整候選
 
 唯一release plan由既有builder生成manifest。最少欄位：release_id/source_commit、module versions、OS/arch/Python/Node/native ABI、每artifact相對入口及SHA、contract IDs/versions/hashes、MCP tool surface fingerprint、允許compat tuples、activation前置條件/順序、state讀寫格式要求/migration、rollback目標/限制、licenses/vendor revision/patch/locks hashes。
 
@@ -62,11 +68,15 @@ Execution由原command/OS/receipt權威回答執行狀態；Review由既有task/
 
 ## 5. 施工驗收分工
 
+當前P1：S1入口/owner/失敗分類；S2移植/實際依賴/唯一來源；S3兩端乾淨重建；S4 M1–M4及舊端保全/回退；S5文檔/最少CI/小型擴展。P1支持入口的cancel、identity、submission uncertainty、lease/CAS與實際載入驗證仍必要，不能把它們全部扔到P3。
+
+下面C1–C6只是原完整候選的技術分類，不是P1全部必做清單：
+
 C1：authority/方向性fixtures/支持入口與10fail分類。C2：src/wheel資源及各launcher從任意cwd啟動。C3：Writer/Background同package雙consumer golden、原preset/body/output/usage、secret-safe錯誤；兩folder隔離。
 
 C4：manifest/tamper/stale plan/partial/reentrant resume/binary與state rollback前置檢查。C5：Windows/Linux fresh install/native；manager/XATS/runtime聯動；PID前cancel、重啟、lease/CAS、submission uncertain、session reload。C6：必要gates機械化。
 
-合成測試不呼叫付費provider、不連現用SSH或讀live DB。原baseline checks可作對照，不能代替新package的消費端驗收。F前各支持target完整通過，未測平台保持unsupported/pending，不宣稱所有existing tests皆通過。
+合成測試不呼叫付費provider、不連現用SSH或讀live DB。原baseline checks可作對照，不能代替新package的消費端驗收。P1聲明targets及M1–M4需實際通過；後期候選未做明示planned，未測平台保持unsupported/pending，不宣稱所有existing tests皆通過。
 
 ## 6. 第三輪收斂後的精確配置與停止規則
 

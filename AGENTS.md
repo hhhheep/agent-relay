@@ -1,10 +1,12 @@
 # Agent Relay 維護入口
 
-目前是獨立來源基線 + Design Ready 設計包，**尚未 Engineering Verified**。`project.json` 的 independent-extraction 狀態仍有效；目標 apps/packages、正式 locks、updater 和架構 CI 尚未實作。MUST 先以實際檔案、Git commit 和驗證回執確認階段，不能把設計當成已存在能力。
+目前是獨立來源基線 + Design Ready 設計包，**尚未 Engineering Verified**。`project.json` 的 independent-extraction 狀態仍有效；原完整apps/packages布局是歷史候選，不是P1目標；兩端安裝、實際依賴鎖定、四情境驗收及後期updater/CI均未實作。MUST 先以實際檔案、Git commit 和驗證回執確認階段，不能把設計當成已存在能力。
 
 本次授權是完備設計與工程維護準則；MUST NOT 因這些文件自行搬程式、切換現用插件或採用新的 Worker 研究政策。未來明確授權整個隔離工程後，MAY 按既定 gates 自主逐批完成，無需逐批重新批准；ADR 或其他聊天的建議不會新增授權。
 
-修改前 MUST 讀取[最新施工任務書](docs/planning/normalization-20261012/TASKBOOK.md)和[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。歷史計劃僅追溯，不覆蓋最新版。此檔列必遵守規則，細節由維護準則展開。
+當前第一期範圍 MUST 以[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)為準：整理來源、Windows×Linux的M1新/舊、M2新/新、M3舊/新、M4舊/舊更新與真實擴展基礎。第一期保留現有主要目錄，不照舊941 map全面搬到apps/packages；完整updater/schema框架/研究UI按使用觸發後期。当前僅調整規劃，S1–S5和四列未跑，不增加現用部署授權。
+
+修改前 MUST 先讀分期交付，再讀[最新施工任務書](docs/planning/normalization-20261012/TASKBOOK.md)和[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。歷史計劃僅追溯，不覆蓋最新版。此檔列必遵守規則，細節由維護準則展開。
 
 ## 適用範圍：僅此專案
 
@@ -17,7 +19,7 @@
 ## 八條強制規則
 
 1. **R1 階段與範圍**：MUST 確認任務目標、既有授權及 repo 階段。MUST NOT 修改原研究資料、installed plugin/cache、hooks、credentials、live DB/state、排程或服務，除非另有具體授權。使用隔離依賴和合成 fixtures；不借現用配置補測試。
-2. **R2 唯一來源**：MUST 找到 source owner，再改 authority。現況見[來源映射](docs/extraction/source-map.json)；預定歸屬見[migration map](docs/planning/normalization-20261012/migration-map.json)及[symbol split](docs/planning/normalization-20261012/split-decisions.json)。MUST NOT 手改生成 schema/bindings、dist、安裝副本作永久修復。生成輸入改後依固定工具重生；vendor revision/license/patch 可追溯。
+2. **R2 唯一來源**：MUST 找到 source owner，再改 authority。現況見[來源映射](docs/extraction/source-map.json)；第一期來源/owner見分期交付第4節。舊[migration map](docs/planning/normalization-20261012/migration-map.json)及[symbol split](docs/planning/normalization-20261012/split-decisions.json)只保留完整候選分析，不是必做搬遷指令。MUST NOT 手改生成 schema/bindings、dist、安裝副本作永久修復。生成輸入改後依固定工具重生；vendor revision/license/patch 可追溯。
 3. **R3 最小完整修復**：MUST 完整修復行為，包括必要的直接 consumer 和有效驗證；最小修改按影響判斷，不按行數。MUST NOT 夾帶無必要的改名、搬目錄、換框架、全面升依賴、特殊 wrapper 或重複 runtime。
 4. **R4 契約與狀態**：MUST 保留 `solution_agent`、CLI/MCP identities、既有工具面和 command/receipt/artifact/CAS/lease 語義。每個 contract ID 僅一個可編輯 authority。strict schema 的 optional 新欄位也 MUST 按收發方向驗證。MUST 保持 protocol 0.6 `verify_pair` 的 protocol_version/release_id/payload_sha256/mcp_schema_sha256 與 workplace 驗證，不以新 system manifest 放寬它。未知 peer 禁副作用；命令結果不確定先查原 ID，不盲目重送。
 5. **R5 變更分類與例外**：MUST 分清 fix、compatible extension、breaking change。跨 owner、依賴方向、公開契約或 state 邊界先寫影響、必要性、替代方案、遷移/回退與驗證；再核對實際授權。ADR 不等於批准。MAY 自主完成已授權的普通修復；更改目標、核心架構、研究方法、資源承諾或正式採用本專案 Worker/Skill 流程須使用者決策。保存專案經驗不等於採用政策，也不得上升全域。
@@ -33,4 +35,4 @@ MUST 在 staging/打包前跑 `python scripts/extraction/check-publication.py`�
 
 本設計階段檢查：`python docs/planning/normalization-20261012/build-plan-inventory.py --check`、`python scripts/extraction/verify-source.py`。它們不能替代未來 runtime/跨平台驗收。源碼修改時，904 原始 hash 的變動必須逐項記錄、由新 release provenance 承接；不可改寫歷史 source-map 假裝來源未變。
 
-未授權範圍、非 authority 修補、受影響測試未處置失敗或未經驗證的相容宣稱，MUST 阻塞「完成」/合併/正式交付。MAY 在隔離分支保留明示 WIP 與失敗證據。發布另需實際契約、建構、平台及回退 gates；未跑不能稱已通過。細節見維護準則。文件提交不要求虛構 runtime 測試。
+未授權範圍、非 authority 修補、受影響測試未處置失敗或未經驗證的相容宣稱，MUST 阻塞「完成」/合併/正式交付。MAY 在隔離分支保留明示 WIP 與失敗證據。P1交付需兩端重建及M1–M4逐列、實際契約、平台與保全/回退驗證；不能用新/新成功代替另外三列。發布依聲明targets驗收，不要求先建後期全套部署平台；未跑不能稱已通過。細節見維護準則。文件提交不要求虛構 runtime 測試。

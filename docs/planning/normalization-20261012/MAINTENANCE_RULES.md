@@ -12,13 +12,18 @@ MUST NOT 自動複製到全域 Codex/使用者 AGENTS、個人 Skill、memory/se
 
 工程維護經驗留在 Agent Relay；研究/Worker 經驗留在產生它的研究 project，不匯入共用工具 repo。共用軟體發布只同步工程來源/產物，不夾帶專案經驗、研究流程或把它們變成其他 project 的預設規則。
 
+## 第一期間的最新範圍
+
+[分期交付](PHASED_DELIVERY.md)與[ADR-002](ADR-002-PHASED-DELIVERY.md)是最新施工範圍。第一期S1–S5，四種Windows client×Linux Worker情境M1新/舊、M2新/新、M3舊/新、M4舊/舊更新必驗。保留現有主要目錄；full-layout map、C1–C6和F只作完整候選/技術背景，不使全部後期工作自動成為P1門檻。現在僅文件，工程及現用切換未執行。
+
 ## 1. 權威與階段
 
-每次工作先核對 `git status --short`、`git rev-parse HEAD`、實際檔案、[project.json](../../../project.json)及[驗證回執](DESIGN_VERIFICATION.md)。規則入口為根 AGENTS；本文件展開維護程序；[TASKBOOK](TASKBOOK.md)負責工程範圍及目標。歷史文件保留來源，不作最新實作證據。
+每次工作先核對 `git status --short`、`git rev-parse HEAD`、實際檔案、[project.json](../../../project.json)及[驗證回執](DESIGN_VERIFICATION.md)。規則入口為根 AGENTS；本文件展開維護程序；[PHASED_DELIVERY](PHASED_DELIVERY.md)負責當前範圍/觸發；[TASKBOOK](TASKBOOK.md)保留主索引與完整候選背景。歷史文件保留來源，不作最新實作證據。
 
 - Extracted：可追溯的獨立來源。現有檔案才是編輯來源。
 - Design Ready：來源/模組/交付包、契約、估算及 gates 已成文件。不能稱 package/CI/updater 已運作。
-- Engineering Verified：C1–C6、支持 targets/current consumers 實際通過 F，才宣稱布局已驗收凍結。
+- P1 Verified：S1–S5及聲明targets的M1–M4實際通過，来源布局/owner/公開入口固定；不等於後期updater或完整設計F已完成。
+- Engineering Verified（舊完整F）：僅有明確完整scope且實際通過時才可宣稱；不作P1前提。
 - Live activated：另有切換授權、全部必要 bindings/session/state 已核對。工程驗收不自動等於現用切換。
 
 沒有證據不可提升階段；缺工具標 NOT AVAILABLE，未跑標 NOT RUN，不以計劃或其他 chat 的文字代替測試。模組內未來 AGENTS 可以補實際命令，不能削弱根規則或自行採用共同研究政策。
@@ -27,7 +32,7 @@ MUST NOT 自動複製到全域 Codex/使用者 AGENTS、個人 Skill、memory/se
 
 先定位問題觸發條件、source owner、直接 consumer 及實際授權，再選最小完整行為修復。不能為少改檔案把修復塞到錯誤層、加無必要 wrapper，或在插件 cache/dist 修一次留下兩個 authority。必要的 consumer 更新不算過度修改。
 
-當前權威：[source-map](../../extraction/source-map.json)；目標歸屬：[migration map](migration-map.json)和[symbol split](split-decisions.json)。941 map 是預定遷移，不表示 941 檔都進 runtime payload。原 source-map 是歷史 provenance，不可重寫原 hash 掩蓋後續修改。
+當前權威：[source-map](../../extraction/source-map.json)；第一期歸屬見分期第4節；[migration map](migration-map.json)和[symbol split](split-decisions.json)是舊完整候選分析，非P1搬檔指令，也不表示941檔都進runtime payload。原 source-map 是歷史 provenance，不可重寫原 hash 掩蓋後續修改。
 
 生成檔只能改 authority 後重生，留下工具版本/命令/diff；本設計 map 由 `build-plan-inventory.py` 產生，不能只手改 JSON/CSV。現有 Pydantic/Writer Zod 是各自原契約權威；未來 schemas/generated 和 schema-bindings 是衍生物。新增 schema ID 的 authority 在契約清單登記；不要再建第三份模型。
 
@@ -43,7 +48,7 @@ Vendor 原碼與我方 adapter 分清。XATS 固定 0.8.6、唯一 vendor-port �
 | Compatible extension | 真實 consumer、契約差異、收發方向、defaults/errors/profile 的行為對照 | 不能只因 optional 或版本號稱相容；在授權的擴展範圍施工 |
 | Breaking/boundary change | 必要性、現有擴展點不足的原因、替代方案、consumer/state 影響、遷移/回退、gates、成本 | 先分析；已有具體授權才施工。沒有授權就提出可審查決策，不讓 ADR 自動批准 |
 
-F 後固定頂層布局、owner、namespace、公用入口、依賴方向及來源權威。PATCH 保留行為契約，MINOR 需證實擴展相容；破壞性改變明示版本/協議及遷移。版本標籤不是相容證明。F 前也不能在普通修復中暗改已收斂設計。
+P1 Verified後固定實際來源布局、owner、namespace、公用入口、依賴方向及來源權威；後期按需增量加真實模組，不為採用apps/packages再全面搬遷。PATCH 保留行為契約，MINOR 需證實擴展相容；破壞性改變明示版本/協議及遷移。版本標籤不是相容證明。P1前也不能在普通修復中暗改當前分期範圍或原契約。
 
 已授權整個隔離工程時，批次 gate 是自主驗證、停止和回復條件，不是每批請示。改目標/核心架構/研究比較方法、正式採用本專案 Worker 或 Skill 流程、額外資源承諾、未授權 live cutover，才需使用者決策。保存去重專案經驗不構成正式政策批准，不提升為全域規則。
 
@@ -83,7 +88,7 @@ F 後固定頂層布局、owner、namespace、公用入口、依賴方向及來�
 
 詳見[契約與發布](CONTRACTS_AND_RELEASE.md)。protocol 0.6 `verify_pair` 仍要求 protocol_version/release_id/payload_sha256/mcp_schema_sha256 一致及 workplace 核對。System release compatibility 不能放寬此檢查。Strict receiver 不靠忽略 unknown fields 混用新舊 payload；只允許實際驗過的 exact component/contract/tool/state/platform tuples。
 
-來源→builder→manifest→artifact hash→部署→實際載入形成唯一追溯鏈；不要另建部署 DB 或第二套 receipt 系統。變更 lock 及 ABI 需有原因、精確版本/diff及相應平台驗證；當前正式 uv/pnpm workspace locks 尚待 C2，不能偽稱已有 frozen-lock gate。
+來源→builder→manifest→artifact hash→部署→實際載入形成唯一追溯鏈；不要另建部署 DB 或第二套 receipt 系統。變更 lock 及 ABI 需有原因、精確版本/diff及相應平台驗證；P1在S2/S3鎖定並驗證支持targets的實際component依賴；root uv/pnpm workspace不強制先建，不能偽稱已有frozen-lock gate。
 
 啟用前核對必要權限與 state ownership。未知 peer 可安全唯讀診斷，副作用阻塞；command uncertainty 先查原 ID。Partial 更新明示哪端成功/未啟用，resume 沿原 plan/receipts；回退不能覆寫不可讀的新 state。舊活動命令留原 execution release，不以回退重派。
 
@@ -91,9 +96,10 @@ F 後固定頂層布局、owner、namespace、公用入口、依賴方向及來�
 | --- | --- |
 | 根 AGENTS、owner/授權核對、scope/diff/驗證/交接規則 | 立即由人及 agent 遵守；不依賴新增 CI |
 | extraction privacy/source verifier、design map checker | 現有可執行檢查；不等於正式工程 gates |
-| Import Linter/ESLint boundaries、dynamic import allowlist、schema generation drift、正式 locks/manifest/platform fixtures | planned，C1–C6 實作驗收；目前無自動 CI 保證 |
-| `deployment/maintain.py status/plan/apply/resume/verify/rollback` | planned，C4；現階段不可拿它當操作命令 |
-| F Architecture Freeze 及現用切換 | 未達；工程通過與 live 授權分開 |
+| P1必要source/privacy/入口檢查、component locks、兩端安裝及四情境fixtures | S1–S5 planned；目前沒有新的工程CI保證 |
+| 完整boundary lint/schema-bindings/通用release compatibility平台 | 按實際consumer在P2/P3建立，不作P1全選前提 |
+| `deployment/maintain.py status/plan/apply/resume/verify/rollback` | P3候選，須實際多端更新問題觸發；P1用既有helpers/明確操作驗證M4 |
+| P1 Verified及現用切換 | 均未達；四情境驗收與live授權分開；舊完整F不作P1前提 |
 
 当前設計包檢查命令：
 

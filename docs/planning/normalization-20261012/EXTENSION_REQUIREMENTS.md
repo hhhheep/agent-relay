@@ -16,6 +16,8 @@
 
 原thread/turn/message IDs及定位資訊保存於排除發布的本地provenance回執。發布台帳只保留alias和泛化需求，不複製聊天全文、研究內容、host、私人路徑或credentials。聊天中的「已測」是歷史報告；本次未驗證者明示。
 
+最新分期見[PHASED_DELIVERY](PHASED_DELIVERY.md)：目前P1整理/四情境安裝更新；下表位置為候選接點，非P1建立所有app/package的指令。P2真實能力、P3更新自動化、P4研究工作台按使用問題觸發；經驗留原project。
+
 ## 2. 具體擴展與位置
 
 | ID | 需求／目前狀態 | 固定接入位置與最少契約 | 本次正規化要做／後延 |
