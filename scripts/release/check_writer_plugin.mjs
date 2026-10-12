@@ -6,8 +6,9 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const pluginRoot=path.resolve(process.argv[2] ?? path.join(root,'dist/p1-candidate/research-report-writer'));
 const cwd=path.join(root,'.verification','writer-cwd');fs.mkdirSync(cwd,{recursive:true});
-const transport=new StdioClientTransport({command:process.execPath,args:[path.join(root,'dist/p1-candidate/research-report-writer/server.mjs')],cwd,
+const transport=new StdioClientTransport({command:process.execPath,args:[path.join(pluginRoot,'server.mjs')],cwd,
  env:{PATH:process.env.PATH ?? '',SystemRoot:process.env.SystemRoot ?? ''},stderr:'pipe'});
 const client=new Client({name:'p1-standalone-check',version:'0.1.0'});
 try {
