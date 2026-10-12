@@ -22,7 +22,7 @@
     {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
-      "current_sha256": "95a33362743af407d5d5d38dad76f43802f3e533c80b10a2d0ed77768f354684"
+      "current_sha256": "7907b344e874a18633ad3910fe19f1dacf8c3a40f248a9647b5c6ebc98eb5d34"
     },
     {
       "path": "tests/test_continuation_three_agent_flow.py",
@@ -52,7 +52,7 @@
     {
       "path": "tests/test_terminal_commands.py",
       "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
-      "current_sha256": "a1c3e47c3ad5fb4a5b25be887d3d25406ae00e836250ea54cfae69f88e148797"
+      "current_sha256": "76eb14db51ae8f126b6b776a76c54b8456fd3eb5daf9c162be8a8ada23c388e0"
     },
     {
       "path": "scripts/harness/build_bootstrap_release.py",

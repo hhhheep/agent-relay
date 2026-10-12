@@ -568,9 +568,9 @@ class TerminalCommandRunner:
                     raise ValueError('terminal_manifest_conflict')
                 terminal = {**status, **{key: receipt.get(key) for key in
                     ('state', 'exit_code', 'started_at', 'finished_at', 'failure_reason', 'signal', 'systemd')}}
+                _release_writer_lease_from_job(directory, terminal)
                 _write_completion_event(directory, terminal)
                 atomic_write_json(directory / 'status.json', terminal)
-                _release_writer_lease_from_job(directory, terminal)
                 self._report_lost_help(directory, terminal)
                 return terminal
             except (OSError, ValueError, TypeError, AttributeError):
@@ -804,9 +804,9 @@ def _mark_lost(directory: Path, status: dict[str, Any], reason: str) -> dict[str
         "exit_code": None,
         "failure_reason": reason,
     }
+    _release_writer_lease_from_job(directory, lost)
     _write_completion_event(directory, lost)
     atomic_write_json(directory / "status.json", lost)
-    _release_writer_lease_from_job(directory, lost)
     return lost
 
 
@@ -832,6 +832,13 @@ def _release_writer_lease_from_job(directory: Path, request: dict[str, Any]) -> 
     if request.get("access_mode") != "writer" or not isinstance(lease_id, str) or not lease_id:
         return None
     receipt_path = directory / "writer_lease_release.json"
+    if receipt_path.is_file():
+        existing = _read_json(receipt_path)
+        if existing.get("released") is True and all(
+            existing.get(key) == request.get(key)
+            for key in ("command_id", "task_id", "work_unit_id", "writer_lease_id")
+        ):
+            return existing
     state_root = request.get("capsule_state_root")
     task_id = request.get("task_id")
     work_unit_id = request.get("work_unit_id")
@@ -930,10 +937,13 @@ def finalize(
         "signal": termination_signal,
         "systemd": systemd_state,
     }
+    # A reader can reconcile directly from the manifest, before status.json is
+    # published. Finish the existing lease disposition before either terminal
+    # surface becomes visible; completion must include its release receipt.
+    _release_writer_lease_from_job(directory, request)
     atomic_write_json(directory / "result_manifest.json", manifest)
     _write_completion_event(directory, terminal_status)
     atomic_write_json(status_path, terminal_status)
-    _release_writer_lease_from_job(directory, request)
     if (directory / "help-watch.json").is_file():
         from solution_agent.harness.worker_help import finalize_watch
         try:

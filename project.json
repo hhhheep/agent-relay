@@ -66,10 +66,18 @@
       "Native App send: no test destination explicitly authorized",
       "Paid report generation: outside engineering acceptance; mock Provider consumer tests passed",
       "Another physical Windows computer: unavailable; same-host clean installation was tested",
-      "GitHub Actions execution: configured only; no push",
       "Live deployment and research work: outside authorized isolation scope"
     ],
     "native_app_bridge": "PASSED: production NativeAppPort with installed official stdio server, trusted current caller/pipe, exact identity and read destination; no send",
     "writer_remote_adapter": "PASSED: standalone MCP to actual SSH remote validation; synthetic evidence SHA256 verified and outside-root rejected; no credentials/model call"
+  },
+  "candidate_followup": {
+    "reason": "terminal writer lease receipt published after terminal status; CI 38227032156 exposed race",
+    "release_id": "harness-0.6-bd6c131ec6a770e5",
+    "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
+    "local_core": "97 passed, 2 native POSIX skips on Windows",
+    "current_linux_and_matrix": "PENDING for changed runtime; retain prior 6f acceptance without promotion",
+    "remote_ci": "PENDING for repaired commit",
+    "evidence": "docs/engineering/phase-one/STATUS.md"
   }
 }

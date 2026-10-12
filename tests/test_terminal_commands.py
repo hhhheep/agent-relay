@@ -178,6 +178,56 @@ def test_terminal_result_repairs_missing_completion_event(tmp_path: Path) -> Non
     assert event_path.is_file()
 
 
+@pytest.mark.parametrize("state,exit_code", [("succeeded", 0), ("failed", 7), ("cancelled", -15), ("lost", None)])
+def test_terminal_publication_includes_writer_release(tmp_path, monkeypatch, state, exit_code):
+    import solution_agent.harness.terminal_commands as commands
+
+    store = TaskCapsuleStore(tmp_path / "state")
+    capsule = store.create(TaskCapsule(
+        task_id="TASK-PUBLICATION", objective="test", source_release_id="release-test",
+        active_work_unit="WU-1", approval_owner="user",
+        scope=ScopeContract(readable_paths=[str(tmp_path)], writable_paths=[str(tmp_path)]),
+    ))
+    lease = WriterLeaseRef(lease_id="publication-lease", target=str(tmp_path), owner_work_unit="WU-1",
+                           expires_at=datetime.now(timezone.utc) + timedelta(hours=1))
+    store.acquire_writer_lease(capsule.task_id, lease, expected_version=capsule.version)
+    command_runner = TerminalCommandRunner(tmp_path / "jobs", cwd=tmp_path, shell=sys.executable,
+                                           capsule_state_root=tmp_path / "state")
+    request = command_runner.prepare("print('unused')", task_id=capsule.task_id, work_unit_id="WU-1",
+                                     access_mode="writer", writer_lease_id=lease.lease_id)
+    directory = command_runner._directory(request["command_id"])
+    prepared_status = json.loads((directory / "status.json").read_text(encoding="utf-8"))
+    write = commands.atomic_write_json
+    observations = []
+
+    def observe_publication(path, payload):
+        if Path(path).parent == directory and Path(path).name in {
+            "result_manifest.json", "completion_event.json", "status.json"
+        } and payload.get("state") == state:
+            receipt = directory / "writer_lease_release.json"
+            observations.append(json.loads(receipt.read_text(encoding="utf-8")) if receipt.exists() else None)
+        write(path, payload)
+
+    monkeypatch.setattr(commands, "atomic_write_json", observe_publication)
+    if state == "lost":
+        commands._mark_lost(directory, prepared_status, "supervisor_missing_without_terminal_receipt")
+    else:
+        finalize(directory, exit_code, "start", forced_state=state)
+    assert len(observations) == (2 if state == "lost" else 3)
+    assert all(item is not None and item["released"] and item["disposition"] == "released"
+               for item in observations), observations
+    assert store.load(capsule.task_id).writer_leases == []
+    release_bytes = (directory / "writer_lease_release.json").read_bytes()
+    # A crash after the manifest but before status publication must recover the
+    # same completion and preserve the original release disposition.
+    if state != "lost":
+        write(directory / "status.json", prepared_status)
+    recovered = command_runner.read_result(request["command_id"], 128)
+    assert recovered["state"] == state
+    assert recovered["writer_lease_release"]["disposition"] == "released"
+    assert (directory / "writer_lease_release.json").read_bytes() == release_bytes
+
+
 def test_job_timeout_has_cancelled_terminal_receipt(tmp_path: Path) -> None:
     result = runner(tmp_path).execute(
         command="import time\ntime.sleep(10)",
