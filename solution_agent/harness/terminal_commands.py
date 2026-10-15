@@ -30,6 +30,19 @@ _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _TERMINAL_STATES = {"succeeded", "failed", "cancelled", "lost"}
 
 
+def validate_wait_ms(wait_ms: int) -> None:
+    """Validate before any command preparation, launch or cancellation."""
+    if type(wait_ms) is not int or not 0 <= wait_ms <= 30000:
+        raise ValueError("wait_ms must be an integer between 0 and 30000")
+
+
+class CommandObservationError(RuntimeError):
+    """A durable job exists, but its launch/result could not be observed."""
+    def __init__(self, command_id: str):
+        self.command_id = command_id
+        super().__init__(f"command outcome unknown: {command_id}; recover this command, do not resubmit")
+
+
 class CommandReceiptError(RuntimeError):
     def __init__(self, code: str, command_id: str):
         self.code = code
@@ -277,6 +290,10 @@ def bounded_utf8_preview(path: Path, limit: int) -> Preview:
     total = path.stat().st_size if path.is_file() else 0
     with path.open("rb") as handle:
         raw = handle.read(min(total, limit + 4))
+    if total == 0:
+        return Preview(text="", tail_text=None, raw_bytes=0, total_bytes=0,
+                       truncated=False, binary_artifact_required=False,
+                       control_sequences_removed=0)
     upper = min(len(raw), limit)
     for cut in range(upper, max(0, upper - 4), -1):
         try:
@@ -568,9 +585,9 @@ class TerminalCommandRunner:
                     raise ValueError('terminal_manifest_conflict')
                 terminal = {**status, **{key: receipt.get(key) for key in
                     ('state', 'exit_code', 'started_at', 'finished_at', 'failure_reason', 'signal', 'systemd')}}
+                _release_writer_lease_from_job(directory, terminal)
                 _write_completion_event(directory, terminal)
                 atomic_write_json(directory / 'status.json', terminal)
-                _release_writer_lease_from_job(directory, terminal)
                 self._report_lost_help(directory, terminal)
                 return terminal
             except (OSError, ValueError, TypeError, AttributeError):
@@ -637,8 +654,7 @@ class TerminalCommandRunner:
             print(json.dumps({"help_recovery_error": type(exc).__name__}), file=sys.stderr)
 
     def wait_result(self, command_id: str, wait_ms: int) -> dict[str, Any]:
-        if not 0 <= wait_ms <= 30000:
-            raise ValueError("wait_ms must be between 0 and 30000")
+        validate_wait_ms(wait_ms)
         deadline = time.monotonic() + wait_ms / 1000
         while True:
             status = self.reconcile(command_id)
@@ -651,12 +667,6 @@ class TerminalCommandRunner:
         status = self._read_status(command_id)
         if status.get("state") in _TERMINAL_STATES:
             return status
-        child_pid = status.get("child_pid")
-        child_marker = status.get("child_process_marker")
-        if not isinstance(child_pid, int) or not _process_exists(
-            child_pid, child_marker if isinstance(child_marker, str) else None
-        ):
-            return self.reconcile(command_id)
         atomic_write_json(
             directory / "cancel_request.json",
             {
@@ -665,6 +675,12 @@ class TerminalCommandRunner:
                 "requested_at": _utc_now(),
             },
         )
+        child_pid = status.get("child_pid")
+        child_marker = status.get("child_process_marker")
+        if not isinstance(child_pid, int) or not _process_exists(
+            child_pid, child_marker if isinstance(child_marker, str) else None
+        ):
+            return self.wait_result(command_id, 5000)
         try:
             if os.name == "posix":
                 os.killpg(child_pid, signal.SIGTERM)
@@ -764,6 +780,7 @@ class TerminalCommandRunner:
         writer_lease_id: str | None = None,
         worker_packet: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        validate_wait_ms(wait_ms)
         if (command is None) == (command_id is None):
             raise ValueError("provide exactly one of command or command_id")
         if cancel and command is not None:
@@ -779,19 +796,25 @@ class TerminalCommandRunner:
                 worker_packet=worker_packet,
             )
             command_id = str(request["command_id"])
-            self.launch(request)
+            try:
+                self.launch(request)
+            except Exception as exc:
+                raise CommandObservationError(command_id) from exc
         assert command_id is not None
         if command is None:
             status = self._read_status(command_id)
             if (task_id is not None and status.get("task_id") != task_id
                     or work_unit_id is not None and status.get("work_unit_id") != work_unit_id):
                 raise CommandReceiptError("job_scope_conflict", command_id)
-        if cancel:
-            self.cancel(command_id)
-        waited = self.wait_result(command_id, wait_ms)
-        result = self.read_result(command_id, max_preview_bytes)
-        result["wait_timed_out"] = waited.get("state") not in _TERMINAL_STATES
-        return result
+        try:
+            if cancel:
+                self.cancel(command_id)
+            waited = self.wait_result(command_id, wait_ms)
+            result = self.read_result(command_id, max_preview_bytes)
+            result["wait_timed_out"] = waited.get("state") not in _TERMINAL_STATES
+            return result
+        except Exception as exc:
+            raise CommandObservationError(command_id) from exc
 
 
 def _mark_lost(directory: Path, status: dict[str, Any], reason: str) -> dict[str, Any]:
@@ -804,9 +827,9 @@ def _mark_lost(directory: Path, status: dict[str, Any], reason: str) -> dict[str
         "exit_code": None,
         "failure_reason": reason,
     }
+    _release_writer_lease_from_job(directory, lost)
     _write_completion_event(directory, lost)
     atomic_write_json(directory / "status.json", lost)
-    _release_writer_lease_from_job(directory, lost)
     return lost
 
 
@@ -832,6 +855,13 @@ def _release_writer_lease_from_job(directory: Path, request: dict[str, Any]) -> 
     if request.get("access_mode") != "writer" or not isinstance(lease_id, str) or not lease_id:
         return None
     receipt_path = directory / "writer_lease_release.json"
+    if receipt_path.is_file():
+        existing = _read_json(receipt_path)
+        if existing.get("released") is True and all(
+            existing.get(key) == request.get(key)
+            for key in ("command_id", "task_id", "work_unit_id", "writer_lease_id")
+        ):
+            return existing
     state_root = request.get("capsule_state_root")
     task_id = request.get("task_id")
     work_unit_id = request.get("work_unit_id")
@@ -930,10 +960,13 @@ def finalize(
         "signal": termination_signal,
         "systemd": systemd_state,
     }
+    # A reader can reconcile directly from the manifest, before status.json is
+    # published. Finish the existing lease disposition before either terminal
+    # surface becomes visible; completion must include its release receipt.
+    _release_writer_lease_from_job(directory, request)
     atomic_write_json(directory / "result_manifest.json", manifest)
     _write_completion_event(directory, terminal_status)
     atomic_write_json(status_path, terminal_status)
-    _release_writer_lease_from_job(directory, request)
     if (directory / "help-watch.json").is_file():
         from solution_agent.harness.worker_help import finalize_watch
         try:
@@ -985,6 +1018,10 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
     shell_args.append(str(directory / "request.sh"))
     try:
         with (directory / "stdout.bin").open("wb") as stdout, (directory / "stderr.bin").open("wb") as stderr:
+            # A cancellation recorded before PID registration must not be lost.
+            if (directory / "cancel_request.json").is_file():
+                finalize(directory, 0, started, failure_reason="cancel_requested", forced_state="cancelled")
+                return
             child = subprocess.Popen(
                 shell_args,
                 cwd=str(request["cwd"]),
@@ -1015,7 +1052,26 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
             atomic_write_json(directory / "status.json", running)
             timeout_seconds = request.get("timeout_seconds")
             try:
-                exit_code = child.wait(timeout=float(timeout_seconds) if timeout_seconds is not None else None)
+                deadline = time.monotonic() + float(timeout_seconds) if timeout_seconds is not None else None
+                cancel_deadline = None
+                while True:
+                    if cancel_deadline is None and (directory / "cancel_request.json").is_file():
+                        try:
+                            if os.name == "posix":
+                                os.killpg(child.pid, signal.SIGTERM)
+                            else:
+                                child.terminate()
+                        except ProcessLookupError:
+                            pass
+                        # Bound shutdown using the existing timeout escalation below.
+                        cancel_deadline = time.monotonic() + 5
+                        deadline = min(deadline, cancel_deadline) if deadline is not None else cancel_deadline
+                    try:
+                        exit_code = child.wait(timeout=0.05)
+                        break
+                    except subprocess.TimeoutExpired:
+                        if deadline is not None and time.monotonic() >= deadline:
+                            raise
             except subprocess.TimeoutExpired:
                 try:
                     if os.name == "posix":
@@ -1042,7 +1098,7 @@ def run_execution(command_dir: Path, supervisor_pid: int | None = None,
                     directory,
                     exit_code,
                     started,
-                    failure_reason="timeout_exceeded",
+                    failure_reason="cancel_requested" if (directory / "cancel_request.json").is_file() else "timeout_exceeded",
                     forced_state="cancelled",
                 )
                 return

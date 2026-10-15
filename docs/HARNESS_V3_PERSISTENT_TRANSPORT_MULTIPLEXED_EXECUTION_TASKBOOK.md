@@ -1,5 +1,7 @@
 # Harness V3 持久連線、多路 Terminal 與受監督命令執行任務書
 
+> 歷史設計，非目前 transport 權威。本文的唯一 workplace transport owner、transport lock 與 shared cooldown 已被現行實作取代：每個 MCP client 使用獨立 SSH process，Launcher 不讀取或修改舊 lock/cooldown。現行來源見 `plugins/solution-agent-harness/scripts/remote_launcher.py` 與該插件 Skill。Codex chat 查詢／回覆沿 `components/lifecycle/native-app-port.ts` 的原生工具與既有路由身份進行。本文保留作追溯，不能據此恢復舊連線鎖；npm/pnpm 依賴 lockfile 是安裝版本資料，與這套 transport 設計無關。
+
 - 版本：v0.1
 - 日期：2026-09-29（Asia/Taipei）
 - 狀態：IMPLEMENTATION TASKBOOK / 尚未執行

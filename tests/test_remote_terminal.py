@@ -208,6 +208,49 @@ def test_second_writer_is_busy_until_first_detaches(tmp_path: Path) -> None:
     second.close(None, action="detach")
 
 
+@pytest.mark.parametrize('dead',[False,True])
+def test_reattach_rejects_changed_configured_workplace_before_logger_or_restart(tmp_path: Path, dead: bool) -> None:
+    profile = _profile(tmp_path)
+    fake = FakeTmux(profile.slots['main'].cwd)
+    first = ProfileTerminalManager(profile, runner=fake)
+    first.open(task_id='original-task')
+    first.close(None, action='detach')
+    before = first._metadata_path(profile.slots['main']).read_bytes()
+    other = tmp_path/'other-worktree'; other.mkdir()
+    changed = replace(profile, slots={'main': replace(profile.slots['main'], cwd=other)})
+    second = ProfileTerminalManager(changed, runner=fake)
+    fake.dead = dead
+    start = len(fake.calls)
+    try:
+        with pytest.raises(TerminalError) as caught:
+            second.open(task_id='other-task', restart=True)
+        assert caught.value.code == 'terminal_identity_mismatch'
+        assert 'configured_cwd' in str(caught.value)
+        assert first._metadata_path(profile.slots['main']).read_bytes() == before
+        assert not any(call[3] in {'pipe-pane','kill-window','new-window','new-session'} for call in fake.calls[start:])
+        assert not second._leases
+    finally:
+        second.release_all()
+
+
+def test_reattach_accepts_same_workplace_alias_and_preserves_owner(tmp_path: Path) -> None:
+    profile = _profile(tmp_path)
+    fake = FakeTmux(profile.slots['main'].cwd)
+    first = ProfileTerminalManager(profile, runner=fake)
+    first.open(task_id='original-task')
+    first.close(None, action='detach')
+    (profile.slots['main'].cwd/'alias').mkdir()
+    changed = replace(profile, slots={'main': replace(profile.slots['main'], cwd=profile.slots['main'].cwd/'alias'/'..')})
+    second = ProfileTerminalManager(changed, runner=fake)
+    try:
+        attached = second.open()
+        assert attached['created'] is False
+        assert attached['owner_task_id'] == 'original-task'
+        assert attached['generation'] == 1
+    finally:
+        second.release_all()
+
+
 def test_profile_label_change_reuses_persistent_session_without_rebind(tmp_path: Path) -> None:
     old_profile = replace(_profile(tmp_path), profile_id="EXAMPLE_WORKER_A_FAN", storage_profile_id="EXAMPLE_WORKER_A_FAN")
     fake = FakeTmux(old_profile.slots["main"].cwd)
@@ -486,3 +529,19 @@ def test_interactive_repl_input_stays_on_send_and_read_is_bounded_diagnostic(tmp
     assert diagnostic["migration_target"] == "terminal_exec"
     assert diagnostic["full_output_fallback"] is False
     manager.close(None, action="detach")
+
+
+@pytest.mark.parametrize('cursor,limit',[(-1,128),(0,0),(0,65537),('invalid',128),(False,128),(0,True),(0,1.5)])
+def test_send_rejects_invalid_read_window_before_interactive_input(tmp_path: Path, cursor, limit) -> None:
+    profile = _profile(tmp_path)
+    fake = FakeTmux(profile.slots['main'].cwd)
+    manager = ProfileTerminalManager(profile, runner=fake)
+    manager.open()
+    before = len(fake.calls)
+    try:
+        with pytest.raises(TerminalError) as caught:
+            manager.send(None, chars='effectful input', control='enter', after_cursor=cursor, wait_ms=0, max_output_bytes=limit)
+        assert caught.value.code == 'invalid_read_window'
+        assert not any(call[3] in {'load-buffer','paste-buffer','send-keys'} for call in fake.calls[before:])
+    finally:
+        manager.release_all()

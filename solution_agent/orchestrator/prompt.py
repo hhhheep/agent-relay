@@ -72,7 +72,7 @@ Phase rules:
 
 You are running phase: `full`.
 
-This is the legacy single-pass mode. If the task mixes source-code changes and long GPU execution, prefer splitting future runs into `prepare_code` then `execute_run`.
+Complete the authorized implementation, execution and checks in this invocation. A bounded complete CPU task does not require a separate prepare phase. Stay within the task's resource authorization; long or expensive experiments retain their approved staging and budget. This phase does not grant extra execution permission.
 """
     return f"""# Worker Execution Prompt
 

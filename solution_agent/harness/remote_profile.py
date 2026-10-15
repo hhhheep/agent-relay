@@ -190,3 +190,11 @@ def load_remote_deploy_profile(path, name: str) -> RemoteDeployProfile:
     if not isinstance(value, dict):
         raise ValueError(f"remote deployment profile not found: {name}")
     return parse_remote_deploy_profile(name, value)
+
+
+def deployment_profiles_path(solution_root):
+    """External per-machine profiles; legacy checkout path remains the fallback."""
+    import os
+    from pathlib import Path
+    configured = os.environ.get("SOLUTION_AGENT_PROFILES_FILE", "").strip()
+    return Path(configured).expanduser().resolve() if configured else Path(solution_root) / "config" / "harness_remote_deploy_profiles.yaml"

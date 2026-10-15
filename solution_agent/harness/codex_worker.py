@@ -17,7 +17,7 @@ if __package__ in {None, ""}:
 import yaml
 
 from solution_agent.execution_port.io_utils import atomic_write_json
-from solution_agent.harness.remote_profile import load_remote_deploy_profile
+from solution_agent.harness.remote_profile import load_remote_deploy_profile, deployment_profiles_path
 from solution_agent.orchestrator.prompt import build_worker_prompt
 from solution_agent.orchestrator.schema import TaskBook, worker_result_from_dict
 
@@ -34,7 +34,7 @@ def worker_packet(root: Path, profile_id: str, task_id: str, work_unit_id: str,
         raise ValueError("worker_task exceeds 64 KiB; send a compact task with pinned artifact references")
     if phase not in {"prepare_code", "execute_run", "full"}:
         raise ValueError("unsupported worker_phase")
-    profile = load_remote_deploy_profile(root / "config/harness_remote_deploy_profiles.yaml", profile_id)
+    profile = load_remote_deploy_profile(deployment_profiles_path(root), profile_id)
     if Path(profile.solution_agent_root).resolve() != root.resolve():
         raise ValueError("worker profile runtime root mismatch")
     key = _digest({"task_id": task_id, "work_unit_id": work_unit_id})
@@ -176,6 +176,22 @@ def verify_result(output: Path, task_id: str) -> dict:
     return {"task_status": result.status, "summary": result.summary_short[:2000],
             "output_dir": str(output), "artifact_hashes": hashes,
             "scientific_acceptance": "requires_manager_review"}
+
+
+def worker_result_action(receipt: dict) -> str:
+    """Explain existing result layers without changing terminal/exit semantics."""
+    code = receipt.get("codex_exit_code")
+    if type(code) is int and code != 0:
+        return f"Worker process exited with code {code}; inspect its logs and any partial artifacts before deciding follow-up."
+    if receipt.get("contract_valid") is not True:
+        return "Worker result contract is invalid or missing; task completion is unverified. Inspect the original artifacts, do not relaunch blindly."
+    if receipt.get("task_status") == "partial":
+        return "Worker returned a valid partial result, not final task success or proof of a process failure. Check the requested phase, phase_state and outputs for prepared work awaiting execution or another blocker."
+    if receipt.get("task_status") == "failed":
+        return "Worker reported task failure despite a valid result contract; inspect task evidence and acceptance checks."
+    if receipt.get("unanswered_questions"):
+        return "Worker has unresolved questions; retain them and review the original task before accepting completion."
+    return "Review the worker artifacts against the original acceptance checks; process and contract success do not establish task or scientific acceptance."
 
 
 def run_worker(packet: dict) -> int:

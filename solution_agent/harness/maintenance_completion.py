@@ -16,6 +16,8 @@ def finish_owned_maintenance(capsules, receipt, *, task_id, work_unit_id):
                 'task_id': task_id, 'work_unit_id': work_unit_id, 'command_id': receipt['command_id']}
     if current.active_work_unit != work_unit_id or current.writer_leases:
         raise ValueError('maintenance ownership or active writer conflict')
+    if getattr(current, 'wait', None) is not None:
+        raise ValueError('unresolved wait/review must be reconciled before maintenance finish')
     finished = capsules.finish_work_unit(task_id, work_unit_id, expected_version=current.version)
     return {'finished': True, 'already_finished': False, 'capsule_version': finished.version,
             'task_id': task_id, 'work_unit_id': work_unit_id, 'command_id': receipt['command_id']}

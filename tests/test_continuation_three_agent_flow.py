@@ -25,11 +25,14 @@ from solution_agent.continuation.three_agent_flow import (
 def _patch_root(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr("solution_agent.orchestrator.paths.root", lambda: tmp_path)
     monkeypatch.setattr("solution_agent.continuation.paths.root", lambda: tmp_path)
-    source_policy = Path(".solution/continuation/planner_policy.yaml")
-    if source_policy.exists():
-        target_policy = tmp_path / ".solution" / "continuation" / "planner_policy.yaml"
-        target_policy.parent.mkdir(parents=True, exist_ok=True)
-        target_policy.write_text(source_policy.read_text(encoding="utf-8"), encoding="utf-8")
+    # This suite tests staging a bounded probe, not the user's research policy.
+    # Supply the required input explicitly instead of copying a private checkout.
+    target_policy = tmp_path / ".solution" / "continuation" / "planner_policy.yaml"
+    target_policy.parent.mkdir(parents=True, exist_ok=True)
+    target_policy.write_text(
+        "schema_version: 1\nallowed_next_step_kinds:\n  - bounded_probe\n",
+        encoding="utf-8",
+    )
 
 
 def _write_json(path: Path, payload) -> None:

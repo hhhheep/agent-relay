@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "engineering_baseline": "bf8db034ee0e72967296b916968dfe2460e35cbe",
+  "historical_map_sha256": "edb3fb9875e91127426c51e61b13d68612c565436f201ebf22d88210c67b8e6b",
+  "decisions": "docs/engineering/phase-one/DECISIONS.md",
+  "changes": [
+    {
+      "path": "solution_agent/harness/codex_worker.py",
+      "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
+      "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
+    },
+    {
+      "path": "solution_agent/harness/maintenance_completion.py",
+      "extraction_sha256": "c933d6ad1a342b3ac704e8c1572efdb8bef0f719fcfec12ce1247fa10d5af83a",
+      "current_sha256": "86758079a6d47589f1831ebe53105cceae02eab00fa98429f360ed60e91b6311"
+    },
+    {
+      "path": "solution_agent/harness/mcp_server.py",
+      "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
+      "current_sha256": "900a476de43ef0789523001cf7c80a6675c19b396285e6d9d8cf3ed6d4aecea0"
+    },
+    {
+      "path": "solution_agent/harness/remote_profile.py",
+      "extraction_sha256": "f5132f2557481251ce60a0e8e2e12f47b4cd1586f9979204e59584eb3ea70330",
+      "current_sha256": "8fe3cfcbce03aa0f379da1c0bbf0706e8046bcb7c047d71a432e0728f7fa4c3e"
+    },
+    {
+      "path": "solution_agent/harness/remote_terminal.py",
+      "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
+      "current_sha256": "78d703909db45678859c63d950d8d8bc7f56e13bfa16081dfa75948261d8182b"
+    },
+    {
+      "path": "solution_agent/harness/task_capsule.py",
+      "extraction_sha256": "d59fc4ed16168ba397521c142107db1d7d0c921824bb0a81aa4347f29b340a11",
+      "current_sha256": "2ef2691f47b9788d27b4ba5870cffc3c35f69361b22e05fdf6b4da656b6bfe9b"
+    },
+    {
+      "path": "solution_agent/harness/task_md_sync.py",
+      "extraction_sha256": "aca47d49e37a946ca9af6ace1eca7f15b875eaed863b72742c48ddc9e32f6c91",
+      "current_sha256": "996ebb935d732ef428b839e4d209699760d975385e3c6b0fec54d56ee6f79387"
+    },
+    {
+      "path": "solution_agent/harness/terminal_commands.py",
+      "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
+      "current_sha256": "fa63285a2b17b06f6a3abca56441edd130896a8ade304d0c9d4ad206b0bdafc2"
+    },
+    {
+      "path": "solution_agent/harness/worker_help.py",
+      "extraction_sha256": "a4b356b307ddb7930e3d756a866b0ab6844bc5d7ed4f74e77c56a74998d8859b",
+      "current_sha256": "c69dbe22dc93eec326c43a1ff39c83891f8d89b2ca94d3f4836978870bf5261f"
+    },
+    {
+      "path": "solution_agent/orchestrator/prompt.py",
+      "extraction_sha256": "2f6b82f90dcb872e6a4e7fde261b91baa66d30f3a4ed35cdd42a61bf680d9ee0",
+      "current_sha256": "1df487f0df7d7d75dbc8c49863ce04f9ddcb470c09654b6ab94066f9fa14060a"
+    },
+    {
+      "path": "tests/test_continuation_three_agent_flow.py",
+      "extraction_sha256": "00a76956faf5e7b73e56fd4708c5b4aa94ee4146396da6357a39de75497d3218",
+      "current_sha256": "59f6c16208c529c62aa81213279842cffbf06ef6586dadc342353c079ba50c10"
+    },
+    {
+      "path": "tests/test_fsfm_s0_acquire.py",
+      "extraction_sha256": "3506145844d434394bc1044f3dbe4b616ec1827024995afe6c7408bdd127de52",
+      "current_sha256": "663df09945c2fa18b299e84ad6986c36e445de115bd7563f36bcadbba9c6b6ae"
+    },
+    {
+      "path": "tests/test_fsfm_s0_boundary.py",
+      "extraction_sha256": "881834fa2df907ae729e78215cbb1d0887459150afe61907f8235e5ceed501f1",
+      "current_sha256": "d0eb2a69e9bd044688b291745a1dce22dee2c23b29d292d7b7add6f514ba4a38"
+    },
+    {
+      "path": "tests/test_fsfm_s0_inventory.py",
+      "extraction_sha256": "8b189e9186607c175a30913b71fb6e8203c47d2fe33c90116e7686362166f811",
+      "current_sha256": "e67b99e65985ef87c1206f7879381afa600d1b66508797fa95ba9c3a062e6adc"
+    },
+    {
+      "path": "tests/test_harness_bootstrap_release.py",
+      "extraction_sha256": "a8a845b6b4a39d708ee83fb19e3df8854635c039e15d77cbb3ddbac08914bdfe",
+      "current_sha256": "f60755d86676f0ebe92fb9bedfe730b44cb29fd99c5ca97e6dc2fd6c4b2c187d"
+    },
+    {
+      "path": "tests/test_harness_codex_worker.py",
+      "extraction_sha256": "7ba1590ad63b693a49645f68ce14a458e668bd62edbebadb906e0a6aa7ef5112",
+      "current_sha256": "47ae82d68075ebd66d16344f75d2d62158b89e9f72ae2fe928e82e8ef31fd073"
+    },
+    {
+      "path": "tests/test_harness_mcp.py",
+      "extraction_sha256": "458bc9c4c84498eb480923410777cf54d6a0a46a12cecf0c545c63c5535270f7",
+      "current_sha256": "85855fe125e5a2e22539dfdddf0443f30bf41148bd35eeda7a43ad097064b09e"
+    },
+    {
+      "path": "tests/test_harness_remote_profile.py",
+      "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
+      "current_sha256": "408731e3f81113495f56b7ae07a37ec20e9db6fc8efc53642a63c5863a0b443e"
+    },
+    {
+      "path": "tests/test_md_sync.py",
+      "extraction_sha256": "229bdf92a2aae3f89da2fba1ad62869f516ea77f77938e5bc5814bf210ddf5c7",
+      "current_sha256": "68e5a5a91374bdef51877b583ff8e4dfa7e0add955ec0060d505c713b0a4493e"
+    },
+    {
+      "path": "tests/test_publication_registry.py",
+      "extraction_sha256": "d1884748645f8c3a0df674cadd137b36239ae0c03b94d2da6676bca320fc8bf3",
+      "current_sha256": "8ee391cfbd90b5eb05258b9f1ea4fd263838e324c80d4e221720335638d8abab"
+    },
+    {
+      "path": "tests/test_remote_status_worker_agnostic.py",
+      "extraction_sha256": "03894493c7071493375fa9f4a0aad54673766bea332fd4d64b33e7483d615f31",
+      "current_sha256": "b975c06491f846ca2acd8f69b4fd7848817aa4645a86fbf75099a04f487a87e9"
+    },
+    {
+      "path": "tests/test_remote_terminal.py",
+      "extraction_sha256": "5b46ce66d556ea708ca51ce8683156a033636a048feb96a866c6a7e410c6bd22",
+      "current_sha256": "03771d29663d7e9b21a0ecce794c5b61ef27dd5c4a4e11241fb6d3adc1bce96b"
+    },
+    {
+      "path": "tests/test_routing_submission_recovery.py",
+      "extraction_sha256": "487111ac86953bd7bcfcee166dbe8d319d1f0137d3a0a3e359cbd3db7036f47a",
+      "current_sha256": "6ce3a8ba16874e9005f5132ba3073fa34ad55298717c32cb8e837a513bee2f67"
+    },
+    {
+      "path": "tests/test_skill_routing_contract.py",
+      "extraction_sha256": "234e4689f5c1a1a7006d6aaaf3c20bc56260a9981dcc4c8d15cc6890c9569bfe",
+      "current_sha256": "fd41e9b189486f1ad9c2ceb2432ff3f53e21d81c0ce9edf8826bbe28943d3613"
+    },
+    {
+      "path": "tests/test_terminal_commands.py",
+      "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
+      "current_sha256": "c96c0777030aa6c5bff1288d046fa76d286e9aa0741771078bdae1c033f6d7de"
+    },
+    {
+      "path": "scripts/harness/build_bootstrap_release.py",
+      "extraction_sha256": "2eeff1b2f062a8857200a4908070017b4b360081c0cd538f6af2e85d4511d984",
+      "current_sha256": "fd4be4c727440f59a363ba06564f4df5e792696d007ec19219cee05bd74ce9fe"
+    },
+    {
+      "path": "plugins/solution-agent-harness/.mcp.json",
+      "extraction_sha256": "3f9c84ae22b60205128ed5aaa5f7b9246f786df963f51490dc72c829fcadb99f",
+      "current_sha256": "96303f3282f18a2f0b698d830456f1b1e6ce2a2d15c495ef30fdffd9bca45edf"
+    },
+    {
+      "path": "plugins/solution-agent-harness/.codex-plugin/plugin.json",
+      "extraction_sha256": "f4f717069e553bbf01b7123509c00b41470ba0dce9003be91d5a9a632f59293f",
+      "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
+    },
+    {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
+      "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
+      "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
+    },
+    {
+      "path": "components/lifecycle/harness-port.ts",
+      "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
+      "current_sha256": "bae0fb780bc989d6b222ab64a6fda65685372425a0a1d388cc17e2b88581acca"
+    },
+    {
+      "path": "components/lifecycle/lifecycle-handoff.test.ts",
+      "extraction_sha256": "6405240f1db3ae904c0fa7f403cce26ff59aa62d4bea27e432b21e1f0252fc6f",
+      "current_sha256": "b904314650c441c5478df7bee9a4db7988a3ef05f725329dcb00115ec09d6545"
+    },
+    {
+      "path": "components/lifecycle/lifecycle-handoff.ts",
+      "extraction_sha256": "c504de6c42078355984f4eca53bb198e2db62832b3e7ff9c7a6651ceebd0a2df",
+      "current_sha256": "96145970dc9679f27a1e868a111880c75cef8c00dc982d67d2d456efc5bdbdb3"
+    },
+    {
+      "path": "components/lifecycle/mailbox-artifact.test.ts",
+      "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
+      "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
+    },
+    {
+      "path": "components/lifecycle/mailbox-driver.test.ts",
+      "extraction_sha256": "60878f7f1ddbcdf577b687591f7e0f4e3ae83f6871dc128eea331fff24a96332",
+      "current_sha256": "5cb200cb1977c3b345dabfb96746ae3743469fd48a6140d0535c67ddf7ecf83e"
+    },
+    {
+      "path": "components/lifecycle/manager-cli.ts",
+      "extraction_sha256": "77b89ee195997352e0c2828680a1e8d9718ce111b8aced3b9d0a67dd3b885cc6",
+      "current_sha256": "c3487c8d336bb394e00ef9abd750d6647ec27ba90c25dd6a6dbc9a9adcd5cef1"
+    },
+    {
+      "path": "components/lifecycle/manager-driver.ts",
+      "extraction_sha256": "03585d5e5ded3c991cb4a1fc0c9948e486ae02f870aed1ecbb4ed8e3fd8e11bf",
+      "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
+    },
+    {
+      "path": "components/lifecycle/resume-controller.test.ts",
+      "extraction_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
+      "current_sha256": "657cf873513cd85d473416a00ca9033006da1831f52837355718242e955a33f2"
+    },
+    {
+      "path": "components/lifecycle/resume-scheduler.test.ts",
+      "extraction_sha256": "13951c67e6c13e016b50d28592ecab146856f8d9d36d074e8e7a403bcaf70e13",
+      "current_sha256": "28cd2c193a9768c6d056316f9ea9253435e9d6b7067043f0ac34d2fef397fcc6"
+    },
+    {
+      "path": "components/lifecycle/router-api.ts",
+      "extraction_sha256": "26568d3072439a87a7cdbfb40cd2dea0ede1961c9ff462a14a9bc2d59a7d156c",
+      "current_sha256": "15d78e23049d06a34b26ca6c5ca01936858bcc2cf468cf92cdedb54fab81ad9e"
+    },
+    {
+      "path": "components/lifecycle/session-lifecycle.ts",
+      "extraction_sha256": "a75e4ccbb42e4ef52ef7af3ff887a8bca706c50ec8987991c3000759dbb26954",
+      "current_sha256": "017371fa1c94ec719b7b5a5afbe3be4d17c0d7ed1112e82d3e1a935b9965f28b"
+    },
+    {
+      "path": "components/lifecycle/task-publisher.test.ts",
+      "extraction_sha256": "685dfbab860b71cbe8a65a13a9bef9c4341c7c97013a42ed565effb5b4b30c85",
+      "current_sha256": "7280015afd629456cbc8b6634499fb3b54f546a63e1fddd535c4e89e16586135"
+    },
+    {
+      "path": "components/lifecycle/task-publisher.ts",
+      "extraction_sha256": "6486711f8c6ad10479a1928ac6482501a847963793c011e49849841edb29b1b0",
+      "current_sha256": "4cb71c2206dd8945981a0841b924005c3abbd8cad7f621665eb80bb356239c80"
+    },
+    {
+      "path": "components/xats-routing-lab/upstream/pnpm-lock.yaml",
+      "extraction_sha256": "9e143de17a1eba8835ac8ffb8fe2779d39ac08edecc14bc1e07e58c7c000b61d",
+      "current_sha256": "9955dd09f1fcd1a7e9a900854a779836df39b4ba786b0056414d2ce8565e04ac"
+    },
+    {
+      "path": "plugins/research-report-writer/package.json",
+      "extraction_sha256": "bf6127de4f088d78ea0a097be965c1f23faa29d8a67ddd9111d660693156aed5",
+      "current_sha256": "70809e5787047751f3109d0bd0e6776f32b096b2a06507e2d604311c25d61646"
+    },
+    {
+      "path": "plugins/research-report-writer/pnpm-lock.yaml",
+      "extraction_sha256": "4537459544819b12dcb1c78933592c0021bc73e259c76aea0c5171f9a12f3cc2",
+      "current_sha256": "1d9e8c02ef1afa37014c73b348eb25b8d54da32aed0355f572c44118b4118222"
+    },
+    {
+      "path": "plugins/research-report-writer/.codex-plugin/plugin.json",
+      "extraction_sha256": "1152e594eb30cd33344c4c1ea4080b5f9871d7a197aee340a5ecaac53e726bde",
+      "current_sha256": "813ef1bc86c1fa442dbd53c4615bd1759f91de1d0fcd969d9728fba46a95bcd6"
+    },
+    {
+      "path": "plugins/research-report-writer/lib/core.mjs",
+      "extraction_sha256": "0689cca36fd8acf13c2ecfa84634eafc7ce11643bb5140502751510a09ce4dcd",
+      "current_sha256": "b37df521dc440ee4c20155afa52a02e64d004e8bdf43927fdd2ecf44ae2ee190"
+    },
+    {
+      "path": "plugins/research-report-writer/lib/provider.mjs",
+      "extraction_sha256": "86ab4d59eb76879b9b68840a5415096f36bb0dfc1cf7d6007c12231db1d160f2",
+      "current_sha256": "667bd8580d9f6b26d76dea09ce18fc1dd0830a032158d75f0673cdbabb6f7e51"
+    },
+    {
+      "path": "tools/research-background/service.mjs",
+      "extraction_sha256": "0976eaaad3bf0bb7f56bca018b84ab7b1953d9e54407d81551800b694d9639a7",
+      "current_sha256": "5b6028c1762902c05116cc6e7ca0daca12506d4c2aa1803eb9d40b9f1b484aed"
+    },
+    {
+      "path": "tools/research-background/provider.mjs",
+      "extraction_sha256": "0aaa7111fa94c115ba8089882aeef86629a0676a89f774741589dc0d8aed6313",
+      "current_sha256": "c3499e1f9369700ef5cd11abef5238a3d3931b64adc2629080c9c7f704e6f2c4"
+    },
+    {
+      "path": "docs/HARNESS_V3_PERSISTENT_TRANSPORT_MULTIPLEXED_EXECUTION_TASKBOOK.md",
+      "extraction_sha256": "840f1685113bfc99d5a555e1e2911e3c9cd4225a2ff465c588d1eb9fdd1b1768",
+      "current_sha256": "9e7f6cc7d218ec5b67e05c00f7929722a2f982b4b66b2ba6e059c63c5fd9e6c9"
+    },
+    {
+      "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
+      "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
+      "current_sha256": "ad74c11973cd87531a516679bfaf1b3b81d74cf9db13c7662d68085b5382a6bd"
+    }
+  ]
+}

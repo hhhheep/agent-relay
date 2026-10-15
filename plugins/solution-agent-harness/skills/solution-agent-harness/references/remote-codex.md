@@ -55,6 +55,23 @@ If sandbox/login/profile restrictions prevent execution, report them; do not
 retry with broader access. Task wording does not enforce filesystem permissions
 inside the workplace; only delegate changes authorized by the user.
 
+## Match phase to the authorized deliverable
+
+Choose the phase explicitly before submitting; the tool default remains
+`prepare_code`. Check the requested deliverable, required checks and resource
+authorization against the phase:
+
+- `prepare_code`: implementation and lightweight validation; actual execution
+  remains a later step when required by the task.
+- `execute_run`: authorized execution of already-prepared work.
+- `full`: implementation, execution and checks are all authorized. A bounded
+  complete CPU task may use this in one invocation; do not force it into two
+  phases. Long or expensive experiments retain their approved staging/budget.
+
+A phase is not permission to use more resources. If task wording and phase
+conflict, resolve the mismatch before submission, without expanding scope or
+changing every task to `full`.
+
 ## Submit once
 
 Example arguments (replace the illustrative IDs and task text):
@@ -72,6 +89,13 @@ Example arguments (replace the illustrative IDs and task text):
 }
 ```
 
+Validate the actual tool arguments before submitting. In the checked runtime,
+`wait_ms` must be an integer in 0..30000; verify the loaded schema/reference
+when the runtime changes. Waiting time is separate from the task's execution
+timeout. Do not use an oversized wait to request a longer-running job.
+Until the core validation order is fixed, invalid `wait_ms` can be rejected
+after launch: an error or `outcome: unknown` is not evidence that no job ran.
+
 Do not pass `command`, `command_id` or `cancel` with `worker_task`. No
 `terminal_open`, additional SSH, YAML spec or per-study registry is needed.
 `prepare_code` limits the worker prompt to implementation and lightweight checks.
@@ -85,6 +109,22 @@ continuation, end the turn. Resume on the supported event or explicit manual
 resume; do not poll. Query the SAME `terminal_exec` with just `task_id` and
 `command_id` (and bounded preview/wait); cancellation uses those IDs plus
 `cancel=true`. Never resend task text as a way to resume a model session.
+
+If transport closes or submission returns no receipt/command ID, preserve the
+original task/work-unit IDs, submitted material/version and known request facts.
+Mark submission as uncertain, not worker failure or confirmed absence. Once the
+declared connection is available, inspect the original request, job/claim and
+receipt through existing scoped recovery. Use the positively identified
+`command_id` to wait/recover/collect; do not resend the task, replace its work
+unit, delete its claim or launch Codex over SSH to bypass uncertainty. An output
+directory alone does not establish submission identity. Use `recover_worker`
+only when supported by the loaded schema and its documented lookup semantics.
+
+Connection/channel diagnosis belongs to the Local Manager; Worker can provide
+existing evidence but is not required to repair the dispatch infrastructure.
+If observation remains unavailable, retain the unresolved original submission
+and report the blocker. Follow the actual event/manual-resume capability rather
+than promising automatic reconnection, polling or wakeups.
 
 `not_found`, `receipt_corrupt` and `job_scope_conflict` are errors, not waiting or
 completion, and do not authorize resubmission. Preserve the Command ID and inspect
@@ -106,8 +146,17 @@ At completion, `artifacts` includes terminal stdout/stderr and, when present,
 those narrowly. This path collects through `terminal_exec`, not `stage_collect`.
 The existing worker prompt requires result.yaml and notes/logs; the adapter checks
 task identity, output existence and hashes. Exit code zero alone is insufficient.
-`partial` is not research completion. A cancelled/failed worker without a result
-receipt remains unverified; terminal receipts still describe the process outcome.
+Read process status, `codex_exit_code`, `contract_valid`, `task_status` and
+task acceptance separately. A valid `partial` may be prepared work awaiting
+execution, another incomplete deliverable or a resource blocker; check the
+actual phase, phase_state and outputs before classifying it. The wrapper may
+exit nonzero and the supervisor may show `failed` despite Codex exit 0 and a
+valid partial contract. Preserve those raw outcomes and explain the task-level
+reason; do not call it an OS execution error or overall success by label alone.
+OS/process failure, an invalid contract and a failed acceptance check require
+different follow-up. `partial` is not final task completion. A cancelled/failed
+worker without a result receipt remains unverified; terminal receipts still
+describe the process outcome.
 The local manager must inspect changed files, tests and scientific evidence before
 accepting a success claim. Worker hashes are integrity evidence, not scientific
 proof. Do not rerun completed S0 or start FSFM merely to test connectivity.

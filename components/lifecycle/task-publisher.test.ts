@@ -86,7 +86,7 @@ test('publisher captures origin, requires remote binding, and never resubmits un
   await assert.rejects(publisher.submit(p.id,async()=>{calls++;}),/uncertain/);assert.equal(calls,1);
   publisher.reconcile(p.id,{task_id:'task',work_unit_id:'unit',command_id:'original-command',state:'running'});
   const contexts=publisher.resumeContexts(profile);assert.equal(contexts.length,1);
-  const key=execFileSync(resolve('../../.venv/Scripts/python.exe'),['-c',"from solution_agent.harness.publication_registry import key;print(key('task','unit'))"],{encoding:'utf8',windowsHide:true}).trim();
+  const key=execFileSync(resolve(process.platform === 'win32' ? '../../.venv/Scripts/python.exe' : '../../.venv/bin/python'),['-c',"from solution_agent.harness.publication_registry import key;print(key('task','unit'))"],{encoding:'utf8',windowsHide:true}).trim();
   assert.equal(contexts[0].context.mailbox,'/workplace/.solution-agent/help-mailboxes/'+key+'/queue.sqlite');
   assert.equal(contexts[0].context.previous_command_id,'original-command');assert.deepEqual(contexts[0].binding,p.binding);
   assert.throws(()=>publisher.resumeContexts({...profile,workplace:'/other'}),/migration_required/);
@@ -120,4 +120,32 @@ test('optional Markdown gate survives restart and cannot admit stale or unbound 
   assert.equal(capture.verification_cwd,'/workplace');
   assert.throws(()=>publisher.resumeContexts(profile,false),/migration_required/);
  }finally{publisher.close();store.close();rmSync(root,{recursive:true,force:true});}
+});
+
+test('unknown submission retains a scoped original command across restart and only recovers it',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'known-command-'));const store=new ReviewedStore(join(root,'queue.db'));let journal=new TaskPublisher(join(root,'pub.db'));
+ try{
+  const input={task_id:'task',work_unit_id:'unit',worker_id:'worker',source:'source',worker_task:'bounded task',worker_phase:'full' as const,timeout_seconds:60};
+  const p=await journal.prepare(input,{identity:()=>({threadId:'origin'}),read:async id=>({thread:{id}})});
+  await journal.admit(p.id,new PublisherRoutes(store),async binding=>({installed:true,binding}));
+  const command='a'.repeat(32);let submits=0,lookups=0;
+  await assert.rejects(journal.submit(p.id,async()=>{submits++;throw new HarnessOperationError({code:'command_outcome_unknown',response:{ok:false,task_id:'task',work_unit_id:'unit',command_id:command}});}));
+  assert.equal(journal.inspect(p.id).command_id,command);assert.equal(journal.inspect(p.id).state,'prepared');
+  journal.close();journal=new TaskPublisher(join(root,'pub.db'));
+  await journal.recoverPending(async()=>{lookups++;throw Error('must recover known command');},async(task,id)=>({task_id:task,work_unit_id:'unit',command_id:id,state:'succeeded',exit_code:0}));
+  assert.equal(journal.inspect(p.id).state,'finished');assert.equal(journal.inspect(p.id).command_id,command);
+  assert.equal(submits,1);assert.equal(lookups,0);assert.equal(journal.attempts(p.id).length,1);
+ }finally{journal.close();store.close();rmSync(root,{recursive:true,force:true});}
+});
+
+for(const mismatch of ['task','work_unit','command'])test('unknown submission rejects foreign '+mismatch+' identity',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'foreign-command-'));const store=new ReviewedStore(join(root,'queue.db'));const journal=new TaskPublisher(join(root,'pub.db'));
+ try{
+  const input={task_id:'task',work_unit_id:'unit',worker_id:'worker',source:'source',worker_task:'bounded task',worker_phase:'full' as const,timeout_seconds:60};
+  const p=await journal.prepare(input,{identity:()=>({threadId:'origin'}),read:async id=>({thread:{id}})});
+  await journal.admit(p.id,new PublisherRoutes(store),async binding=>({installed:true,binding}));
+  const response={ok:false,task_id:mismatch==='task'?'foreign':'task',work_unit_id:mismatch==='work_unit'?'foreign':'unit',command_id:mismatch==='command'?'invalid':'a'.repeat(32)};
+  await assert.rejects(journal.submit(p.id,async()=>{throw new HarnessOperationError({code:'command_outcome_unknown',response});}));
+  assert.equal(journal.inspect(p.id).command_id,null);assert.equal(journal.inspect(p.id).state,'prepared');
+ }finally{journal.close();store.close();rmSync(root,{recursive:true,force:true});}
 });

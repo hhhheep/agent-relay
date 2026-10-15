@@ -14,11 +14,25 @@
       "provider_env_file": "/work/example/credentials.local.env",
       "initialize_checkout": false,
       "jobs": {
-        "backend": "systemd",
+        "backend": "systemd_transient",
         "max_concurrent": 1
       },
       "bootstrap": {
-        "mode": "managed"
+        "mode": "existing_checkout"
+      },
+      "remote_terminals": {
+        "hub_name": "solution-agent-hub",
+        "default": "main",
+        "max_children": 8,
+        "segment_bytes": 4194304,
+        "retain_segments": 16,
+        "slots": {
+          "main": {
+            "window_name": "interactive-main",
+            "cwd": "/work/example",
+            "shell": "/bin/bash"
+          }
+        }
       }
     }
   }

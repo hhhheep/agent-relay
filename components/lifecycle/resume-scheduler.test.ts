@@ -24,7 +24,7 @@ test('one continuation fails without blocking another; original deliveries stay 
 test('scheduler waits for remote answer persistence then dispatches only once through real ledger',async()=>{
  const root=mkdtempSync(join(tmpdir(),'resume-schedule-'));let store=new Store(join(root,'queue.sqlite'));let submissions=0;
  const harness={recover:async(task:string,command:string)=>({task_id:task,command_id:command,state:'succeeded',writer_lease_released:true}),submit:async(request:any)=>{submissions++;return {task_id:request.task_id,work_unit_id:request.work_unit_id,command_id:'continuation-'+submissions,state:'succeeded'};}};
- const controller=new ResumeController(resolve('../../.venv/Scripts/python.exe'),resolve('resume-rpc.py'),join(root,'resume.sqlite'),harness);
+ const controller=new ResumeController(resolve(process.platform === 'win32' ? '../../.venv/Scripts/python.exe' : '../../.venv/bin/python'),resolve('resume-rpc.py'),join(root,'resume.sqlite'),harness);
  try{
   let routes=new PublisherRoutes(store);const binding=routes.publish('sender','task','unit','worker',{threadId:'chat'});
   const delivery=remoteDelivery(binding,'q');routes.ingest('sender',{v:1,binding,request_id:'q',delivery_id:delivery,payload:{kind:'question',problem:'blocked',acceptance:'check'}});

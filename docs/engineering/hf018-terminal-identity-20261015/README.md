@@ -1,0 +1,9 @@
+# HF-018: declared terminal workplace identity
+
+Ordinary source fix from engineering baseline `5227660`, owner `remote_terminal.ProfileTerminalManager`, consumer `terminal_open`. A synthetic regression on unchanged code failed because an existing terminal could be reattached after its declared slot cwd changed to another worktree; `restart=true` could even replace the old pane before detecting that mismatch.
+
+The stored configured_cwd must now resolve to the currently declared slot cwd before any logger refresh, restart or metadata/owner update. Missing or mismatched metadata fails closed with the existing terminal_identity_mismatch error, releases the newly acquired lease and suggests restoring configuration or a separately declared terminal/worktree. Actual interactive shell cwd may legitimately change with `cd`; it is not equated with the configured workplace. Equivalent path spellings and profile-label renames remain supported. No schema, tool surface, task ownership policy, protocol or live configuration changes. Revert the source commit to roll back; no state migration is required.
+
+Evidence: new negative regression failed before the fix (DID NOT RAISE). `tests/test_remote_terminal.py tests/test_terminal_lease_errors.py tests/test_terminal_owner_diagnostics.py`: 45 passed after repair, covering live/exited panes, no logger/restart/metadata side effects, released lease, equivalent workplace paths and original owner recovery. Tests use synthetic tmux, not an installed service. Native tmux/Linux and live network/reboot acceptance are NOT RUN; historical HF-018 remains open for those broader requirements.
+
+The existing Windows candidate workflow now also runs on `codex/hf*` pushes so reviewed repair candidates can receive clean-host CI before advancing the engineering branch. Its validation steps and permissions remain unchanged; no default-branch merge or deployment is involved.

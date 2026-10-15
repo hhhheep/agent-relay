@@ -10,7 +10,10 @@
       "startup_timeout_sec": 20,
       "tool_timeout_sec": 60,
       "env_vars": [
-        "SOLUTION_AGENT_ROOT"
+        "SOLUTION_AGENT_ROOT",
+        "SOLUTION_AGENT_PROFILES_FILE",
+        "SOLUTION_AGENT_PROFILE_ID",
+        "SOLUTION_AGENT_BINDING_ID"
       ],
       "tools": {
         "stage_execute": {

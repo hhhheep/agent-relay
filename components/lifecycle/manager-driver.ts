@@ -43,6 +43,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
  const root=resolve(config.stateRoot);mkdirSync(root,{recursive:true});
  const managerGeneration=randomUUID();
  const store=new ReviewedStore(resolve(root,'queue.sqlite')),app=dependencies.app();
+ store.db.prepare("INSERT INTO meta VALUES ('manager_generation',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(managerGeneration);
  let inbox:any,appReady=false,connectionFailures=0,nextConnect=0,lastStatus:any,harness:HarnessPort|undefined,scheduler:ResumeScheduler|undefined,resumeState='disabled',publisher:TaskPublisher|undefined;
  let appAttempts=0,outageAttempts=0,outageStart:number|undefined,nextAppAttempt=0,appReason='initial_context_required';
  let nextHealth=0;
@@ -100,7 +101,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
     catch{connectionFailures++;nextConnect=Date.now()+Math.min(60000,1000*2**Math.min(connectionFailures,6));}
    }
    const tick=await service.tick();
-   if(scheduler){
+   if(scheduler&&harness?.connected){
     try{
      if(publisher&&Date.now()>=nextPublicationRecovery){
       publicationRecovery=await publisher.recoverPending(request=>{allowedTasks.add(request.task_id);return harness!.recoverWorker(request);},(task,command)=>{allowedTasks.add(task);return harness!.recover(task,command);});
@@ -110,6 +111,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
      const resumes=await scheduler.tick();resumeState=resumes.some(r=>r.state==='requires_attention')?'resume_requires_attention':resumes.some(r=>r.state==='submission_uncertain')?'submission_uncertain':'ready';}
     catch{resumeState='resume_requires_attention';}
    }
+   if(harness&&!harness.connected)resumeState='harness_reconnect_required';
    if(tick.transport.length&&inbox){await inbox.close();inbox=undefined;connectionFailures++;nextConnect=Date.now()+Math.min(60000,1000*2**Math.min(connectionFailures,6));}
    try{app.identity();}catch{if(appReady)appReason=app.canReconnect()?'connection_lost':'new_trusted_context_required';appReady=false;}
    status({lifecycle:'active',state:appReady?'running':'app_rebootstrap_required',transport:inbox?'connected':'offline',

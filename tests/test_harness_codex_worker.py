@@ -68,7 +68,7 @@ def test_codex_uses_declared_local_process_and_existing_prompt(packet, monkeypat
     with pytest.raises(ValueError, match="already claimed"):
         worker.run_worker(packet)
     assert len(calls) == 1
-    receipt = json.loads((Path(packet["control"]) / "receipt.json").read_text())
+    receipt = json.loads((Path(packet["control"]) / "receipt.json").read_text(encoding="utf-8"))
     assert receipt["contract_valid"]
     assert len(receipt["artifact_hashes"]) == 4
 

@@ -2,6 +2,7 @@ import shutil
 import tarfile
 import unittest
 import uuid
+from pathlib import Path
 from unittest.mock import patch
 
 from solution_agent.orchestrator import core
@@ -13,7 +14,36 @@ from tests.helpers import WorkspaceTempDir
 
 class RemoteStatusWorkerAgnosticTests(unittest.TestCase):
     def setUp(self):
+        # The extracted source does not ship private research workspace inputs.
+        # Exercise the real loaders/builders with an explicit synthetic workspace.
+        workspace = WorkspaceTempDir()
+        self.workspace = workspace.__enter__()
+        self.addCleanup(workspace.__exit__, None, None, None)
+        for target in ("solution_agent.orchestrator.paths.root", "solution_agent.orchestrator.core.root"):
+            patcher = patch(target, return_value=self.workspace)
+            patcher.start()
+            self.addCleanup(patcher.stop)
         ensure_orchestrator_dirs()
+        (self.workspace / "config" / "remote_execution_profiles.yaml").write_text(
+            "schema_version: 1\nprofiles:\n"
+            "  EXAMPLE_WORKER_B:\n    host: EXAMPLE_WORKER_B\n"
+            "    remote_workdir: /srv/example-project\n    conda:\n      env: py_torch\n"
+            "  EXAMPLE_WORKER_A:\n    host: EXAMPLE_WORKER_A\n"
+            "    remote_workdir: /srv/example-workspaces-b/loupe_workspace/Loupe_agent\n"
+            "    conda:\n      prefix: /srv/example-workspaces-b/envs/loupe\n",
+            encoding="utf-8",
+        )
+        for relative in (
+            "docs/MAINTENANCE_POLICY_V1.md", "docs/SCHEDULER_OPTIMIZATION_NOTES.md",
+            "docs/OPENCODER_TASK_EXECUTION_GUIDE.md", "docs/INBOX_TASK_FORMAT.md",
+            "scripts/probes/run_probe.py", "scripts/loupe/run_seg_overfit.py",
+        ):
+            target = self.workspace / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("# Synthetic bootstrap input; never executed.\n", encoding="utf-8")
+        # run_remote packages the actual core source; only workspace inputs are synthetic.
+        source = Path(core.__file__).resolve().parents[2] / "solution_agent"
+        shutil.copytree(source, self.workspace / "solution_agent", ignore=shutil.ignore_patterns("__pycache__"))
         self.registry_backup = load_registry()
 
     def tearDown(self):

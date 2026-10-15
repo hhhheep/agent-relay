@@ -12,7 +12,6 @@
   ],
   "vault": "fixture-vault",
   "state": "state",
-  "provider_module": "../../plugins/research-report-writer/lib/provider.mjs",
   "credential_env_file": "credentials.local.env",
   "watch_roots": [
     "Sources"

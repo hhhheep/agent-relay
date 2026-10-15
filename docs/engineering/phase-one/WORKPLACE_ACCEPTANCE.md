@@ -1,0 +1,101 @@
+# Workplace acceptance follow-up — 2026-10-12
+
+Current result: **M1–M4 isolated Harness PASSED for runtime bd6c131ec6a770e5**. The terminal-publication follow-up at the end is the current runtime evidence; 6f records are retained as history. The current archive and follow-up sections below supersede earlier PARTIAL rows and old candidate identities. Remaining whole-system coverage is listed in [STATUS.md](STATUS.md).
+
+Status: partial P1 acceptance. User explicitly authorized installation packages and isolated workplace installation/testing/update/rollback. Existing installed plugins, global control profiles and live Worker installation were not switched. Private paths, original deployment configuration and raw receipts remain outside Git.
+
+## Legacy regression repair
+
+The original nine failures were reproducibility defects in tests relying on intentionally excluded research checkout files. Three remote tests lacked synthetic conda profiles and required bootstrap input files; six continuation tests copied a planner policy only if it happened to exist in the checkout. The remote suite now uses a temporary workspace with synthetic inputs and the actual core source. The continuation suite supplies an explicit bounded-probe policy. All previous behavior assertions are retained. Runtime missing-policy/missing-bootstrap behavior still fails closed. Two legacy suites plus workflow-profile regressions: **55 passed**. This does not provision production research policies.
+
+## Actual target and source identities
+
+- Client: same Windows x64 host, new isolated source/venv; Python 3.13.12, Node 24.19.0. Python pins installed from public PyPI with cache disabled. Node locks installed using a new npm cache and pnpm store; fresh consumer tests: 23 passed.
+- Worker: actual Linux x64 workplace, kernel 6.8, isolated directory. Python 3.13.16 obtained through uv 0.13.0 (downloaded wheel checked against its PyPI SHA256). Exact Linux Worker pins install from public PyPI, `pip check` passes. No system interpreter, service or current Worker installation was replaced.
+- Existing release: `harness-0.6-cdf4c9cbb9e48fb2`, source root `cdf4c9cbb9e48fb29f6c924795f2aa56d3675b96ab842b7033c67c173520da5d`.
+- Candidate release: `harness-0.6-4e69022edc545f89`, source root `4e69022edc545f89b24c206c9a260e9be719752088901f00deeb937e521b27b2`.
+- Both retain MCP schema `0e4f66158a663c674a761cf70253cb6cda09b34167c99e75643892ae6556b4b4` and the original eleven tools.
+
+## Matrix evidence and limits
+
+| Row | Actual evidence | Full-row status |
+| --- | --- | --- |
+| M1 | New isolated Windows client with original paired Client manifest connects through release-owned launcher to existing Linux Worker; matching loaded identity, correct cwd, supervised command, receipt hash and original-ID lookup pass | PARTIAL: same physical Windows device and Harness component coverage |
+| M2 | Fresh isolated Windows dependencies and fresh Linux Worker installation; independent workplace identity; real stdio list/dispatch/result/hash/original-ID lookup pass | PARTIAL: Harness component coverage, remaining whole-system coverage pending |
+| M3 | Existing isolated client profile, original receipt and synthetic SQLite history preserved by hash; add a new explicit binding, connect to candidate Worker, verify new target and original-ID lookup | PARTIAL: isolated configuration/history fixture; no live-client cutover |
+| M4 | Exact old ZIP activates in a private namespace; original/candidate/original stdio activation, hash-reviewed update/rollback, command recovery and configuration/state/receipt preservation pass | PARTIAL whole-system; isolated Harness update/rollback PASSED |
+
+Private local evidence is under `.verification/workplace-matrix/`. Successful M1 stdout receipt SHA256: `c736ea7cc85e797120ed4ac888ba23f9adc427ed4514a2a755e3d5d4abc90ff0`. M2/M3 isolated target stdout receipt SHA256: `59831b1d9e32dce1aa6c090579c89070919dadbfbf94ed80e1a21dfe02ddf4ff`. Receipts record original command IDs and exact execution releases. Commands print cwd and a fixed acceptance marker; no research job or paid model is invoked.
+
+The M4 error is `profile_root_mismatch`: the original configured runtime root differs from the isolated installation root. Editing that old profile changes the old source identity because its allowlist hashes the profile. We do not loosen `verify_pair`, alter the immutable archive, or treat a relocated/reissued package as the original old release. That initial blocker is now resolved by the genuine private namespace documented below.
+
+After the M3 switch, the old binding also recovered the original M1 command without resubmission. A deliberate old-Client/new-Worker identity mismatch was rejected during server startup by the unchanged protocol gate, before any acceptance command was submitted. The candidate manifest carries prior component acceptance only while the built release ID and source-root hash still equal the tested candidate; overall status remains `P1_CANDIDATE_NOT_VERIFIED`.
+
+## Packaging and diagnostic findings
+
+The client source ZIP originally omitted `plugins/solution-agent-harness/release_manifest.json`, required by its existing remote launcher. The builder now generates this from the Worker builder's exact runtime identity plus Worker archive provenance. Archive payload digest and runtime source digest have distinct meanings and are not substituted for one another.
+
+The acceptance client preserves Windows standard environment variables used by OpenSSH, including its global configuration location, while excluding provider credentials. It selects the SDK's documented initialize handshake for the unchanged Harness MCP surface; protocol 0.6 release checks still run unchanged. Remote profile key casing must match the actual deployed key. Supervised systemd jobs have their own PATH, so the probe uses the confirmed Linux `python3`, rather than assuming `python` is available. Failed probes and diagnostic attempts are preserved; uncertain results were queried by their original IDs before any new command.
+
+Final affected legacy/workflow/bootstrap/installation suite: **59 passed**. Fresh client Node consumer suite: **23 passed**. Publication check: 979 Git candidate files, no findings. Immutable source map unchanged; 19 extracted files now have explicit engineering change provenance. Prior 130-pass core/Guard and 77-pass lifecycle evidence remains separate from this follow-up.
+
+## Resolved original-root blocker
+
+Following explicit user approval for the helpers and clean engineering test package, bubblewrap/user namespaces and user-systemd cgroup delegation were verified. `scripts/release/run_linux_namespace.py` maps the unchanged isolated release onto its historical runtime path, with private workplace/run/state mounts. Mount, PID, network and cgroup namespaces isolate execution. No host HOME, research filesystem or host D-Bus socket is mounted. A transient Delegate=yes user unit owns cleanup; a private systemd manager supervises actual Harness jobs. Root permission and persistent service configuration changes were unnecessary. Reproduction method: [NAMESPACE_ACCEPTANCE.md](NAMESPACE_ACCEPTANCE.md).
+
+Both clients and servers passed strict protocol/workplace checks and exposed eleven canonical tools. The existing overlay installer applied an exact original-hash-reviewed forward plan and an exact-current-hash reverse plan. Each apply was bound to its dry-run plan hash. The Windows acceptance client selected the matched retained plugin for each server. Actual loaded sequence: `harness-0.6-cdf4c9cbb9e48fb2` → `harness-0.6-4e69022edc545f89` → `harness-0.6-cdf4c9cbb9e48fb2`.
+
+The candidate recovered the original old command ID. The rolled-back old release recovered both the old command and a candidate-release completed command, preserving execution-release IDs and stdout hash `c736ea7cc85e797120ed4ac888ba23f9adc427ed4514a2a755e3d5d4abc90ff0`, without resubmission. Seven original configuration/workplace/SQLite backup/command-result files retained exact hashes through update and rollback. SQLite rows and consistent backup were verified; the prior M3 client profile, receipt and SQLite history also retained their recorded hashes. Original archive bytes remained unchanged.
+
+Real artifact store, inspect, diff review, create-only materialize plan and CAS commit passed for M2, M3 and rolled-back M4. Synthetic source, receipt and target all hash to `d948f658bbb3595257ea920fb9ee6ae27c7c60047f08a401fb8e53500a5d8afd`. Eight cross-end receipts and original-ID links were checked together under ignored `.verification/namespace-m4/`. Linux core/legacy/install/namespace suite: **153 passed**, no skips. Windows namespace boundary tests: **3 passed**. This clears the path blocker and verifies isolated Harness update/rollback; wider whole-system and independent-device coverage remain separate.
+
+Retained diagnostics: mount ordering initially hid the isolated interpreter; a separate dbus-run-session bus could not activate the private manager; the read-only release needed an existing state mountpoint before mounting private state. All were repaired in the helper. One recovery used an incorrect ID and returned not_found without submitting a command; corrected recovery reads the exact original receipt ID. Windows sandbox tempfile restrictions initially failed the boundary tests; unchanged assertions pass in the authorized normal local environment. Failed attempts are not counted as acceptance.
+
+Linux Token Guard suite also passed: **37 passed** (190 Linux tests across the two suites). Final checks confirmed all seven original hashes and the immutable old ZIP remained unchanged, with no acceptance transient units left running.
+
+## Wider Linux component acceptance
+
+The persistent, explicitly labelled isolated test environment now also hosts a fresh Node 24.19.0/source/dependency round. Linux Writer/Background/Provider: **23 passed**; Lifecycle/goal: **77 passed**, zero skips. Actual temporary loopback XATS/mailbox delivery, restart and receipt behavior are covered. Native better-sqlite3 rebuild and memory SQLite check, Router/XATS build, standalone Writer build and six-tool stdio handshake passed. Fresh Python no-cache installation and pip check passed. Logs were retrieved and their summary SHA256 values verified locally.
+
+This run exposed and fixed the XATS lock specifiers, Windows-only test interpreter paths and omitted goal-routing dependency installation/registry lock. The first goal lock inherited local dependency links; a second clean-directory generation removed them, and the final registry-only lock passes npm ci. Exact methods, hashes and failed-attempt disposition are in [STATUS.md](STATUS.md); reproduction commands are in [INSTALL.md](INSTALL.md). These component results supplement the matrix evidence, but updated archive installation and per-row complete coverage remain under review. Same-host Windows isolation is still identified explicitly; no live deployment was activated.
+
+## Current archive installation round
+
+Source commit `3b010b1d3873cd0571062ce47a44ff9e1ee472df` builds clean archives. Marking the obsolete transport-owner taskbook as historical changes a file in the existing Worker release inventory, so the exact runtime becomes `harness-0.6-6f9532ef91a5cdae`, source root `6f9532ef91a5cdaec9cfc345f888039b64f29f39472d4c1288f3ecc0f44efe91`. The builder correctly refuses to reuse old runtime acceptance automatically. No runtime routing or transport lock was added.
+
+Actual Worker ZIP SHA256 `17a4c55043b46bd8234d4f275b1a04ae67adcfe4d94d3f3855d82020f3227b17` passes the delivered bootstrap dry run (target stays absent), apply, 324 payload checks, fresh venv/no-cache exact pins, pip check and loaded identity/tool checks. Writer ZIP `fb7476770e3a523bbae3bc39ce64ef5a9e11ea6f689f73b47c3cb33c53b9bf26` installs in a separate directory and passes real six-tool stdio without adjacent dependency files. The checker accepts an optional installed-plugin directory argument.
+
+Windows client ZIP `02f3261f8885687f56f274ab8b9e0d5ed2427c315360f318bbbd280c3ff4ba74` installs into a new same-host directory. Fresh Python pins install with no cache; npm uses an empty round-local cache for Provider, Lifecycle and goal-routing; Writer uses an explicitly empty round-local pnpm store (3 downloaded, 0 reused). Consumer tests: 23 passed. Delivered Python installer and eleven-tool self-check pass.
+
+The matched archive-installed Windows client/Linux Worker pass real stdio, exact protocol/workplace identity, completed probe recovery and reviewed artifact create-only CAS. Original command ID `5fc36788a092455f806cc1aba4da6e3c` is recovered without resubmission; stdout SHA256 `f64ba3627b9f3dc19b99535cdd38768ca6cd24c74465058113de6a05e95c69eb`. Artifact bytes match `d948f658bbb3595257ea920fb9ee6ae27c7c60047f08a401fb8e53500a5d8afd`. The first artifact attempt correctly rejected a fixture outside the allowed runtime root; the fixture was moved inside the isolated runtime, preserving the boundary and recovering the already-completed command. One diagnostic initially looked for `server` in CLI self-check output; its actual `runtime_identity` fields were then checked against the manifest.
+
+Full logs and summaries were retrieved and hash-verified under ignored `.verification/full-acceptance/`. This proves current-archive fresh installation and M2 Harness behavior. M1/M3/M4 evidence above belongs to the prior `4e69022edc545f89` candidate; recheck the new release before carrying those results forward. Another physical Windows device remains unavailable. Whole-system P1 is not yet verified.
+
+## Current M1–M4 follow-up
+
+The new `6f9532ef91a5cdae` archive round now has independent passed Harness receipts for all four rows. M1 uses fresh archive-installed Windows client code with the retained matching old manifest; actual old Worker identity remains `cdf4c9cbb9e48fb2`, running at original paths inside the private namespace. M3 adds an explicit package-Worker binding to the existing isolated client environment; original profile, receipt and SQLite history hashes remain unchanged. The local selector alias resolves to the new Worker’s canonical test profile; the actual target cwd/workplace/release are verified. M2/M3 artifact review and create-only CAS pass.
+
+M4 uses a newly reviewed forward ZIP `091c5630bfbfc4a4bbd33767afacba8b5cbcacf17eeabfa2fde08db4707696d3` and exact reverse ZIP `2d6a584768a5454dfa7ef0fe4723aaf2d8e373392a6d1a1d710ab217efe50aa1`. Dry-run plans contain zero conflicts; applies are bound to their respective plan hashes. Actual Windows/Linux sequence: original `cdf4c9cbb9e48fb2` → current `6f9532ef91a5cdae` → original. The current runtime recovers old command `322f373d0d0640909f21bdb632b02f94`; the rolled-back runtime recovers that command and current-release command `fef441ec950d414190d38c0c80b28342`, retaining execution release and stdout hash. Thirteen original/current config, identity, history and result files retain their hashes. SQLite-consistent backup rows match, immutable old ZIP remains unchanged, and zero acceptance transient units remain. Rolled-back artifact review/CAS also passes within the private mounted state root.
+
+Fresh archive-installed Windows XATS downloads 255 packages with zero reuse, rebuilds target-native SQLite, passes memory create/insert/select and service bundle, and passes all 77 Lifecycle/goal tests with zero skips. The real production `HarnessPort` and its installed MCP SDK connect to the isolated Linux Worker, verify the current release and recover original M2 command `5fc36788a092455f806cc1aba4da6e3c`; this supplement uses no fake Harness client. Eight current cross-end/adapter receipts and all native log hashes were audited together. The current goal is at final whole-system requirements audit; no installed hooks, native App service configuration or live deployment was activated.
+
+## Native App and Writer remote closure
+
+Production NativeAppPort used the installed official Codex app-tools stdio entry with the current genuine executor context. Caller/host identity and exact thread read passed; no send or pipe discovery occurred. Standalone Writer also validated a synthetic evidence packet through its own real SSH adapter, returning verified SHA256 and rejecting outside-root paths. Remote script bytes match source; no credential/model invocation occurred. Scope, hashes and diagnostics: [STATUS.md](STATUS.md). These close the previous adapter checks; live activation, cross-chat sends and paid drafting remain NOT RUN.
+
+## Current bd runtime matrix after terminal publication repair
+
+Source commit `d0481c629085a7b09bc4483f82bfa3ba1040788c`, runtime `harness-0.6-bd6c131ec6a770e5`, source root `bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591`. Fresh client/Worker Python archive installation, Linux 194-test regression and all steps of GitHub run 38228079618 passed. Node source for the production bridge was checked byte-for-byte against the prior clean installed archive; current clean-host CI rebuilds its locked dependencies and native modules.
+
+| Row | Actual result | Private evidence |
+| --- | --- | --- |
+| M1 | Fresh client Python and exact supported old plugin/Worker pairing; original ID recovered, immutable old archive unchanged | package-bd-M1-old-before.local.json |
+| M2 | Fresh paired bd endpoints, original ID recovery, artifact source hash, reviewed diff and create-only CAS | package-bd-M2.local.json |
+| M3 | Existing client adds bd binding; prior bindings and original profile/receipt/SQLite bytes unchanged | package-bd-M3.local.json; existing-client/bd-preservation.local.json |
+| M4 | Loaded old → bd → old; original old command readable on bd, bd command readable on old; reviewed artifact CAS on both versions | package-bd-M4-old-recovered/candidate/rollback-old/rollback-candidate.local.json |
+
+M4 forward archive SHA256 `f388a4afe7e159486713566ec657ddfbe85e6eee8a16498cd001d0655ab16eb1`, plan `08d9d50e2b1d8434d277cc39dcf081c7362ace0d31cc378e3184f4366741cc4d`. Reverse archive SHA256 `03628f71362ab6f432ecf33769b224ebc9867a32fc12b7fdedd97a8c8e026479`, plan `b6d582d5672280bdaae2e8837a0ce041249a8e6c1f164e4285b02bb4a7490751`. Both plans were conflict-free and applied with the exact reviewed plan hash. Sixteen configuration/history/receipt/output hashes and SQLite-consistent backup contents survived; the original supported ZIP bytes are unchanged. The bd synthetic task has no remaining writer lease.
+
+Production Manager used its default NativeAppPort, stable inbox and HarnessPort simultaneously: genuine current Codex context, actual official server identity/health read, independent loopback XATS `/mcp`, and bd paired Worker. Active state was running/online/connected/ready with zero pending items and connection failures; the one-tick Manager then stopped and disconnected, and XATS closed. Private receipt: manager-stack-bd-real.local.json. No fake App, injected adapter, message send, task dispatch or global startup entry was used. Installation examples document the actual configuration fields.
+
+Retained diagnostics: the first M2 artifact fixture was outside the allowed source root; moving the synthetic fixture inside the installed root and querying the original successful ID completed acceptance. M4 first targeted the namespace's read-only code mount; no target was published. Its failed plan lease was explicitly released through the existing TaskCapsule API after verifying the target absent, with a private abandonment receipt. The same command ID completed CAS using the writable private state mount. The first Manager test omitted `/mcp` in its private URL and reported offline; the corrected declared endpoint passed in a new private state directory. These are acceptance configuration corrections, not runtime permission relaxations or hidden retries.

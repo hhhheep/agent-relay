@@ -34,7 +34,7 @@ def test_bootstrap_release_build_dry_run_and_initial_install(tmp_path: Path) -> 
     assert built["manifest"]["release_id"] == build_runtime_identity(ROOT).release_id
     assert "plugins/solution-agent-harness/.mcp.json" in paths
     assert "plugins/solution-agent-harness/skills/solution-agent-harness/references/feedback.md" in paths
-    assert "config/harness_remote_deploy_profiles.yaml" in paths
+    assert "config/harness_remote_deploy_profiles.example.json" in paths
     assert "config/research_md_sync.example.yaml" in paths
     assert "solution_agent/harness/md_sync.py" in paths
     assert "scripts/harness/run_research_md_sync_plan.py" in paths
@@ -71,3 +71,22 @@ def test_bootstrap_release_refuses_hash_mismatch_and_nonempty_target(tmp_path: P
     with pytest.raises(FileExistsError, match="never overwrites"):
         installer.install_release(archive, built["sha256"], occupied)
     assert (occupied / "keep.txt").read_text(encoding="utf-8") == "user data"
+
+
+def test_delivered_fresh_installer_uses_the_documented_cli(tmp_path):
+    import json
+    import subprocess
+    import sys
+    archive = tmp_path / "release.zip"
+    built = builder.build_release(ROOT, archive)
+    delivered = tmp_path / "install_bootstrap_release.py"
+    target = tmp_path / "fresh-target"
+    completed = subprocess.run([sys.executable, str(delivered), "--archive", str(archive),
+        "--expected-sha256", built["sha256"], "--target-root", str(target)],
+        capture_output=True, text=True, check=True)
+    result = json.loads(completed.stdout)
+    assert result["safe"] and not result["applied"]
+    assert not target.exists()
+    managed_help = subprocess.run([sys.executable, str(tmp_path / "install_overlay.py"), "--help"],
+        capture_output=True, text=True, check=True)
+    assert "--plan-sha256" in managed_help.stdout

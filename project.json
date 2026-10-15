@@ -1,6 +1,6 @@
 {
   "name": "agent-relay",
-  "stage": "independent-extraction",
+  "stage": "phase-one-engineering-verified",
   "runtime": {
     "python": "3.13.12",
     "node": "24.19.0",
@@ -9,17 +9,134 @@
   "live_installation": false,
   "formal_modularization": false,
   "source_map": "docs/extraction/source-map.json",
-  "build": "scripts/extraction/rebuild.ps1",
-  "verify": "scripts/extraction/verify-source.py",
+  "build": "scripts/release/build_candidate.py",
+  "verify": "scripts/release/provenance.py",
   "local_git_initialized": true,
   "source_baseline_committed": true,
-  "verification": "docs/extraction/VERIFICATION.md",
+  "verification": "docs/engineering/phase-one/STATUS.md",
   "known_test_failures": {
-    "initial_core": 1,
-    "additional_legacy_workspace_configuration": 9
+    "initial_core": 0,
+    "additional_legacy_workspace_configuration": 0,
+    "historical_legacy_workspace_configuration": 9
   },
   "display_name": "Agent Relay",
   "publication_privacy_checked": true,
-  "publication_visibility": "private",
-  "repository": "https://github.com/hhhheep/agent-relay"
+  "publication_visibility": "public",
+  "repository": "https://github.com/hhhheep/agent-relay",
+  "phase_one_verified": true,
+  "layout_decisions": "docs/engineering/phase-one/DECISIONS.md",
+  "deployment_matrix": {
+    "M1": "PASSED: fresh Windows Python/client paired to supported immutable old Worker; original ID recovery",
+    "M2": "PASSED: fresh bd Windows/Linux endpoints, original ID and artifact diff-review/CAS",
+    "M3": "PASSED: bd binding added to existing client; all prior profiles and 3 history/config hashes preserved",
+    "M4": "PASSED: supported old/bd/old loaded identity, 16 preserved hashes, consistent SQLite backup, new/old original IDs recovered"
+  },
+  "workplace_acceptance": {
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
+    "linux_worker": "isolated Linux x64 / Python 3.13.16 / pinned dependencies and stdio verified",
+    "candidate_release_id": "harness-0.6-4e69022edc545f89",
+    "candidate_source_root_sha256": "4e69022edc545f89b24c206c9a260e9be719752088901f00deeb937e521b27b2",
+    "whole_system_verified": false,
+    "isolated_harness_M4": "PASSED: original paths preserved using Linux namespace and private systemd",
+    "linux_regression": "153 core/legacy/install/namespace + 37 Token Guard passed",
+    "linux_node_components": "PASSED: fresh Node 24.19.0 dependencies, 23 consumers + 77 Lifecycle/goal; native SQLite/XATS and standalone Writer stdio",
+    "linux_node_evidence": "docs/engineering/phase-one/STATUS.md"
+  },
+  "fresh_archive_acceptance": {
+    "source_commit": "d0481c629085a7b09bc4483f82bfa3ba1040788c",
+    "release_id": "harness-0.6-bd6c131ec6a770e5",
+    "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
+    "windows_client": "PASSED: fresh ZIP Python/11-tool surface; prior clean Node payload retained unchanged and new clean-host CI passed",
+    "linux_worker": "PASSED: new delivered bootstrap dry-run/apply, new no-cache Python venv, pip check and loaded identity",
+    "M1_M3_M4_current_release": "PASSED: matched supported old baseline; additive existing-client binding; old/bd/old with 16 preserved hashes and original-ID recovery",
+    "M2_harness": "PASSED: matched newly installed endpoints, original command lookup and artifact diff-review/CAS",
+    "linux_regression": "194 passed, no skips",
+    "windows_core": "97 passed, 2 native POSIX skips",
+    "github_ci": {
+      "run_id": 38228079618,
+      "job_id": 114740438554,
+      "conclusion": "success",
+      "source_commit": "d0481c629085a7b09bc4483f82bfa3ba1040788c"
+    },
+    "manager_stack": "PASSED: production default adapters, genuine App identity/health read, own loopback XATS and strict paired Harness simultaneously, one tick, no message/task submission",
+    "standalone_writer": "Prior actual clean install and real SSH validation; unchanged business source; current clean-host stdio/consumer checks passed",
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
+    "tested_artifacts": {
+      "harness-worker.zip": "1c1d9b3e66804aa56576e85a90cef066183645421c95829c552ad3450374a68b",
+      "windows-client-source.zip": "b1351239bb6a53fda0a086dd443c30be81af55673db6b8841ba594e314360d9c",
+      "install_bootstrap_release.py": "fcaf6c4bb06bea25db8c561638b0be7a569661f3ff51f3f823a070b978d50ff5",
+      "install_overlay.py": "154b2e07e2cd5a777d799d73f9c88252f1a0bca655ae1d9e40e382227f18dd08",
+      "research-report-writer.zip": "f34c8e9af8d6601407dafcf174f0f8cf212bb535835f9d49891479aa89b65359"
+    },
+    "whole_system": "P1_S1_S5_ENGINEERING_DELIVERY_VERIFIED; excluded live/paid/message actions NOT RUN",
+    "unverified": [
+      "Native App send: no test destination authorized",
+      "Paid report generation: outside engineering scope; mock consumer tests passed",
+      "Another physical Windows device: unavailable; same-host clean install tested",
+      "Live deployment/research: outside authorized isolation scope"
+    ]
+  },
+  "candidate_followup": {
+    "reason": "terminal writer lease receipt published after terminal status; CI 38227032156 exposed race",
+    "release_id": "harness-0.6-bd6c131ec6a770e5",
+    "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
+    "local_core": "97 passed, 2 native POSIX skips on Windows",
+    "current_linux_and_matrix": "PASSED: bd M1-M4, Manager stack and S1-S5 engineering delivery review",
+    "remote_ci": "PASSED: run 38228079618, job 114740438554, all required steps",
+    "evidence": "docs/engineering/phase-one/STATUS.md",
+    "source_commit": "d0481c629085a7b09bc4483f82bfa3ba1040788c",
+    "linux_regression": "194 passed, no skips; command f52bf30f809c463d809609a0e3f99940",
+    "windows_archive_python": "PASSED: fresh no-cache dependency install, pip check and 11-tool surface",
+    "linux_archive_python": "PASSED: delivered bootstrap dry-run/apply, fresh no-cache dependencies, pip check and loaded identity"
+  },
+  "prior_fresh_archive_acceptance": {
+    "source_commit": "3b010b1d3873cd0571062ce47a44ff9e1ee472df",
+    "release_id": "harness-0.6-6f9532ef91a5cdae",
+    "source_root_sha256": "6f9532ef91a5cdaec9cfc345f888039b64f29f39472d4c1288f3ecc0f44efe91",
+    "windows_client": "PASSED: fresh archive, no-cache Python, empty npm/pnpm store, 23 consumers, delivered installer and 11-tool check",
+    "linux_worker": "PASSED: delivered bootstrap dry-run/apply, fresh venv/pins, pip check and loaded identity",
+    "standalone_writer": "PASSED: archive installation and six-tool stdio from unrelated cwd",
+    "M2_harness": "PASSED: matched archive-installed endpoints, original command recovery and artifact review/CAS",
+    "M1_M3_M4_current_release": "PASSED: matched old baseline M1; existing-client binding/history M3; hash-bound old/current/old M4 with command recovery and 13 preserved files",
+    "evidence": "docs/engineering/phase-one/WORKPLACE_ACCEPTANCE.md",
+    "windows_native": "PASSED: 255 packages freshly downloaded, SQLite/XATS memory build, 77 Lifecycle/goal",
+    "router_harness_adapter": "PASSED: real SDK connection to isolated Worker and original command recovery",
+    "whole_system": "ISOLATED_ACCEPTANCE_COMPLETE; live activation, native App send and paid report generation NOT RUN",
+    "tested_artifacts": {
+      "harness-worker.zip": "17a4c55043b46bd8234d4f275b1a04ae67adcfe4d94d3f3855d82020f3227b17",
+      "windows-client-source.zip": "02f3261f8885687f56f274ab8b9e0d5ed2427c315360f318bbbd280c3ff4ba74",
+      "install_bootstrap_release.py": "fcaf6c4bb06bea25db8c561638b0be7a569661f3ff51f3f823a070b978d50ff5",
+      "install_overlay.py": "154b2e07e2cd5a777d799d73f9c88252f1a0bca655ae1d9e40e382227f18dd08",
+      "research-report-writer.zip": "fb7476770e3a523bbae3bc39ce64ef5a9e11ea6f689f73b47c3cb33c53b9bf26"
+    },
+    "unverified": [
+      "Native App send: no test destination explicitly authorized",
+      "Paid report generation: outside engineering acceptance; mock Provider consumer tests passed",
+      "Another physical Windows computer: unavailable; same-host clean installation was tested",
+      "Live deployment and research work: outside authorized isolation scope"
+    ],
+    "native_app_bridge": "PASSED: production NativeAppPort with installed official stdio server, trusted current caller/pipe, exact identity and read destination; no send",
+    "writer_remote_adapter": "PASSED: standalone MCP to actual SSH remote validation; synthetic evidence SHA256 verified and outside-root rejected; no credentials/model call"
+  },
+  "delivery_verification": {
+    "status": "S1_S5_VERIFIED",
+    "requirements": {
+      "S1": "PASSED",
+      "S2": "PASSED",
+      "S3": "PASSED",
+      "S4": "PASSED",
+      "S5": "PASSED"
+    },
+    "release_id": "harness-0.6-bd6c131ec6a770e5",
+    "source_root_sha256": "bd6c131ec6a770e579937e4da52cfde08ed2fa149dee86b582b9d51ff3b6b591",
+    "reviewed_source_commit": "691ba2cc49c0ddb104e5dc59b353783430a94906",
+    "evidence": "docs/engineering/phase-one/DELIVERY.md",
+    "scope": "Windows x64 client / Ubuntu 22.04 x64 Worker; exact supported old baseline; isolated installation/update/rollback and production adapter startup",
+    "exclusions": [
+      "native cross-chat send",
+      "paid report generation",
+      "live deployment/research",
+      "other physical Windows devices or arbitrary OS/releases"
+    ]
+  }
 }

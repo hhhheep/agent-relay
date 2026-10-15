@@ -23,7 +23,7 @@ export class TaskPublisher {
  }
  close(){this.db.close();}
  async recoverPending(recover:(request:any)=>Promise<any>,recoverKnown?:(task:string,command:string)=>Promise<any>){
-  const rows=this.db.prepare("SELECT id,body,command_id FROM publications WHERE (state='prepared' AND command_id IS NULL) OR state='running' ORDER BY id LIMIT 128").all() as any[];
+  const rows=this.db.prepare("SELECT id,body,command_id FROM publications WHERE state IN ('prepared','running') ORDER BY id LIMIT 128").all() as any[];
   const results=[];
   for(const row of rows){
    try{
@@ -172,9 +172,12 @@ export class TaskPublisher {
   }catch(error){
    const evidence=error instanceof HarnessOperationError?error.evidence:{code:'transport_or_receipt_unknown',message:String(error)};
    const state=error instanceof HarnessOperationError&&rejectedBeforeLaunch(request,evidence)?'rejected':'prepared';
+   const response=error instanceof HarnessOperationError?evidence.response:undefined;
+   const command=response?.task_id===request.task_id&&response?.work_unit_id===request.work_unit_id&&
+    typeof response.command_id==='string'&&/^[0-9a-f]{32}$/.test(response.command_id)?response.command_id:null;
    this.db.exec('BEGIN IMMEDIATE');
    try{
-    this.db.prepare("UPDATE publications SET state=?,result=? WHERE id=? AND state='prepared' AND command_id IS NULL").run(state,JSON.stringify(evidence),id);
+    this.db.prepare("UPDATE publications SET state=?,result=?,command_id=COALESCE(command_id,?) WHERE id=? AND state='prepared' AND command_id IS NULL").run(state,JSON.stringify(evidence),command,id);
     this.db.prepare('UPDATE publication_attempts SET state=?,receipt=? WHERE attempt=?').run(state,JSON.stringify(evidence),attempt);
     this.db.exec('COMMIT');
    }catch(saveError){this.db.exec('ROLLBACK');throw saveError;}

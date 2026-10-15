@@ -1,10 +1,10 @@
 # Agent Relay 維護入口
 
-目前是獨立來源基線 + Design Ready 設計包，**尚未 Engineering Verified**。`project.json` 的 independent-extraction 狀態仍有效；原完整apps/packages布局是歷史候選，不是P1目標；兩端安裝、實際依賴鎖定、四情境驗收及後期updater/CI均未實作。MUST 先以實際檔案、Git commit 和驗證回執確認階段，不能把設計當成已存在能力。
+目前已完成 **P1 engineering verified（S1–S5，Windows x64 × Linux x64 與已支持舊起點）**；實際交付範圍與證據見[交付審核](docs/engineering/phase-one/DELIVERY.md)。這不宣稱現用啟用、跨chat發送或付費模型已驗證。最新實作與驗證見[工程狀態](docs/engineering/phase-one/STATUS.md)與`project.json`；舊extraction與完整apps/packages布局是歷史基線/候選。兩端乾淨安裝與當前版本M1–M4隔離Harness跨端檢查已通過；Native App原生身份/讀取與Writer遠端驗證亦通過；跨chat發送、付費模型及現用啟用不屬此次隔離驗收，MUST以實際Git/回執核對，不把本機合成驗證當跨端完成。
 
 最新使用者已授權第一期首次框架整理，見[FIRST_RESTRUCTURE_EXECUTION](docs/planning/normalization-20261012/FIRST_RESTRUCTURE_EXECUTION.md)。MAY在本獨立repo集中調整結構、模組、程式與打包接線；首次不受小步diff限制，不能只停在方案。工程自治逐批驗證，不逐批重新批准；仍不授權現用切換、破壞性state遷移或新的Worker研究政策。
 
-當前第一期範圍 MUST 以[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)為準：整理來源、Windows×Linux的M1新/舊、M2新/新、M3舊/新、M4舊/舊更新與真實擴展基礎。首次整理可選compact布局並集中重整，不限制保留舊物理目錄，也不照舊941 map機械搬遷；完整updater/schema框架/研究UI按使用觸發後期。目前工程/四列尚未驗收，已授權新chat開始S1–S5；不增加現用部署授權。
+當前第一期範圍 MUST 以[分期交付](docs/planning/normalization-20261012/PHASED_DELIVERY.md)與[ADR-002](docs/planning/normalization-20261012/ADR-002-PHASED-DELIVERY.md)為準：整理來源、Windows×Linux的M1新/舊、M2新/新、M3舊/新、M4舊/舊更新與真實擴展基礎。首次整理可選compact布局並集中重整，不限制保留舊物理目錄，也不照舊941 map機械搬遷；完整updater/schema框架/研究UI按使用觸發後期。目前四列隔離驗收已通過；整套 S1–S5 交付狀態以工程狀態與實際回執為準，不增加現用部署授權。
 
 修改前 MUST 先讀分期交付，再讀[最新施工任務書](docs/planning/normalization-20261012/TASKBOOK.md)和[維護準則](docs/planning/normalization-20261012/MAINTENANCE_RULES.md)。歷史計劃僅追溯，不覆蓋最新版。此檔列必遵守規則，細節由維護準則展開。
 

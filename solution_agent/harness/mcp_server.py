@@ -10,7 +10,9 @@ import uuid
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
+
+from pydantic import Field
 
 import yaml
 from mcp.server import MCPServer
@@ -28,7 +30,9 @@ from solution_agent.harness.remote_terminal import (
     verify_workplace_identity,
 )
 from solution_agent.harness.release_identity import build_runtime_identity
-from solution_agent.harness.terminal_commands import CommandReceiptError
+from solution_agent.harness.terminal_commands import (
+    CommandObservationError, CommandReceiptError, validate_wait_ms,
+)
 from solution_agent.harness.protocol import ActivationGate, EndpointIdentity, ProtocolMismatch, PROTOCOL_VERSION
 from solution_agent.harness.artifact_apply import ArtifactApplyEngine
 from solution_agent.harness.artifact_runtime import ArtifactStore, Selector
@@ -446,6 +450,11 @@ def _terminal_error(operation: str, terminal_id: str | None, exc: Exception) -> 
     profile_id = os.environ.get("SOLUTION_AGENT_PROFILE_ID") or None
     if isinstance(exc, TerminalError):
         return _with_server(exc.result(operation, profile_id, terminal_id))
+    if isinstance(exc, CommandObservationError):
+        return _with_server(TerminalError(
+            "command_outcome_unknown", str(exc), recoverable=True,
+            next_action="Recover and collect the original command_id; do not resubmit the task.",
+        ).result(operation, profile_id, terminal_id))
     if isinstance(exc, CommandReceiptError):
         return _with_server(TerminalError(
             exc.code, str(exc), recoverable=False,
@@ -787,7 +796,7 @@ def terminal_exec(
     access_mode: Literal["read_only", "writer"] = "writer",
     timeout_seconds: float | None = None,
     cancel: bool = False,
-    wait_ms: int = 30000,
+    wait_ms: Annotated[int, Field(ge=0, le=30000, strict=True)] = 30000,
     max_preview_bytes: int = 4096,
     worker_task: str | None = None,
     worker_phase: Literal["prepare_code", "execute_run", "full"] = "prepare_code",
@@ -796,7 +805,13 @@ def terminal_exec(
 ) -> dict[str, Any]:
     """Run/resume a supervised job. For remote Codex delegation pass worker_task Markdown,
     task_id, work_unit_id, access_mode=writer and timeout_seconds (no command).
-    Defaults to prepare_code, not research execution. Resume/cancel with command_id only.
+    Choose worker_phase to match the authorized deliverable: prepare_code (default)
+    for code/light checks, execute_run for prepared execution, full for authorized
+    implementation plus execution/checks (including bounded complete CPU tasks).
+    Phase does not grant resources. Resume/cancel with command_id only.
+    Ordinary commands retain a work unit for finish or continue; a terminal command
+    does not prove research acceptance or detached resource exit. To finish owned
+    maintenance, recover its command_id with work_unit_id and finish_maintenance=true.
     Uses the existing transport; no terminal_open, YAML spec or research registry required.
     """
 
@@ -808,6 +823,7 @@ def terminal_exec(
     capsule: TaskCapsule | None = None
     packet = None
     try:
+        validate_wait_ms(wait_ms)
         _require_activation()
         manager = _terminal_manager()
         if recover_worker and worker_task is None:
@@ -845,7 +861,11 @@ def terminal_exec(
                     )
                     work_unit_claimed = True
                 elif capsule.active_work_unit != work_unit_id:
-                    raise CapsuleConflict("requested work unit is not the capsule active work unit")
+                    raise CapsuleConflict(
+                        f"work unit {capsule.active_work_unit} requires finish or continue before a different unit; "
+                        f"lifecycle={capsule.lifecycle_state}, writer_leases={len(capsule.writer_leases)}. "
+                        "Retained ownership is not proof of running commands or occupied compute."
+                    )
                 writer_lease_id = f"terminal-job-{uuid.uuid4().hex}"
                 lifetime = max(300.0, (timeout_seconds or 3600.0) + 60.0)
                 lease = WriterLeaseRef(
@@ -922,6 +942,8 @@ def terminal_exec(
                 result["worker"] = read_json(receipt_path) if receipt_path.is_file() else {
                     "contract_valid": False, "task_status": "unverified",
                     "reason": "worker interrupted or failed before result receipt; do not relaunch"}
+                from solution_agent.harness.codex_worker import worker_result_action
+                result["next_action"] = worker_result_action(result["worker"])
                 for name, file in (("worker_receipt", receipt_path),
                                    ("worker_result", output / "result.yaml"),
                                    ("worker_notes", output / "worker_notes.md")):
@@ -986,7 +1008,27 @@ def terminal_exec(
                 result["maintenance"] = finish_owned_maintenance(
                     capsules, result, task_id=task_id, work_unit_id=work_unit_id)
                 current = capsules.load(task_id)
+            elif (not worker_link.is_file() and result.get("access_mode") == "writer"
+                  and current.active_work_unit == result.get("work_unit_id")
+                  and not current.writer_leases and current.lifecycle_state != "REVIEW_REQUIRED"):
+                current = capsules.review_work_unit(task_id, current.active_work_unit, expected_version=current.version)
             result["capsule_version"] = current.version
+        if result.get("access_mode") == "writer":
+            current = _capsule_store().load(task_id)
+            unit_state = ("finished" if current.active_work_unit is None else
+                          "not_active" if current.active_work_unit != result.get("work_unit_id") else
+                          "review_required" if current.lifecycle_state == "REVIEW_REQUIRED" else "active")
+            result["work_unit"] = {"id": result.get("work_unit_id"), "state": unit_state,
+                                   "command_state": result.get("state"), "writer_leases": len(current.writer_leases),
+                                   "external_resources": "unknown", "research_acceptance": "not_assessed"}
+            if unit_state == "review_required" and not result.get("worker"):
+                result["next_action"] = (
+                    ("Command outcome remains unverified; " if result.get("state") == "lost" else "The command ended; ") +
+                    "retained work-unit ownership awaits finish or continue, not a compute slot. "
+                    "Continue in the same unit for persistent/TUI work or unresolved review. For completed owned "
+                    "maintenance, recover this command_id with work_unit_id and finish_maintenance=true. "
+                    "Detached resources and research acceptance require separate evidence."
+                )
         return _with_server(result)
     except Exception as exc:
         # An exception after entering the runner may follow a real launch.
@@ -1009,6 +1051,9 @@ def terminal_exec(
             except Exception:
                 pass
         failure = _terminal_error("terminal_exec", None, exc)
+        if isinstance(exc, CommandObservationError):
+            command_id = exc.command_id
+            failure.update(task_id=task_id, work_unit_id=work_unit_id, command_id=command_id)
         if executor_entered and job_result_received and result.get("command_id"):
             failure.update(task_id=task_id, work_unit_id=work_unit_id, command_id=result["command_id"])
         if worker_task is not None:

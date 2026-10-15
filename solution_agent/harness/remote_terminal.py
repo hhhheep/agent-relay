@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import errno
 import getpass
 import hashlib
 import hmac
@@ -105,6 +106,12 @@ class TerminalError(RuntimeError):
         }
 
 
+def _validate_read_window(after_cursor: int, max_output_bytes: int) -> None:
+    if (type(after_cursor) is not int or after_cursor < 0
+            or type(max_output_bytes) is not int or not 1 <= max_output_bytes <= 65536):
+        raise TerminalError("invalid_read_window", "after_cursor must be a non-negative integer and max_output_bytes must be an integer in 1..65536")
+
+
 @dataclass(frozen=True)
 class TerminalSlot:
     terminal_id: str
@@ -184,7 +191,8 @@ def load_terminal_profile(solution_root: Path) -> TerminalProfile:
             "a Codex process running inside a managed terminal cannot control the same terminal service",
             recoverable=False,
         )
-    config_path = solution_root / "config" / "harness_remote_deploy_profiles.yaml"
+    from solution_agent.harness.remote_profile import deployment_profiles_path
+    config_path = deployment_profiles_path(solution_root)
     try:
         payload = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     except (OSError, yaml.YAMLError) as exc:
@@ -281,6 +289,61 @@ def load_terminal_profile(solution_root: Path) -> TerminalProfile:
     )
 
 
+def _windows_process_identity(pid: int) -> dict[str, Any]:
+    """Query creation time without signalling a process or trusting PID alone."""
+    import ctypes
+    from ctypes import wintypes
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+    kernel.GetProcessTimes.restype = wintypes.BOOL
+    kernel.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+    kernel.GetExitCodeProcess.restype = wintypes.BOOL
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel.CloseHandle.restype = wintypes.BOOL
+    handle = kernel.OpenProcess(0x1000, False, pid)
+    if not handle:
+        return {"state": "exited" if ctypes.get_last_error() == 87 else "unknown"}
+    try:
+        created, exited, system, user = (wintypes.FILETIME() for _ in range(4))
+        code = wintypes.DWORD()
+        if not kernel.GetProcessTimes(handle, ctypes.byref(created), ctypes.byref(exited), ctypes.byref(system), ctypes.byref(user)) or not kernel.GetExitCodeProcess(handle, ctypes.byref(code)):
+            return {"state": "unknown"}
+        return {"state": "alive" if code.value == 259 else "exited",
+                "process_start_marker": str((created.dwHighDateTime << 32) | created.dwLowDateTime)}
+    finally:
+        kernel.CloseHandle(handle)
+
+
+def _lease_process_identity() -> dict[str, Any]:
+    from solution_agent.harness.terminal_commands import _boot_id, _process_marker
+
+    marker = (_windows_process_identity(os.getpid()).get("process_start_marker")
+              if os.name == "nt" else _process_marker(os.getpid()))
+    return {"pid": os.getpid(), "process_start_marker": marker,
+            "host_boot_id": _boot_id() if os.name != "nt" else None}
+
+
+def _lease_process_observation(record: dict[str, Any]) -> dict[str, Any]:
+    pid, marker = record.get("pid"), record.get("process_start_marker")
+    if type(pid) is not int or not 0 < pid <= 0xFFFFFFFF or not isinstance(marker, str) or not marker:
+        return {"state": "unknown", "reason": "process_identity_missing"}
+    if os.name != "nt":
+        from solution_agent.harness.terminal_commands import _process_snapshot
+
+        if not isinstance(record.get("host_boot_id"), str) or not record["host_boot_id"]:
+            return {"state": "unknown", "reason": "boot_identity_missing"}
+        return _process_snapshot(pid, marker, record.get("host_boot_id"))
+    observed = _windows_process_identity(pid)
+    if observed.get("state") != "alive":
+        return {"state": observed["state"], "reason": "process_absent_or_unreadable"}
+    if observed.get("process_start_marker") != marker:
+        return {"state": "exited", "reason": "pid_reused"}
+    return {"state": "alive", "reason": "identity_verified"}
+
+
 class _Lease:
     def __init__(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -289,26 +352,36 @@ class _Lease:
         self.locked = False
 
     def acquire(self) -> None:
+        lock_attempted = False
         try:
             if os.name == "nt":
                 import msvcrt
 
+                # Windows byte-range locks may extend beyond EOF. Do not read
+                # the range before locking: an existing writer denies that read.
                 self.handle.seek(0)
-                if self.handle.read(1) == b"":
-                    self.handle.write(b"0")
-                    self.handle.flush()
-                self.handle.seek(0)
+                lock_attempted = True
                 msvcrt.locking(self.handle.fileno(), msvcrt.LK_NBLCK, 1)
             else:
                 import fcntl
 
+                lock_attempted = True
                 fcntl.flock(self.handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             self.locked = True
-        except (OSError, BlockingIOError) as exc:
+        except OSError as exc:
             self.handle.close()
+            contention = {errno.EAGAIN, errno.EWOULDBLOCK}
+            if os.name == "nt":
+                contention.add(errno.EACCES)
+            if not lock_attempted or exc.errno not in contention:
+                raise TerminalError(
+                    "terminal_lock_failed",
+                    f"terminal writer lease lock failed (errno={exc.errno}); owner unknown",
+                    next_action="Inspect the OS lock error; do not remove the lock file or terminate a presumed owner.",
+                ) from exc
             raise TerminalError(
                 "terminal_busy",
-                "another Codex client owns the fixed terminal writer lease",
+                f"another Codex client owns the fixed terminal writer lease (errno={exc.errno})",
                 next_action="Continue in the owning task or wait for that MCP client to exit; do not force-steal the lease.",
             ) from exc
 
@@ -341,6 +414,7 @@ class ProfileTerminalManager:
         self.base = profile.run_root / "terminal-sessions" / (profile.storage_profile_id or profile.profile_id)
         self.socket_path = self.base / "tmux.sock"
         self._leases: dict[str, _Lease] = {}
+        self.connection_id = uuid.uuid4().hex
 
     def _slot(self, terminal_id: str | None) -> TerminalSlot:
         selected = terminal_id or self.profile.default_terminal
@@ -413,7 +487,32 @@ class ProfileTerminalManager:
         if slot.terminal_id in self._leases:
             return
         lease = _Lease(self._slot_root(slot) / "writer.lock")
-        lease.acquire()
+        try:
+            lease.acquire()
+        except TerminalError as exc:
+            if exc.code == "terminal_busy":
+                # This record is advisory: even an exited PID cannot override
+                # a contended kernel lock. Legacy/malformed records stay unknown.
+                try:
+                    metadata = self._load_metadata(slot)
+                    raw = metadata.get("lease_owner")
+                    record = raw if isinstance(raw, dict) else {}
+                    limits = {"process_start_marker": 128, "host_boot_id": 64,
+                              "connection_id": 32, "task_id": 128, "lock_type": 24}
+                    owner = {key: value[:limit] for key, limit in limits.items()
+                             if isinstance((value := record.get(key)), str)}
+                    pid = record.get("pid")
+                    if type(pid) is int and 0 < pid <= 0xFFFFFFFF:
+                        owner["pid"] = pid
+                    observation = _lease_process_observation(owner)
+                except (OSError, ValueError, TypeError):
+                    owner, observation = {}, {"state": "unknown", "reason": "owner_record_unreadable"}
+                diagnostic = {"recorded_owner": owner, "liveness": observation, "ownership_verified": False}
+                raise TerminalError(
+                    exc.code, f"{exc}; diagnostics=" + json.dumps(diagnostic, separators=(",", ":")),
+                    next_action="Owner metadata is advisory. Do not delete/steal the lock or kill a presumed owner. Reattach the same terminal after its MCP owner normally exits; terminal_read remains available.",
+                ) from exc
+            raise
         self._leases[slot.terminal_id] = lease
 
     def _release(self, slot: TerminalSlot) -> None:
@@ -550,6 +649,14 @@ class ProfileTerminalManager:
         return metadata
 
     def _verify_existing(self, slot: TerminalSlot, metadata: dict[str, Any]) -> None:
+        configured_cwd = metadata.get("configured_cwd")
+        if not isinstance(configured_cwd, str) or not configured_cwd or Path(configured_cwd).resolve() != slot.cwd.resolve():
+            raise TerminalError(
+                "terminal_identity_mismatch",
+                "fixed terminal metadata mismatch: configured_cwd",
+                recoverable=False,
+                next_action="Restore the original workplace configuration or use a separately declared terminal/worktree; do not restart the existing terminal to rebind it.",
+            )
         expected = {
             "terminal_id": slot.terminal_id,
             "hub_name": self.profile.hub_name,
@@ -623,6 +730,11 @@ class ProfileTerminalManager:
             if task_id is not None:
                 metadata["owner_task_id"] = task_id
             metadata["owner_client_pid"] = os.getpid()
+            metadata["lease_owner"] = {
+                **_lease_process_identity(), "connection_id": self.connection_id,
+                "task_id": metadata.get("owner_task_id"),
+                "lock_type": "windows_byte_range" if os.name == "nt" else "posix_flock",
+            }
             self._write_metadata(slot, metadata)
             return {
                 "ok": True,
@@ -646,8 +758,7 @@ class ProfileTerminalManager:
             raise
 
     def _read_raw_bytes(self, slot: TerminalSlot, after_cursor: int, max_output_bytes: int) -> dict[str, Any]:
-        if after_cursor < 0 or not 1 <= max_output_bytes <= 65536:
-            raise TerminalError("invalid_read_window", "after_cursor must be non-negative and max_output_bytes must be 1..65536")
+        _validate_read_window(after_cursor, max_output_bytes)
         manifest = _read_json_retry(self._manifest_path(slot))
         total = int(manifest.get("total_bytes", 0))
         retained_from = int(manifest.get("retained_from", 0))
@@ -747,6 +858,7 @@ class ProfileTerminalManager:
             raise TerminalError("terminal_control_invalid", f"unsupported terminal control: {control}")
         if not 0 <= wait_ms <= 30000:
             raise TerminalError("terminal_wait_invalid", "wait_ms must be between 0 and 30000")
+        _validate_read_window(0 if after_cursor is None else after_cursor, max_output_bytes)
         before = self._stream_summary(slot)
         cursor = before["cursor"] if after_cursor is None else after_cursor
         state = self._query(slot)

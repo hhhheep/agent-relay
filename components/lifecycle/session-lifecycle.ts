@@ -31,7 +31,7 @@ export async function runSessionLifecycle(config:SessionLifecycleConfig,event:an
  if(signal.aborted)return {state:'cancelled',attempts:0};
  // Only a freshly verified context may ask the old manager to release. The old
  // manager checks exact PID+generation, stops normally and keeps durable queues.
- const handoff=requestLifecycleHandoff(config.manager.stateRoot,admission.caller!);
+ const handoff=requestLifecycleHandoff(config.manager.stateRoot,admission.caller!,Date.now(),Math.max(5000,(config.manager.intervalMs??2000)*3));
  const now=dependencies.now??Date.now,sleep=dependencies.sleep??(async(ms,s)=>{await delay(ms,undefined,{signal:s});}),start=now(),budget=config.ownerWaitMs??60000;
  let attempts=0;
  while(!signal.aborted){
