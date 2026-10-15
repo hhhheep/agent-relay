@@ -60,6 +60,11 @@
       "current_sha256": "b975c06491f846ca2acd8f69b4fd7848817aa4645a86fbf75099a04f487a87e9"
     },
     {
+      "path": "tests/test_routing_submission_recovery.py",
+      "extraction_sha256": "487111ac86953bd7bcfcee166dbe8d319d1f0137d3a0a3e359cbd3db7036f47a",
+      "current_sha256": "6ce3a8ba16874e9005f5132ba3073fa34ad55298717c32cb8e837a513bee2f67"
+    },
+    {
       "path": "tests/test_terminal_commands.py",
       "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
       "current_sha256": "76eb14db51ae8f126b6b776a76c54b8456fd3eb5daf9c162be8a8ada23c388e0"

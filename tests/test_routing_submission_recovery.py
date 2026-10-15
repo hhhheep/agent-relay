@@ -6,20 +6,32 @@ from solution_agent.harness.maintenance_completion import finish_owned_maintenan
 from tests.test_harness_codex_worker import packet
 
 
-def test_production_allowlist_actual_transfer_registry_and_worker_version(packet):
+def test_synthetic_allowlist_actual_transfer_registry_and_worker_version(packet, tmp_path):
     import json
     import subprocess
     import sys
     from pathlib import Path
     from solution_agent.harness.task_md_sync import plan_sync, accept_sync
     from solution_agent.harness.publication_registry import install
-    root=Path(__file__).resolve().parents[1]
-    names=json.loads((root/'worker-md-allowlist.json').read_text())['files']
+    root=tmp_path/'publication-source'
+    root.mkdir()
+    documents={'task.md':'# Task\nSynthetic bounded task.\n',
+               'context/inputs.md':'# Inputs\nVerified synthetic input.\n',
+               'context/acceptance.md':'# Acceptance\nPreserve hashes and task ownership.\n'}
+    for name, text in documents.items():
+        source=root/name
+        source.parent.mkdir(parents=True,exist_ok=True)
+        source.write_bytes(text.encode('utf-8'))
+    allowlist=root/'worker-md-allowlist.json'
+    allowlist.write_text(json.dumps({'files':list(documents)}),encoding='utf-8')
+    names=json.loads(allowlist.read_text(encoding='utf-8'))['files']
     assert len(names)==3 and not any(name.startswith('sync-input/') for name in names)
     plan=plan_sync(root,names,remote_python=sys.executable,remote_workplace=packet['cwd'])
     assert len(plan['command'].encode())<=48000
     result=subprocess.run(plan['argv'],capture_output=True,text=True,check=True)
     synced=accept_sync(plan,dict(state='succeeded',exit_code=0,stdout={'preview':result.stdout}))
+    assert plan['manifest']=={name:hashlib.sha256(text.encode('utf-8')).hexdigest()
+                             for name,text in documents.items()}
     snapshot={key:plan[key] for key in ('version','manifest')}
     binding=dict(task_id=packet['task_id'],work_unit_id=packet['work_unit_id'],worker_id='worker',origin_chat_id='origin')
     runtime=Path(packet['root'])
