@@ -36,6 +36,14 @@ Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在
 | Report Provider | Writer 與 Background 共用的模型傳輸、配置與 preset |
 | Token Guard | 大型輸出的有界擷取與可核對紀錄 |
 
+## 目前版本與驗證
+
+2026-10-15 的維護修復已整合至工程分支 [`codex/phase-one-restructure`](https://github.com/hhhheep/agent-relay/tree/codex/phase-one-restructure)，程式提交為 [`91c88cd`](https://github.com/hhhheep/agent-relay/commit/91c88cd7c8181f3c21b2dc084f6ba26cdd737387)。本批改善原命令恢復、等待參數驗證、終端租約診斷、工作單元完成後的處理、MCP 斷線狀態及 Manager 健康判定，並修正 Windows 路徑別名造成的 Markdown 同步回執不一致。詳細範圍見[整合紀錄](docs/engineering/harness-integration-20261015/README.md)及[回饋處置索引](docs/HARNESS_V2_FIELD_FEEDBACK.md)。
+
+該提交的 [GitHub Windows CI 已通過](https://github.com/hhhheep/agent-relay/actions/runs/38743576311)：Python 325 項通過、2 項既有 POSIX 平台跳過，Node 114 項通過；隱私掃描、來源追溯、原生依賴建構與來源候選包檢查也通過。
+
+這批新 runtime 尚未重新執行 Linux 原生及 M1–M4 新舊版本安裝／更新矩陣驗收；先前 P1 的隔離驗收結果仍對應其記錄中的版本。本批尚未合併至 `main` 或部署至現用環境。
+
 ## 開始使用
 
 目前提供 **P1 工程候選版**，主要部署組合是 Windows 客戶端與 Linux Worker。使用前需要配置自己的遠端連線、workplace 和插件入口；報告撰寫另需配置 Provider。
@@ -49,7 +57,7 @@ python scripts/release/build_candidate.py
 
 產物位於 `dist/p1-candidate/`，包含 Windows 客戶端來源包、Linux Worker 包、獨立 Report Writer 插件包，以及安裝／更新工具。依照[安裝指南](docs/engineering/phase-one/INSTALL.md)完成依賴安裝、私有配置、兩端配對與啟動。
 
-Windows／Linux 的乾淨安裝及 Harness 更新／回退已完成隔離驗收。實機覆蓋範圍、版本相容性與仍未執行的項目，見[工程狀態](docs/engineering/phase-one/STATUS.md)；候選版仍需依自己的環境配置與驗證。
+先前 P1 版本的 Windows／Linux 乾淨安裝及 Harness 更新／回退已完成隔離驗收。具體版本、實機覆蓋範圍及仍未執行的項目，見[工程狀態](docs/engineering/phase-one/STATUS.md)；目前工程分支的驗證範圍見上節，候選版仍需依自己的環境配置與驗證。
 
 ## 進一步閱讀
 
