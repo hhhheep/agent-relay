@@ -100,6 +100,11 @@
       "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
     },
     {
+      "path": "components/lifecycle/harness-port.ts",
+      "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
+      "current_sha256": "7f3af5a9019549b9e5e21b4e8513d745518575c9c3372e0ef7b5ca464a713a03"
+    },
+    {
       "path": "components/lifecycle/mailbox-artifact.test.ts",
       "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
       "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
@@ -108,6 +113,11 @@
       "path": "components/lifecycle/mailbox-driver.test.ts",
       "extraction_sha256": "60878f7f1ddbcdf577b687591f7e0f4e3ae83f6871dc128eea331fff24a96332",
       "current_sha256": "5cb200cb1977c3b345dabfb96746ae3743469fd48a6140d0535c67ddf7ecf83e"
+    },
+    {
+      "path": "components/lifecycle/manager-driver.ts",
+      "extraction_sha256": "03585d5e5ded3c991cb4a1fc0c9948e486ae02f870aed1ecbb4ed8e3fd8e11bf",
+      "current_sha256": "e453d32a8bb9412d499d26d9412e49eb42cd0f42c9c0987ccd59bb12416eca29"
     },
     {
       "path": "components/lifecycle/resume-controller.test.ts",
