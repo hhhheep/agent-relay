@@ -290,6 +290,10 @@ def bounded_utf8_preview(path: Path, limit: int) -> Preview:
     total = path.stat().st_size if path.is_file() else 0
     with path.open("rb") as handle:
         raw = handle.read(min(total, limit + 4))
+    if total == 0:
+        return Preview(text="", tail_text=None, raw_bytes=0, total_bytes=0,
+                       truncated=False, binary_artifact_required=False,
+                       control_sequences_removed=0)
     upper = min(len(raw), limit)
     for cut in range(upper, max(0, upper - 4), -1):
         try:

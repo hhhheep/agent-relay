@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import subprocess
 import sys
@@ -19,6 +20,28 @@ from solution_agent.small_task_worker.background_runner import _pid_alive as wor
 
 def runner(tmp_path: Path, *, shell: str | None = None) -> TerminalCommandRunner:
     return TerminalCommandRunner(tmp_path / "jobs", cwd=tmp_path, shell=shell or sys.executable)
+
+
+def test_empty_preview_is_text_and_does_not_request_binary_artifact(tmp_path: Path) -> None:
+    path = tmp_path/'empty.bin'
+    path.write_bytes(b'')
+    preview = bounded_utf8_preview(path, 1)
+    assert preview.text == ''
+    assert preview.tail_text is None
+    assert preview.raw_bytes == preview.total_bytes == 0
+    assert preview.truncated is False
+    assert preview.binary_artifact_required is False
+
+
+def test_silent_success_returns_empty_text_for_both_streams(tmp_path: Path) -> None:
+    result = runner(tmp_path).execute(command='pass',command_id=None,wait_ms=5000,max_preview_bytes=1)
+    assert result['state'] == 'succeeded'
+    assert result['exit_code'] == 0
+    for name in ('stdout','stderr'):
+        assert result[name]['preview'] == ''
+        assert result[name]['binary_artifact_required'] is False
+        assert result[name]['total_bytes'] == 0
+        assert result[name]['sha256'] == hashlib.sha256(b'').hexdigest()
 
 
 @pytest.mark.parametrize("probe", [_process_exists, orchestrator_pid_alive, worker_pid_alive])
