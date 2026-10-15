@@ -158,6 +158,11 @@
       "path": "docs/HARNESS_V3_PERSISTENT_TRANSPORT_MULTIPLEXED_EXECUTION_TASKBOOK.md",
       "extraction_sha256": "840f1685113bfc99d5a555e1e2911e3c9cd4225a2ff465c588d1eb9fdd1b1768",
       "current_sha256": "9e7f6cc7d218ec5b67e05c00f7929722a2f982b4b66b2ba6e059c63c5fd9e6c9"
+    },
+    {
+      "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
+      "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
+      "current_sha256": "629454022a9cec3a20f3c0390db17b0f51e87de241cdabfc90cffe21e824b487"
     }
   ]
 }
