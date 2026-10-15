@@ -809,6 +809,9 @@ def terminal_exec(
     for code/light checks, execute_run for prepared execution, full for authorized
     implementation plus execution/checks (including bounded complete CPU tasks).
     Phase does not grant resources. Resume/cancel with command_id only.
+    Ordinary commands retain a work unit for finish or continue; a terminal command
+    does not prove research acceptance or detached resource exit. To finish owned
+    maintenance, recover its command_id with work_unit_id and finish_maintenance=true.
     Uses the existing transport; no terminal_open, YAML spec or research registry required.
     """
 
@@ -858,7 +861,11 @@ def terminal_exec(
                     )
                     work_unit_claimed = True
                 elif capsule.active_work_unit != work_unit_id:
-                    raise CapsuleConflict("requested work unit is not the capsule active work unit")
+                    raise CapsuleConflict(
+                        f"work unit {capsule.active_work_unit} requires finish or continue before a different unit; "
+                        f"lifecycle={capsule.lifecycle_state}, writer_leases={len(capsule.writer_leases)}. "
+                        "Retained ownership is not proof of running commands or occupied compute."
+                    )
                 writer_lease_id = f"terminal-job-{uuid.uuid4().hex}"
                 lifetime = max(300.0, (timeout_seconds or 3600.0) + 60.0)
                 lease = WriterLeaseRef(
@@ -1001,7 +1008,27 @@ def terminal_exec(
                 result["maintenance"] = finish_owned_maintenance(
                     capsules, result, task_id=task_id, work_unit_id=work_unit_id)
                 current = capsules.load(task_id)
+            elif (not worker_link.is_file() and result.get("access_mode") == "writer"
+                  and current.active_work_unit == result.get("work_unit_id")
+                  and not current.writer_leases and current.lifecycle_state != "REVIEW_REQUIRED"):
+                current = capsules.review_work_unit(task_id, current.active_work_unit, expected_version=current.version)
             result["capsule_version"] = current.version
+        if result.get("access_mode") == "writer":
+            current = _capsule_store().load(task_id)
+            unit_state = ("finished" if current.active_work_unit is None else
+                          "not_active" if current.active_work_unit != result.get("work_unit_id") else
+                          "review_required" if current.lifecycle_state == "REVIEW_REQUIRED" else "active")
+            result["work_unit"] = {"id": result.get("work_unit_id"), "state": unit_state,
+                                   "command_state": result.get("state"), "writer_leases": len(current.writer_leases),
+                                   "external_resources": "unknown", "research_acceptance": "not_assessed"}
+            if unit_state == "review_required" and not result.get("worker"):
+                result["next_action"] = (
+                    ("Command outcome remains unverified; " if result.get("state") == "lost" else "The command ended; ") +
+                    "retained work-unit ownership awaits finish or continue, not a compute slot. "
+                    "Continue in the same unit for persistent/TUI work or unresolved review. For completed owned "
+                    "maintenance, recover this command_id with work_unit_id and finish_maintenance=true. "
+                    "Detached resources and research acceptance require separate evidence."
+                )
         return _with_server(result)
     except Exception as exc:
         # An exception after entering the runner may follow a real launch.

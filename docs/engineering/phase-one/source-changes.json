@@ -10,9 +10,14 @@
       "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
     },
     {
+      "path": "solution_agent/harness/maintenance_completion.py",
+      "extraction_sha256": "c933d6ad1a342b3ac704e8c1572efdb8bef0f719fcfec12ce1247fa10d5af83a",
+      "current_sha256": "86758079a6d47589f1831ebe53105cceae02eab00fa98429f360ed60e91b6311"
+    },
+    {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "206946816048f1c07b80712e9d59b05ceb4bdcb862e83c86d2e8ef5ecc0a8f89"
+      "current_sha256": "900a476de43ef0789523001cf7c80a6675c19b396285e6d9d8cf3ed6d4aecea0"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
@@ -23,6 +28,11 @@
       "path": "solution_agent/harness/remote_terminal.py",
       "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
       "current_sha256": "ceb62c57c261f35124577df5014ee273faf0e9b134ce1f981c888f21b04891ea"
+    },
+    {
+      "path": "solution_agent/harness/task_capsule.py",
+      "extraction_sha256": "d59fc4ed16168ba397521c142107db1d7d0c921824bb0a81aa4347f29b340a11",
+      "current_sha256": "2ef2691f47b9788d27b4ba5870cffc3c35f69361b22e05fdf6b4da656b6bfe9b"
     },
     {
       "path": "solution_agent/harness/terminal_commands.py",
