@@ -27,7 +27,7 @@ def markdown_config(root, key, cwd):
     manifest=snapshot['manifest']
     version=hashlib.sha256(json.dumps(manifest,sort_keys=True,separators=(',',':')).encode()).hexdigest()
     if version!=snapshot['version']: raise ValueError('Markdown version mismatch')
-    directory=cwd/'.solution-agent'/'md-versions'/version
+    directory=cwd.resolve()/'.solution-agent'/'md-versions'/version
     directory.resolve().relative_to(cwd.resolve())
     verify_snapshot(directory,manifest)
     return {'version':version,'manifest':manifest,'directory':str(directory)}

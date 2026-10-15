@@ -35,9 +35,19 @@
       "current_sha256": "2ef2691f47b9788d27b4ba5870cffc3c35f69361b22e05fdf6b4da656b6bfe9b"
     },
     {
+      "path": "solution_agent/harness/task_md_sync.py",
+      "extraction_sha256": "aca47d49e37a946ca9af6ace1eca7f15b875eaed863b72742c48ddc9e32f6c91",
+      "current_sha256": "996ebb935d732ef428b839e4d209699760d975385e3c6b0fec54d56ee6f79387"
+    },
+    {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
       "current_sha256": "eea2afc16558b8024256552d6840b9cd436ecbea9d7e19cb7851b8482b8baf05"
+    },
+    {
+      "path": "solution_agent/harness/worker_help.py",
+      "extraction_sha256": "a4b356b307ddb7930e3d756a866b0ab6844bc5d7ed4f74e77c56a74998d8859b",
+      "current_sha256": "c69dbe22dc93eec326c43a1ff39c83891f8d89b2ca94d3f4836978870bf5261f"
     },
     {
       "path": "solution_agent/orchestrator/prompt.py",
@@ -73,6 +83,16 @@
       "path": "tests/test_harness_remote_profile.py",
       "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
       "current_sha256": "408731e3f81113495f56b7ae07a37ec20e9db6fc8efc53642a63c5863a0b443e"
+    },
+    {
+      "path": "tests/test_md_sync.py",
+      "extraction_sha256": "229bdf92a2aae3f89da2fba1ad62869f516ea77f77938e5bc5814bf210ddf5c7",
+      "current_sha256": "68e5a5a91374bdef51877b583ff8e4dfa7e0add955ec0060d505c713b0a4493e"
+    },
+    {
+      "path": "tests/test_publication_registry.py",
+      "extraction_sha256": "d1884748645f8c3a0df674cadd137b36239ae0c03b94d2da6676bca320fc8bf3",
+      "current_sha256": "8ee391cfbd90b5eb05258b9f1ea4fd263838e324c80d4e221720335638d8abab"
     },
     {
       "path": "tests/test_remote_status_worker_agnostic.py",

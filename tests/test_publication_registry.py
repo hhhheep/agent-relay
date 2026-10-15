@@ -40,11 +40,15 @@ def test_worker_packet_includes_registered_markdown_and_rejects_changed_files(pa
     with pytest.raises(ValueError,match='hash'): build()
 
 
-def test_markdown_registration_requires_existing_verified_snapshot_and_pins_version(tmp_path):
+@pytest.mark.parametrize('alias',[False,True])
+def test_markdown_registration_requires_existing_verified_snapshot_and_pins_version(tmp_path,alias):
     from solution_agent.harness.md_snapshot import build_bundle,materialize
     from solution_agent.harness.worker_help import markdown_config
     source=tmp_path/'source';source.mkdir();(source/'guide.md').write_text('version one')
     workplace=tmp_path/'workplace';workplace.mkdir();runtime=tmp_path/'runtime'
+    if alias:
+        (workplace/'alias').mkdir()
+        workplace=workplace/'alias'/'..'
     path=runtime/'config'/'help-publications.sqlite'
     binding=dict(task_id='task',work_unit_id='unit',worker_id='worker',origin_chat_id='chat')
     bundle=build_bundle(source,['guide.md']);snapshot={k:bundle[k] for k in ('version','manifest')}

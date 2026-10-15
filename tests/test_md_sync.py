@@ -33,3 +33,20 @@ def test_no_acceptance_on_disconnection_or_wrong_receipt(tmp_path):
 def test_oversize_requires_explicit_artifact_transport(tmp_path):
     (tmp_path/'a.md').write_text('a'*48000)
     with pytest.raises(ValueError,match='artifact transport'): plan_sync(tmp_path,['a.md'],remote_python=sys.executable,remote_workplace=str(tmp_path))
+
+
+def test_receiver_preserves_declared_alias_and_rejects_other_destination(tmp_path):
+    (tmp_path/'a.md').write_text('verified content')
+    (tmp_path/'alias').mkdir()
+    workplace=tmp_path/'alias'/'..'
+    plan=plan_sync(tmp_path,['a.md'],remote_python=sys.executable,remote_workplace=str(workplace))
+    result=subprocess.run(plan['argv'],capture_output=True,check=True)
+    receipt=json.loads(result.stdout)
+    command={'state':'succeeded','exit_code':0,'stdout':{'preview':json.dumps(receipt)}}
+    assert accept_sync(plan,command)==receipt
+    assert Path(receipt['directory']).resolve().parent==tmp_path.resolve()/'.solution-agent'/'md-versions'
+    assert (Path(receipt['directory'])/'a.md').read_text()=='verified content'
+    receipt['directory']=str(tmp_path/'elsewhere'/plan['version'])
+    command['stdout']['preview']=json.dumps(receipt)
+    with pytest.raises(ValueError,match='destination mismatch'):
+        accept_sync(plan,command)

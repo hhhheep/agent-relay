@@ -36,7 +36,11 @@ destination=workplace/payload['relative']
 destination.resolve().relative_to(workplace)
 result=materialize(payload['bundle'],destination)
 verify_snapshot(result,payload['bundle']['manifest'])
-print(json.dumps({'ok':True,'version':payload['bundle']['version'],'manifest':payload['bundle']['manifest'],'directory':str(result)},ensure_ascii=True))
+# Keep the declared destination spelling in the receipt. Resolution above and
+# materialize/verify_snapshot still validate the actual files on this host.
+# A Windows short-path workplace can resolve to a different long-path spelling.
+declared=Path(payload['workplace'])/payload['relative']/payload['bundle']['version']
+print(json.dumps({'ok':True,'version':payload['bundle']['version'],'manifest':payload['bundle']['manifest'],'directory':str(declared)},ensure_ascii=True))
 '''.replace('PAYLOAD',repr(encoded))
     argv=[remote_python,'-c','import base64; exec(base64.b64decode('+repr(base64.b64encode(program.encode()).decode())+',validate=True))']
     command=shlex.join(argv)
