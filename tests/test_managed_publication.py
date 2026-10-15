@@ -152,7 +152,8 @@ def test_packet_cannot_redirect_or_silently_bypass_destination_owner(tmp_path,mu
     assert b'old' in target.read_bytes() and not capsules.load(task.task_id).writer_leases
 
 
-def test_actual_writer_packet_is_consumed_without_a_second_format(tmp_path,monkeypatch):
+@pytest.mark.parametrize('report_name',['report.md','REPORT.MD'])
+def test_actual_writer_packet_is_consumed_without_a_second_format(tmp_path,monkeypatch,report_name):
     from tests.test_harness_report_writer import writer, _evidence
     task,capsules,artifacts,engine,target,draft,decl,packet=fixture(tmp_path)
     monkeypatch.chdir(tmp_path)
@@ -162,11 +163,11 @@ def test_actual_writer_packet_is_consumed_without_a_second_format(tmp_path,monke
         return ({'report_markdown':'# Reviewed\nSynthetic result [c1].','claims_used':['c1'],
                  'warnings':[],'unsupported_claims':[]},
                 {'model':'deepseek-v4-flash-0731','usage':{'prompt_tokens':10,'completion_tokens':5}})
-    result=writer.run(evidence_path=evidence,output_dir=tmp_path/'out',destination_kind='local_file',
+    result=writer.run(evidence_path=evidence,output_dir=tmp_path/'out',report_name=report_name,destination_kind='local_file',
         destination_path=target,expected_destination_sha256=decl['accepted_destination_sha256'],
         update_reason='review existing evidence',provider_call=provider)
     assert b'old' in target.read_bytes()
-    decl['draft_path']='out/report.md'
+    decl['draft_path']='out/'+report_name
     packet_id=artifacts.put_path(task,Path(result['publication_packet_path'])).artifact_id
     plan=engine.plan_publication(task,tmp_path,decl,packet_id)
     assert engine.commit_publication(task,plan.plan_id,review(artifacts,task,plan),'manager')['status']=='verified'

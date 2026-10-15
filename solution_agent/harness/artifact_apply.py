@@ -50,7 +50,7 @@ class PublicationDeclaration(StrictModel):
         if any(not value.strip() for value in (self.draft_owner, self.review_owner, self.publish_owner)):
             raise ValueError("publication owners must be explicit")
         for value in (self.draft_path, self.destination_path):
-            if safe_relative_path(value) != value or any(c in value for c in "*?[]") or not value.endswith('.md'):
+            if safe_relative_path(value) != value or any(c in value for c in "*?[]") or not value.lower().endswith('.md'):
                 raise ValueError("publication requires exact relative Markdown paths")
         if self.draft_path == self.destination_path:
             raise ValueError("draft and authority must be separate")

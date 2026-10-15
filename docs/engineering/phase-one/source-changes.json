@@ -7,7 +7,7 @@
     {
       "path": "solution_agent/harness/artifact_apply.py",
       "extraction_sha256": "172489764d3553bdb465322bb0cc412b5416216e9dea5d3b981dd9c520326ed9",
-      "current_sha256": "62e04510576fa00cce7ebe8e8860db2b7166d18d0848c12339f14d3efd5e1802"
+      "current_sha256": "cd6188d41726bc43a5b3bdff5d1cf5e5f3612e59d833f7037daced82c9aa4283"
     },
     {
       "path": "solution_agent/harness/codex_worker.py",
@@ -272,7 +272,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "48290603fe899dd7f22e34826ebb5fa3a0071594ba7fd0459aa55f3add3982b1"
+      "current_sha256": "7c0112646e14e96bd0afaa28ba45d30a515d6f17af55a25c5e7e22a7a17c63a6"
     }
   ]
 }
