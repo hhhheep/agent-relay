@@ -40,6 +40,16 @@
       "current_sha256": "59f6c16208c529c62aa81213279842cffbf06ef6586dadc342353c079ba50c10"
     },
     {
+      "path": "tests/test_fsfm_s0_boundary.py",
+      "extraction_sha256": "881834fa2df907ae729e78215cbb1d0887459150afe61907f8235e5ceed501f1",
+      "current_sha256": "d0eb2a69e9bd044688b291745a1dce22dee2c23b29d292d7b7add6f514ba4a38"
+    },
+    {
+      "path": "tests/test_fsfm_s0_inventory.py",
+      "extraction_sha256": "8b189e9186607c175a30913b71fb6e8203c47d2fe33c90116e7686362166f811",
+      "current_sha256": "e67b99e65985ef87c1206f7879381afa600d1b66508797fa95ba9c3a062e6adc"
+    },
+    {
       "path": "tests/test_harness_bootstrap_release.py",
       "extraction_sha256": "a8a845b6b4a39d708ee83fb19e3df8854635c039e15d77cbb3ddbac08914bdfe",
       "current_sha256": "f60755d86676f0ebe92fb9bedfe730b44cb29fd99c5ca97e6dc2fd6c4b2c187d"

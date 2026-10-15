@@ -1,0 +1,29 @@
+task_id: synthetic_boundary
+job_type: bounded_boundary
+workspace:
+  root: /synthetic/workplace
+  cwd: /synthetic/workplace
+command:
+  script_id: fsfm_s0_boundary
+  args:
+    repo_root: inputs/source
+    output_dir: artifacts/{job_id}
+  timeout_sec: 2700
+resources:
+  gpu_required: false
+  gpu_count: 0
+artifacts:
+  required:
+    - artifacts/{job_id}/fsfm_s0_boundary_metrics.json
+    - artifacts/{job_id}/fsfm_s0_boundary_receipt.json
+    - artifacts/{job_id}/claim_evidence_boundary.csv
+    - artifacts/{job_id}/checkpoint_provenance.json
+    - artifacts/{job_id}/d1_direct_eval_spec.proposed.json
+    - artifacts/{job_id}/s0_data_handoff.md
+    - artifacts/{job_id}/action_requests.json
+    - artifacts/{job_id}/worker_notes.md
+    - artifacts/{job_id}/artifact_summary.md
+success_criteria:
+  exit_code: 0
+  metrics_file: artifacts/{job_id}/fsfm_s0_boundary_metrics.json
+  metric_keys: [execution_status, contract_status, science_status]
