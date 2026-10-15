@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import errno
 import getpass
 import hashlib
 import hmac
@@ -290,26 +291,36 @@ class _Lease:
         self.locked = False
 
     def acquire(self) -> None:
+        lock_attempted = False
         try:
             if os.name == "nt":
                 import msvcrt
 
+                # Windows byte-range locks may extend beyond EOF. Do not read
+                # the range before locking: an existing writer denies that read.
                 self.handle.seek(0)
-                if self.handle.read(1) == b"":
-                    self.handle.write(b"0")
-                    self.handle.flush()
-                self.handle.seek(0)
+                lock_attempted = True
                 msvcrt.locking(self.handle.fileno(), msvcrt.LK_NBLCK, 1)
             else:
                 import fcntl
 
+                lock_attempted = True
                 fcntl.flock(self.handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             self.locked = True
-        except (OSError, BlockingIOError) as exc:
+        except OSError as exc:
             self.handle.close()
+            contention = {errno.EAGAIN, errno.EWOULDBLOCK}
+            if os.name == "nt":
+                contention.add(errno.EACCES)
+            if not lock_attempted or exc.errno not in contention:
+                raise TerminalError(
+                    "terminal_lock_failed",
+                    f"terminal writer lease lock failed (errno={exc.errno}); owner unknown",
+                    next_action="Inspect the OS lock error; do not remove the lock file or terminate a presumed owner.",
+                ) from exc
             raise TerminalError(
                 "terminal_busy",
-                "another Codex client owns the fixed terminal writer lease",
+                f"another Codex client owns the fixed terminal writer lease (errno={exc.errno})",
                 next_action="Continue in the owning task or wait for that MCP client to exit; do not force-steal the lease.",
             ) from exc
 
