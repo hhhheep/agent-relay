@@ -7,7 +7,12 @@
     {
       "path": "solution_agent/harness/codex_worker.py",
       "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
-      "current_sha256": "1742d5c672f64b4f26bd3ab2dc049e2cc6e95299a6d427e4956ac7d974ac5444"
+      "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
+    },
+    {
+      "path": "solution_agent/harness/mcp_server.py",
+      "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
+      "current_sha256": "206946816048f1c07b80712e9d59b05ceb4bdcb862e83c86d2e8ef5ecc0a8f89"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
@@ -22,7 +27,12 @@
     {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
-      "current_sha256": "7907b344e874a18633ad3910fe19f1dacf8c3a40f248a9647b5c6ebc98eb5d34"
+      "current_sha256": "eea2afc16558b8024256552d6840b9cd436ecbea9d7e19cb7851b8482b8baf05"
+    },
+    {
+      "path": "solution_agent/orchestrator/prompt.py",
+      "extraction_sha256": "2f6b82f90dcb872e6a4e7fde261b91baa66d30f3a4ed35cdd42a61bf680d9ee0",
+      "current_sha256": "1df487f0df7d7d75dbc8c49863ce04f9ddcb470c09654b6ab94066f9fa14060a"
     },
     {
       "path": "tests/test_continuation_three_agent_flow.py",
@@ -70,6 +80,11 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
+      "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
+      "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
+    },
+    {
       "path": "components/lifecycle/mailbox-artifact.test.ts",
       "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
       "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
@@ -92,7 +107,12 @@
     {
       "path": "components/lifecycle/task-publisher.test.ts",
       "extraction_sha256": "685dfbab860b71cbe8a65a13a9bef9c4341c7c97013a42ed565effb5b4b30c85",
-      "current_sha256": "acb6d1dfb8c34bfe5ab897f8eed37ed80a95b5b14f9da934339edbf1e0dca14b"
+      "current_sha256": "7280015afd629456cbc8b6634499fb3b54f546a63e1fddd535c4e89e16586135"
+    },
+    {
+      "path": "components/lifecycle/task-publisher.ts",
+      "extraction_sha256": "6486711f8c6ad10479a1928ac6482501a847963793c011e49849841edb29b1b0",
+      "current_sha256": "4cb71c2206dd8945981a0841b924005c3abbd8cad7f621665eb80bb356239c80"
     },
     {
       "path": "components/xats-routing-lab/upstream/pnpm-lock.yaml",

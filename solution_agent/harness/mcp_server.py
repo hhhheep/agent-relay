@@ -10,7 +10,9 @@ import uuid
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
+
+from pydantic import Field
 
 import yaml
 from mcp.server import MCPServer
@@ -28,7 +30,9 @@ from solution_agent.harness.remote_terminal import (
     verify_workplace_identity,
 )
 from solution_agent.harness.release_identity import build_runtime_identity
-from solution_agent.harness.terminal_commands import CommandReceiptError
+from solution_agent.harness.terminal_commands import (
+    CommandObservationError, CommandReceiptError, validate_wait_ms,
+)
 from solution_agent.harness.protocol import ActivationGate, EndpointIdentity, ProtocolMismatch, PROTOCOL_VERSION
 from solution_agent.harness.artifact_apply import ArtifactApplyEngine
 from solution_agent.harness.artifact_runtime import ArtifactStore, Selector
@@ -446,6 +450,11 @@ def _terminal_error(operation: str, terminal_id: str | None, exc: Exception) -> 
     profile_id = os.environ.get("SOLUTION_AGENT_PROFILE_ID") or None
     if isinstance(exc, TerminalError):
         return _with_server(exc.result(operation, profile_id, terminal_id))
+    if isinstance(exc, CommandObservationError):
+        return _with_server(TerminalError(
+            "command_outcome_unknown", str(exc), recoverable=True,
+            next_action="Recover and collect the original command_id; do not resubmit the task.",
+        ).result(operation, profile_id, terminal_id))
     if isinstance(exc, CommandReceiptError):
         return _with_server(TerminalError(
             exc.code, str(exc), recoverable=False,
@@ -787,7 +796,7 @@ def terminal_exec(
     access_mode: Literal["read_only", "writer"] = "writer",
     timeout_seconds: float | None = None,
     cancel: bool = False,
-    wait_ms: int = 30000,
+    wait_ms: Annotated[int, Field(ge=0, le=30000, strict=True)] = 30000,
     max_preview_bytes: int = 4096,
     worker_task: str | None = None,
     worker_phase: Literal["prepare_code", "execute_run", "full"] = "prepare_code",
@@ -796,7 +805,10 @@ def terminal_exec(
 ) -> dict[str, Any]:
     """Run/resume a supervised job. For remote Codex delegation pass worker_task Markdown,
     task_id, work_unit_id, access_mode=writer and timeout_seconds (no command).
-    Defaults to prepare_code, not research execution. Resume/cancel with command_id only.
+    Choose worker_phase to match the authorized deliverable: prepare_code (default)
+    for code/light checks, execute_run for prepared execution, full for authorized
+    implementation plus execution/checks (including bounded complete CPU tasks).
+    Phase does not grant resources. Resume/cancel with command_id only.
     Uses the existing transport; no terminal_open, YAML spec or research registry required.
     """
 
@@ -808,6 +820,7 @@ def terminal_exec(
     capsule: TaskCapsule | None = None
     packet = None
     try:
+        validate_wait_ms(wait_ms)
         _require_activation()
         manager = _terminal_manager()
         if recover_worker and worker_task is None:
@@ -922,6 +935,8 @@ def terminal_exec(
                 result["worker"] = read_json(receipt_path) if receipt_path.is_file() else {
                     "contract_valid": False, "task_status": "unverified",
                     "reason": "worker interrupted or failed before result receipt; do not relaunch"}
+                from solution_agent.harness.codex_worker import worker_result_action
+                result["next_action"] = worker_result_action(result["worker"])
                 for name, file in (("worker_receipt", receipt_path),
                                    ("worker_result", output / "result.yaml"),
                                    ("worker_notes", output / "worker_notes.md")):
@@ -1009,6 +1024,9 @@ def terminal_exec(
             except Exception:
                 pass
         failure = _terminal_error("terminal_exec", None, exc)
+        if isinstance(exc, CommandObservationError):
+            command_id = exc.command_id
+            failure.update(task_id=task_id, work_unit_id=work_unit_id, command_id=command_id)
         if executor_entered and job_result_received and result.get("command_id"):
             failure.update(task_id=task_id, work_unit_id=work_unit_id, command_id=result["command_id"])
         if worker_task is not None:

@@ -30,6 +30,19 @@ _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _TERMINAL_STATES = {"succeeded", "failed", "cancelled", "lost"}
 
 
+def validate_wait_ms(wait_ms: int) -> None:
+    """Validate before any command preparation, launch or cancellation."""
+    if type(wait_ms) is not int or not 0 <= wait_ms <= 30000:
+        raise ValueError("wait_ms must be an integer between 0 and 30000")
+
+
+class CommandObservationError(RuntimeError):
+    """A durable job exists, but its launch/result could not be observed."""
+    def __init__(self, command_id: str):
+        self.command_id = command_id
+        super().__init__(f"command outcome unknown: {command_id}; recover this command, do not resubmit")
+
+
 class CommandReceiptError(RuntimeError):
     def __init__(self, code: str, command_id: str):
         self.code = code
@@ -637,8 +650,7 @@ class TerminalCommandRunner:
             print(json.dumps({"help_recovery_error": type(exc).__name__}), file=sys.stderr)
 
     def wait_result(self, command_id: str, wait_ms: int) -> dict[str, Any]:
-        if not 0 <= wait_ms <= 30000:
-            raise ValueError("wait_ms must be between 0 and 30000")
+        validate_wait_ms(wait_ms)
         deadline = time.monotonic() + wait_ms / 1000
         while True:
             status = self.reconcile(command_id)
@@ -764,6 +776,7 @@ class TerminalCommandRunner:
         writer_lease_id: str | None = None,
         worker_packet: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        validate_wait_ms(wait_ms)
         if (command is None) == (command_id is None):
             raise ValueError("provide exactly one of command or command_id")
         if cancel and command is not None:
@@ -779,19 +792,25 @@ class TerminalCommandRunner:
                 worker_packet=worker_packet,
             )
             command_id = str(request["command_id"])
-            self.launch(request)
+            try:
+                self.launch(request)
+            except Exception as exc:
+                raise CommandObservationError(command_id) from exc
         assert command_id is not None
         if command is None:
             status = self._read_status(command_id)
             if (task_id is not None and status.get("task_id") != task_id
                     or work_unit_id is not None and status.get("work_unit_id") != work_unit_id):
                 raise CommandReceiptError("job_scope_conflict", command_id)
-        if cancel:
-            self.cancel(command_id)
-        waited = self.wait_result(command_id, wait_ms)
-        result = self.read_result(command_id, max_preview_bytes)
-        result["wait_timed_out"] = waited.get("state") not in _TERMINAL_STATES
-        return result
+        try:
+            if cancel:
+                self.cancel(command_id)
+            waited = self.wait_result(command_id, wait_ms)
+            result = self.read_result(command_id, max_preview_bytes)
+            result["wait_timed_out"] = waited.get("state") not in _TERMINAL_STATES
+            return result
+        except Exception as exc:
+            raise CommandObservationError(command_id) from exc
 
 
 def _mark_lost(directory: Path, status: dict[str, Any], reason: str) -> dict[str, Any]:

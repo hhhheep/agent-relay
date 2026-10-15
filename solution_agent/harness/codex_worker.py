@@ -178,6 +178,22 @@ def verify_result(output: Path, task_id: str) -> dict:
             "scientific_acceptance": "requires_manager_review"}
 
 
+def worker_result_action(receipt: dict) -> str:
+    """Explain existing result layers without changing terminal/exit semantics."""
+    code = receipt.get("codex_exit_code")
+    if type(code) is int and code != 0:
+        return f"Worker process exited with code {code}; inspect its logs and any partial artifacts before deciding follow-up."
+    if receipt.get("contract_valid") is not True:
+        return "Worker result contract is invalid or missing; task completion is unverified. Inspect the original artifacts, do not relaunch blindly."
+    if receipt.get("task_status") == "partial":
+        return "Worker returned a valid partial result, not final task success or proof of a process failure. Check the requested phase, phase_state and outputs for prepared work awaiting execution or another blocker."
+    if receipt.get("task_status") == "failed":
+        return "Worker reported task failure despite a valid result contract; inspect task evidence and acceptance checks."
+    if receipt.get("unanswered_questions"):
+        return "Worker has unresolved questions; retain them and review the original task before accepting completion."
+    return "Review the worker artifacts against the original acceptance checks; process and contract success do not establish task or scientific acceptance."
+
+
 def run_worker(packet: dict) -> int:
     # Re-resolve profile on the executing host; a changed profile cannot redirect a queued job.
     expected = worker_packet(Path(packet["root"]), packet["profile_id"], packet["task_id"],

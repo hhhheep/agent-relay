@@ -35,3 +35,7 @@ Use Linux namespaces and a delegated private systemd manager to activate the imm
 ## Final delivery classification
 
 The completed S1–S5 review classifies the declared target/baseline scope as engineering verified. The candidate builder may expose this classification only for a clean producer, an explicit completed five-batch review, all four matrix rows and exact matching current/runtime source identities. Dirty, incomplete or mismatched builds keep the unverified candidate status. This changes delivery metadata only; protocol 0.6, MCP schemas, runtime source hash and state formats are unchanged. Component receipts alone do not certify the whole delivery, and live/paid/message exclusions remain explicit.
+
+## Post-P1 scoped Harness correction
+
+The four-issue correction (wait validation, phase selection, partial presentation, original-command recovery) is documented in [the scoped change and verification record](../harness-four-fixes-20261015/README.md). It preserves lifecycle/state and protocol pairing, includes the necessary Lifecycle publication consumer, and does not deploy or extend the P1 acceptance claim.
