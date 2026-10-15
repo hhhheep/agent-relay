@@ -43,6 +43,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
  const root=resolve(config.stateRoot);mkdirSync(root,{recursive:true});
  const managerGeneration=randomUUID();
  const store=new ReviewedStore(resolve(root,'queue.sqlite')),app=dependencies.app();
+ store.db.prepare("INSERT INTO meta VALUES ('manager_generation',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(managerGeneration);
  let inbox:any,appReady=false,connectionFailures=0,nextConnect=0,lastStatus:any,harness:HarnessPort|undefined,scheduler:ResumeScheduler|undefined,resumeState='disabled',publisher:TaskPublisher|undefined;
  let appAttempts=0,outageAttempts=0,outageStart:number|undefined,nextAppAttempt=0,appReason='initial_context_required';
  let nextHealth=0;

@@ -105,6 +105,16 @@
       "current_sha256": "7f3af5a9019549b9e5e21b4e8513d745518575c9c3372e0ef7b5ca464a713a03"
     },
     {
+      "path": "components/lifecycle/lifecycle-handoff.test.ts",
+      "extraction_sha256": "6405240f1db3ae904c0fa7f403cce26ff59aa62d4bea27e432b21e1f0252fc6f",
+      "current_sha256": "b904314650c441c5478df7bee9a4db7988a3ef05f725329dcb00115ec09d6545"
+    },
+    {
+      "path": "components/lifecycle/lifecycle-handoff.ts",
+      "extraction_sha256": "c504de6c42078355984f4eca53bb198e2db62832b3e7ff9c7a6651ceebd0a2df",
+      "current_sha256": "96145970dc9679f27a1e868a111880c75cef8c00dc982d67d2d456efc5bdbdb3"
+    },
+    {
       "path": "components/lifecycle/mailbox-artifact.test.ts",
       "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
       "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
@@ -115,9 +125,14 @@
       "current_sha256": "5cb200cb1977c3b345dabfb96746ae3743469fd48a6140d0535c67ddf7ecf83e"
     },
     {
+      "path": "components/lifecycle/manager-cli.ts",
+      "extraction_sha256": "77b89ee195997352e0c2828680a1e8d9718ce111b8aced3b9d0a67dd3b885cc6",
+      "current_sha256": "c3487c8d336bb394e00ef9abd750d6647ec27ba90c25dd6a6dbc9a9adcd5cef1"
+    },
+    {
       "path": "components/lifecycle/manager-driver.ts",
       "extraction_sha256": "03585d5e5ded3c991cb4a1fc0c9948e486ae02f870aed1ecbb4ed8e3fd8e11bf",
-      "current_sha256": "e453d32a8bb9412d499d26d9412e49eb42cd0f42c9c0987ccd59bb12416eca29"
+      "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
     },
     {
       "path": "components/lifecycle/resume-controller.test.ts",
@@ -128,6 +143,16 @@
       "path": "components/lifecycle/resume-scheduler.test.ts",
       "extraction_sha256": "13951c67e6c13e016b50d28592ecab146856f8d9d36d074e8e7a403bcaf70e13",
       "current_sha256": "28cd2c193a9768c6d056316f9ea9253435e9d6b7067043f0ac34d2fef397fcc6"
+    },
+    {
+      "path": "components/lifecycle/router-api.ts",
+      "extraction_sha256": "26568d3072439a87a7cdbfb40cd2dea0ede1961c9ff462a14a9bc2d59a7d156c",
+      "current_sha256": "15d78e23049d06a34b26ca6c5ca01936858bcc2cf468cf92cdedb54fab81ad9e"
+    },
+    {
+      "path": "components/lifecycle/session-lifecycle.ts",
+      "extraction_sha256": "a75e4ccbb42e4ef52ef7af3ff887a8bca706c50ec8987991c3000759dbb26954",
+      "current_sha256": "017371fa1c94ec719b7b5a5afbe3be4d17c0d7ed1112e82d3e1a935b9965f28b"
     },
     {
       "path": "components/lifecycle/task-publisher.test.ts",
