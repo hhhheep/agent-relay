@@ -1296,7 +1296,7 @@ def artifact_apply(
             if set(request) != {"review", "publish_owner"}:
                 raise ValueError("publication review requires only review and publish_owner")
             publication = engine.review_publication(task, plan_id, request['review'], request['publish_owner'])
-            return _with_server({"ok": True, "operation": "artifact_apply", "committed": False,
+            return _with_server({"ok": True, "operation": "artifact_apply", "committed": "receipt" in publication,
                                  "publication": publication})
         if request is None:
             raise ValueError("plan request is required when commit=false")

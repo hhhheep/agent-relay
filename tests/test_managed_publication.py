@@ -80,6 +80,9 @@ def test_publication_mcp_round_trip_and_read_back_drift(tmp_path, monkeypatch):
             assert target.read_bytes()==draft.read_bytes()
             replay=(await client.call_tool('artifact_apply',request)).structured_content
             assert replay['receipt']==published['receipt']
+            review_replay=(await client.call_tool('artifact_apply',dict(task_id=task.task_id,mode='publication',
+                plan_id=plan.plan_id,request={'review':engine._json_artifact(task,evidence),'publish_owner':'manager'}))).structured_content
+            assert review_replay['committed'] is True and review_replay['publication']['status']=='verified'
             target.write_bytes(b'external update')
             stale=(await client.call_tool('artifact_apply',request)).structured_content
             assert stale['ok'] is False and stale['error']['code']=='WRITE_CONFLICT'

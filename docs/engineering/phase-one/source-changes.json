@@ -22,7 +22,7 @@
     {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "c98dd9c2d515510bc727b29d0e7abc54363ec109dfc6d298cd0a627bac85b09e"
+      "current_sha256": "7ba0e88869f0e05025349921bf30391a3d4de095808a91b46edf651e98bb2c70"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
