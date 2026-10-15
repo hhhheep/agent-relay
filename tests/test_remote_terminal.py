@@ -529,3 +529,19 @@ def test_interactive_repl_input_stays_on_send_and_read_is_bounded_diagnostic(tmp
     assert diagnostic["migration_target"] == "terminal_exec"
     assert diagnostic["full_output_fallback"] is False
     manager.close(None, action="detach")
+
+
+@pytest.mark.parametrize('cursor,limit',[(-1,128),(0,0),(0,65537),('invalid',128),(False,128),(0,True),(0,1.5)])
+def test_send_rejects_invalid_read_window_before_interactive_input(tmp_path: Path, cursor, limit) -> None:
+    profile = _profile(tmp_path)
+    fake = FakeTmux(profile.slots['main'].cwd)
+    manager = ProfileTerminalManager(profile, runner=fake)
+    manager.open()
+    before = len(fake.calls)
+    try:
+        with pytest.raises(TerminalError) as caught:
+            manager.send(None, chars='effectful input', control='enter', after_cursor=cursor, wait_ms=0, max_output_bytes=limit)
+        assert caught.value.code == 'invalid_read_window'
+        assert not any(call[3] in {'load-buffer','paste-buffer','send-keys'} for call in fake.calls[before:])
+    finally:
+        manager.release_all()

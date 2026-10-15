@@ -106,6 +106,12 @@ class TerminalError(RuntimeError):
         }
 
 
+def _validate_read_window(after_cursor: int, max_output_bytes: int) -> None:
+    if (type(after_cursor) is not int or after_cursor < 0
+            or type(max_output_bytes) is not int or not 1 <= max_output_bytes <= 65536):
+        raise TerminalError("invalid_read_window", "after_cursor must be a non-negative integer and max_output_bytes must be an integer in 1..65536")
+
+
 @dataclass(frozen=True)
 class TerminalSlot:
     terminal_id: str
@@ -752,8 +758,7 @@ class ProfileTerminalManager:
             raise
 
     def _read_raw_bytes(self, slot: TerminalSlot, after_cursor: int, max_output_bytes: int) -> dict[str, Any]:
-        if after_cursor < 0 or not 1 <= max_output_bytes <= 65536:
-            raise TerminalError("invalid_read_window", "after_cursor must be non-negative and max_output_bytes must be 1..65536")
+        _validate_read_window(after_cursor, max_output_bytes)
         manifest = _read_json_retry(self._manifest_path(slot))
         total = int(manifest.get("total_bytes", 0))
         retained_from = int(manifest.get("retained_from", 0))
@@ -853,6 +858,7 @@ class ProfileTerminalManager:
             raise TerminalError("terminal_control_invalid", f"unsupported terminal control: {control}")
         if not 0 <= wait_ms <= 30000:
             raise TerminalError("terminal_wait_invalid", "wait_ms must be between 0 and 30000")
+        _validate_read_window(0 if after_cursor is None else after_cursor, max_output_bytes)
         before = self._stream_summary(slot)
         cursor = before["cursor"] if after_cursor is None else after_cursor
         state = self._query(slot)
