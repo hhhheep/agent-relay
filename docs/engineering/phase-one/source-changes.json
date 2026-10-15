@@ -152,7 +152,7 @@
     {
       "path": "components/lifecycle/harness-port.ts",
       "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
-      "current_sha256": "7f3af5a9019549b9e5e21b4e8513d745518575c9c3372e0ef7b5ca464a713a03"
+      "current_sha256": "bae0fb780bc989d6b222ab64a6fda65685372425a0a1d388cc17e2b88581acca"
     },
     {
       "path": "components/lifecycle/lifecycle-handoff.test.ts",
@@ -262,7 +262,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "7451278580e90ed6f3fd7a48aabe8f26353185dc1dd91591079318f0ef5675e1"
+      "current_sha256": "ad74c11973cd87531a516679bfaf1b3b81d74cf9db13c7662d68085b5382a6bd"
     }
   ]
 }

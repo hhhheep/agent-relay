@@ -7,6 +7,60 @@ import {HarnessPort} from './harness-port.ts';
 import {runManager} from './manager-driver.ts';
 import {ResumeScheduler} from './resume-scheduler.ts';
 
+test('a pending MCP connect reserves the attempt against a second connect',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'harness-concurrent-')),path=join(root,'config.json');
+ writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:{command:'unused',args:[],cwd:root}}}));
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});let created=0;
+ const port=new HarnessPort(new Set(['task']),()=>{
+  const id=++created;
+  const client:any={connect:async()=>{if(id===1)await gate;},close:async()=>{client.onclose?.();},
+   listTools:async()=>({tools:[{name:'terminal_exec',inputSchema:{properties:{worker_task:{},command_id:{}}}}]})};
+  return client;
+ });
+ const first=port.connect(path,{});
+ try{
+  await assert.rejects(port.connect(path,{}),/harness_already_connected/);
+  assert.equal(created,1);
+  release();await first;assert.equal(port.connected,true);
+ }finally{release();await first.catch(()=>{});await port.close();rmSync(root,{recursive:true,force:true});}
+});
+
+test('close revokes a pending MCP initialization before it can publish readiness',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'harness-close-pending-')),path=join(root,'config.json');
+ writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:{command:'unused',args:[],cwd:root}}}));
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});let closed=0;
+ const client:any={connect:async()=>{await gate;},close:async()=>{closed++;client.onclose?.();},
+  listTools:async()=>({tools:[{name:'terminal_exec',inputSchema:{properties:{worker_task:{},command_id:{}}}}]})};
+ const port=new HarnessPort(new Set(['task']),()=>client);
+ const pending=port.connect(path,{});
+ try{
+  await port.close();release();
+  await assert.rejects(pending,/harness_reconnect_required/);
+  assert.equal(port.connected,false);assert.ok(closed>=1);
+ }finally{release();await pending.catch(()=>{});await port.close();rmSync(root,{recursive:true,force:true});}
+});
+
+test('a revoked old initialization cannot overwrite a fresh client or its capabilities',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'harness-replaced-pending-')),path=join(root,'config.json');
+ writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:{command:'unused',args:[],cwd:root}}}));
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});let created=0;const calls:any[]=[];
+ const port=new HarnessPort(new Set(['task']),()=>{
+  const id=++created;
+  const client:any={connect:async()=>{if(id===1)await gate;},close:async()=>{client.onclose?.();},
+   listTools:async()=>({tools:[{name:'terminal_exec',inputSchema:{properties:{worker_task:{},command_id:{},...(id===2?{finish_maintenance:{},recover_worker:{}}:{})}}}]}),
+   callTool:async(r:any)=>{calls.push({id,request:r});return {structuredContent:{ok:true,task_id:'task',work_unit_id:'unit',command_id:'original',state:'succeeded'}};}};
+  return client;
+ });
+ const first=port.connect(path,{});
+ try{
+  await port.close();await port.connect(path,{});
+  release();await assert.rejects(first,/harness_reconnect_required/);
+  assert.equal(port.connected,true);assert.equal(calls.length,0);
+  assert.equal((await port.maintenance({task_id:'task',work_unit_id:'unit',command:'synthetic',access_mode:'writer'})).command_id,'original');
+  assert.equal(calls.length,1);assert.equal(calls[0].id,2);
+ }finally{release();await first.catch(()=>{});await port.close();rmSync(root,{recursive:true,force:true});}
+});
+
 test('EOF invalidates the old MCP client and never replays a command during recovery',async()=>{
  const root=mkdtempSync(join(tmpdir(),'harness-eof-')),path=join(root,'config.json');
  writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:{command:'unused',args:[],cwd:root}}}));
