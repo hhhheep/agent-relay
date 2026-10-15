@@ -4,6 +4,8 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
+import yaml
+
 from solution_agent.execution_port.script_registry import load_registry
 from solution_agent.execution_port.spec import load_spec
 
@@ -20,9 +22,9 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_reviewed_fsfm_s0_boundary_packet_is_registered_and_unchanged() -> None:
+def test_public_fsfm_s0_boundary_fixture_is_registered_and_unchanged() -> None:
     registry = load_registry(ROOT / "solution_agent" / "execution_port" / "script_registry.yaml")
-    spec_path = ROOT / "harness_specs" / "fan_fsfm_s0_boundary_20260928.yaml"
+    spec_path = ROOT / "tests/fixtures/harness/boundary.execution_spec.yaml"
     runner = ROOT / "scripts" / "harness" / "run_fsfm_s0_boundary.py"
     spec = load_spec(spec_path, registry)
 
@@ -30,7 +32,7 @@ def test_reviewed_fsfm_s0_boundary_packet_is_registered_and_unchanged() -> None:
     assert spec.command.timeout_sec == 2700
     assert spec.resources.gpu_required is False
     assert registry["scripts"]["fsfm_s0_boundary"]["gpu_allowed"] is False
-    assert _sha256(spec_path) == "cd28d0da38ba53bb8462eec5ae38f030c4ebfff8fcc44d58a1e08a5db653b5e2"
+    assert _sha256(spec_path) == "828811207129dc2b884b33a79cba9e64b2331313f778ffc31d3822e24c6ac315"
     assert _sha256(runner) == "709c77a696905f6570afb711ce4d808ad9fcbbe06921358cc04597af1955b89d"
 
 
@@ -56,9 +58,22 @@ def test_boundary_and_acquisition_use_the_official_dfd_engine_path() -> None:
     assert '"fsfm-3c/engine_finetune.py"' not in boundary
 
 
-def test_boundary_spec_materializes_an_isolated_output_per_job() -> None:
-    text = (ROOT / "harness_specs" / "fan_fsfm_s0_boundary_20260928.yaml").read_text(encoding="utf-8")
+def test_boundary_spec_materializes_an_isolated_output_per_job(tmp_path: Path) -> None:
+    from solution_agent.execution_port.registry import register_execution
+
+    text = (ROOT / "tests/fixtures/harness/boundary.execution_spec.yaml").read_text(encoding="utf-8")
     assert text.count("{job_id}") == 11
+    spec_path = tmp_path / "boundary.yaml"
+    spec_path.write_text(text, encoding="utf-8")
+    registry_path = ROOT / "solution_agent/execution_port/script_registry.yaml"
+    first = register_execution(spec_path, registry_path, tmp_path / "jobs")
+    second = register_execution(spec_path, registry_path, tmp_path / "jobs")
+    assert first != second
+    for job in (first, second):
+        materialized = yaml.safe_load((tmp_path / "jobs" / job / "execution_spec.yaml").read_text(encoding="utf-8"))
+        assert materialized["command"]["args"]["output_dir"] == f"artifacts/{job}"
+        assert all(path.startswith(f"artifacts/{job}/") for path in materialized["artifacts"]["required"])
+        assert materialized["success_criteria"]["metrics_file"].startswith(f"artifacts/{job}/")
 
 
 def test_boundary_uses_hash_pinned_metadata_without_live_network() -> None:

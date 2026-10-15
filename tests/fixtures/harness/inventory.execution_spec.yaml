@@ -1,0 +1,25 @@
+task_id: synthetic_inventory
+job_type: bounded_inventory
+workspace:
+  root: /synthetic/workplace
+  cwd: /synthetic/workplace
+command:
+  script_id: fsfm_s0_inventory
+  args:
+    ffpp_root: inputs/a
+    dfdc_root: inputs/b
+    celeb_df_v2_root: inputs/c
+    repo_root: inputs/source
+    output_dir: artifacts/{job_id}
+  timeout_sec: 300
+resources:
+  gpu_required: false
+  gpu_count: 0
+artifacts:
+  required:
+    - artifacts/{job_id}/fsfm_s0_inventory.json
+    - artifacts/{job_id}/fsfm_s0_inventory_metrics.json
+success_criteria:
+  exit_code: 0
+  metrics_file: artifacts/{job_id}/fsfm_s0_inventory_metrics.json
+  metric_keys: [execution_status, contract_status, science_status]

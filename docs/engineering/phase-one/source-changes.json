@@ -7,7 +7,17 @@
     {
       "path": "solution_agent/harness/codex_worker.py",
       "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
-      "current_sha256": "1742d5c672f64b4f26bd3ab2dc049e2cc6e95299a6d427e4956ac7d974ac5444"
+      "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
+    },
+    {
+      "path": "solution_agent/harness/maintenance_completion.py",
+      "extraction_sha256": "c933d6ad1a342b3ac704e8c1572efdb8bef0f719fcfec12ce1247fa10d5af83a",
+      "current_sha256": "86758079a6d47589f1831ebe53105cceae02eab00fa98429f360ed60e91b6311"
+    },
+    {
+      "path": "solution_agent/harness/mcp_server.py",
+      "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
+      "current_sha256": "900a476de43ef0789523001cf7c80a6675c19b396285e6d9d8cf3ed6d4aecea0"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
@@ -17,17 +27,37 @@
     {
       "path": "solution_agent/harness/remote_terminal.py",
       "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
-      "current_sha256": "c7ff68c5819ffbcba0d859985646e8ddb9087c7d7da2cb83ae3f5799cb0e3299"
+      "current_sha256": "ceb62c57c261f35124577df5014ee273faf0e9b134ce1f981c888f21b04891ea"
+    },
+    {
+      "path": "solution_agent/harness/task_capsule.py",
+      "extraction_sha256": "d59fc4ed16168ba397521c142107db1d7d0c921824bb0a81aa4347f29b340a11",
+      "current_sha256": "2ef2691f47b9788d27b4ba5870cffc3c35f69361b22e05fdf6b4da656b6bfe9b"
     },
     {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
-      "current_sha256": "7907b344e874a18633ad3910fe19f1dacf8c3a40f248a9647b5c6ebc98eb5d34"
+      "current_sha256": "eea2afc16558b8024256552d6840b9cd436ecbea9d7e19cb7851b8482b8baf05"
+    },
+    {
+      "path": "solution_agent/orchestrator/prompt.py",
+      "extraction_sha256": "2f6b82f90dcb872e6a4e7fde261b91baa66d30f3a4ed35cdd42a61bf680d9ee0",
+      "current_sha256": "1df487f0df7d7d75dbc8c49863ce04f9ddcb470c09654b6ab94066f9fa14060a"
     },
     {
       "path": "tests/test_continuation_three_agent_flow.py",
       "extraction_sha256": "00a76956faf5e7b73e56fd4708c5b4aa94ee4146396da6357a39de75497d3218",
       "current_sha256": "59f6c16208c529c62aa81213279842cffbf06ef6586dadc342353c079ba50c10"
+    },
+    {
+      "path": "tests/test_fsfm_s0_boundary.py",
+      "extraction_sha256": "881834fa2df907ae729e78215cbb1d0887459150afe61907f8235e5ceed501f1",
+      "current_sha256": "d0eb2a69e9bd044688b291745a1dce22dee2c23b29d292d7b7add6f514ba4a38"
+    },
+    {
+      "path": "tests/test_fsfm_s0_inventory.py",
+      "extraction_sha256": "8b189e9186607c175a30913b71fb6e8203c47d2fe33c90116e7686362166f811",
+      "current_sha256": "e67b99e65985ef87c1206f7879381afa600d1b66508797fa95ba9c3a062e6adc"
     },
     {
       "path": "tests/test_harness_bootstrap_release.py",
@@ -50,6 +80,11 @@
       "current_sha256": "b975c06491f846ca2acd8f69b4fd7848817aa4645a86fbf75099a04f487a87e9"
     },
     {
+      "path": "tests/test_routing_submission_recovery.py",
+      "extraction_sha256": "487111ac86953bd7bcfcee166dbe8d319d1f0137d3a0a3e359cbd3db7036f47a",
+      "current_sha256": "6ce3a8ba16874e9005f5132ba3073fa34ad55298717c32cb8e837a513bee2f67"
+    },
+    {
       "path": "tests/test_terminal_commands.py",
       "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
       "current_sha256": "76eb14db51ae8f126b6b776a76c54b8456fd3eb5daf9c162be8a8ada23c388e0"
@@ -70,6 +105,26 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
+      "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
+      "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
+    },
+    {
+      "path": "components/lifecycle/harness-port.ts",
+      "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
+      "current_sha256": "7f3af5a9019549b9e5e21b4e8513d745518575c9c3372e0ef7b5ca464a713a03"
+    },
+    {
+      "path": "components/lifecycle/lifecycle-handoff.test.ts",
+      "extraction_sha256": "6405240f1db3ae904c0fa7f403cce26ff59aa62d4bea27e432b21e1f0252fc6f",
+      "current_sha256": "b904314650c441c5478df7bee9a4db7988a3ef05f725329dcb00115ec09d6545"
+    },
+    {
+      "path": "components/lifecycle/lifecycle-handoff.ts",
+      "extraction_sha256": "c504de6c42078355984f4eca53bb198e2db62832b3e7ff9c7a6651ceebd0a2df",
+      "current_sha256": "96145970dc9679f27a1e868a111880c75cef8c00dc982d67d2d456efc5bdbdb3"
+    },
+    {
       "path": "components/lifecycle/mailbox-artifact.test.ts",
       "extraction_sha256": "21cdebb41e66dadae79d657262d75a5fefb3527e0e866988d59870df54704e0e",
       "current_sha256": "00c8904d771c1db28fd6ad65e4902a265cc8f7ac6236e68de4c4ba2ec763f3a9"
@@ -78,6 +133,16 @@
       "path": "components/lifecycle/mailbox-driver.test.ts",
       "extraction_sha256": "60878f7f1ddbcdf577b687591f7e0f4e3ae83f6871dc128eea331fff24a96332",
       "current_sha256": "5cb200cb1977c3b345dabfb96746ae3743469fd48a6140d0535c67ddf7ecf83e"
+    },
+    {
+      "path": "components/lifecycle/manager-cli.ts",
+      "extraction_sha256": "77b89ee195997352e0c2828680a1e8d9718ce111b8aced3b9d0a67dd3b885cc6",
+      "current_sha256": "c3487c8d336bb394e00ef9abd750d6647ec27ba90c25dd6a6dbc9a9adcd5cef1"
+    },
+    {
+      "path": "components/lifecycle/manager-driver.ts",
+      "extraction_sha256": "03585d5e5ded3c991cb4a1fc0c9948e486ae02f870aed1ecbb4ed8e3fd8e11bf",
+      "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
     },
     {
       "path": "components/lifecycle/resume-controller.test.ts",
@@ -90,9 +155,24 @@
       "current_sha256": "28cd2c193a9768c6d056316f9ea9253435e9d6b7067043f0ac34d2fef397fcc6"
     },
     {
+      "path": "components/lifecycle/router-api.ts",
+      "extraction_sha256": "26568d3072439a87a7cdbfb40cd2dea0ede1961c9ff462a14a9bc2d59a7d156c",
+      "current_sha256": "15d78e23049d06a34b26ca6c5ca01936858bcc2cf468cf92cdedb54fab81ad9e"
+    },
+    {
+      "path": "components/lifecycle/session-lifecycle.ts",
+      "extraction_sha256": "a75e4ccbb42e4ef52ef7af3ff887a8bca706c50ec8987991c3000759dbb26954",
+      "current_sha256": "017371fa1c94ec719b7b5a5afbe3be4d17c0d7ed1112e82d3e1a935b9965f28b"
+    },
+    {
       "path": "components/lifecycle/task-publisher.test.ts",
       "extraction_sha256": "685dfbab860b71cbe8a65a13a9bef9c4341c7c97013a42ed565effb5b4b30c85",
-      "current_sha256": "acb6d1dfb8c34bfe5ab897f8eed37ed80a95b5b14f9da934339edbf1e0dca14b"
+      "current_sha256": "7280015afd629456cbc8b6634499fb3b54f546a63e1fddd535c4e89e16586135"
+    },
+    {
+      "path": "components/lifecycle/task-publisher.ts",
+      "extraction_sha256": "6486711f8c6ad10479a1928ac6482501a847963793c011e49849841edb29b1b0",
+      "current_sha256": "4cb71c2206dd8945981a0841b924005c3abbd8cad7f621665eb80bb356239c80"
     },
     {
       "path": "components/xats-routing-lab/upstream/pnpm-lock.yaml",
@@ -138,6 +218,11 @@
       "path": "docs/HARNESS_V3_PERSISTENT_TRANSPORT_MULTIPLEXED_EXECUTION_TASKBOOK.md",
       "extraction_sha256": "840f1685113bfc99d5a555e1e2911e3c9cd4225a2ff465c588d1eb9fdd1b1768",
       "current_sha256": "9e7f6cc7d218ec5b67e05c00f7929722a2f982b4b66b2ba6e059c63c5fd9e6c9"
+    },
+    {
+      "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
+      "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
+      "current_sha256": "94ce034330bf91ab859ad26738e415d1cc8400f110b31f0726f11a692e81f252"
     }
   ]
 }

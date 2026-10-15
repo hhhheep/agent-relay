@@ -1,0 +1,11 @@
+# HF-003: self-contained inventory and boundary acceptance
+
+Base `56fce6f`; branch `codex/hf003-public-spec-fixtures-20261015`. Ordinary test portability fix, owned by the existing execution-port consumers. No runtime, research data, private spec, installed plugin or live state is changed.
+
+Three tests referenced two deployment specs deliberately absent from the public repository. Before repair the inventory/boundary selection reported five passes and three FileNotFoundError failures. The inventory failure also reproduces on unchanged `4c4438b`.
+
+Public synthetic specs now live under `tests/fixtures/harness/` and use the real registry and validator. The boundary fixture retains CPU-only, 2700-second limits and all nine declared output artifacts, with a fixed fixture hash. The unchanged runner still has its original pinned SHA256. The historical unavailable spec hash `cd28d0da38ba53bb8462eec5ae38f030c4ebfff8fcc44d58a1e08a5db653b5e2` remains historical evidence; the public synthetic fixture is explicitly not that private reviewed packet. Historical extraction hashes are not rewritten.
+
+Behavioral acceptance now registers two distinct jobs and verifies all output/metrics paths use the corresponding ID. Inventory acceptance executes both materialized commands in real subprocesses against synthetic metadata inputs, checks passing metrics, and verifies the first artifacts remain unchanged. Re-executing either exact command against its existing output still fails without overwriting. Therefore the observed same-directory FileExistsError is preserved as a safety boundary; the repeat-safe pattern is a fresh job output, not relaxing `exist_ok=False`. This does not establish the cause of the historical remote failure or close HF-003 globally.
+
+Validation: `python -m pytest tests/test_fsfm_s0_inventory.py tests/test_fsfm_s0_boundary.py -q` gives nine passes. The same selection plus tests/test_execution_port_spec.py, tests/test_execution_port_runner.py and tests/test_materializer_execution_spec.py reports 57 passed. CI includes the repaired suites. Publication/current provenance and diff checks pass. Native Linux and actual remote deployment acceptance are NOT RUN. Rollback changes public tests/fixtures only and requires no state migration.

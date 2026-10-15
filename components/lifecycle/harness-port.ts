@@ -19,12 +19,15 @@ export class HarnessPort {
  private maintenanceSupported=false;
  private workerRecoverySupported=false;
  lastFailure:any;
+ get connected(){return this.client!==undefined;}
  constructor(readonly allowedTasks:ReadonlySet<string>,readonly factory=()=>new Client({name:'harness-routing-manager',version:'1'},{capabilities:{}}),readonly expectedReleaseId?:string){}
  async connect(installedConfig:string,env:NodeJS.ProcessEnv){
   if(this.client)throw Error('harness_already_connected');
   const config=JSON.parse(readFileSync(installedConfig,'utf8')).mcpServers?.solution_agent_harness;
   if(!config?.command||!Array.isArray(config.args)||!config.cwd)throw Error('invalid_installed_harness_config');
   const client=this.factory();
+  let closed=false;
+  client.onclose=()=>{closed=true;if(this.client===client)this.client=undefined;};
   try{
    await client.connect(new StdioClientTransport({command:config.command,args:config.args,cwd:config.cwd,env:env as any,stderr:'pipe'}));
    const listing=await client.listTools();const properties=listing.tools.find((t:any)=>t.name==='terminal_exec')?.inputSchema?.properties;
@@ -36,6 +39,7 @@ export class HarnessPort {
     const identity=probe.structuredContent??JSON.parse(probe.content.find((c:any)=>c.type==='text').text);
     if(identity.server?.release_id!==this.expectedReleaseId)throw Error('candidate_runtime_identity_mismatch');
    }
+   if(closed)throw Error('harness_reconnect_required');
    this.client=client;
   }catch(error){await client.close();throw error;}
  }

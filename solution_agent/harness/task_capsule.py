@@ -211,6 +211,15 @@ class TaskCapsuleStore:
 
         return self.compare_and_swap(task_id, expected_version, update)
 
+    def review_work_unit(self, task_id: str, work_unit: str, *, expected_version: int) -> TaskCapsule:
+        """Retain ownership for an explicit finish/continue decision, not execution."""
+        def update(capsule: TaskCapsule) -> TaskCapsule:
+            if capsule.active_work_unit != work_unit or capsule.writer_leases:
+                raise CapsuleConflict("work unit ownership or writer conflict during review transition")
+            return capsule.model_copy(update={"lifecycle_state": "REVIEW_REQUIRED"})
+
+        return self.compare_and_swap(task_id, expected_version, update)
+
     def attach_read_receipt(self, task_id: str, receipt_id: str, *, expected_version: int) -> TaskCapsule:
         def update(capsule: TaskCapsule) -> TaskCapsule:
             if receipt_id in capsule.read_receipt_ids:
@@ -284,7 +293,10 @@ class TaskCapsuleStore:
             active = [item for item in capsule.writer_leases if item.expires_at > now]
             if active:
                 raise CapsuleConflict(f"task already has an active writer lease: {active[0].lease_id}")
-            return capsule.model_copy(update={"writer_leases": [*active, lease]})
+            changes = {"writer_leases": [*active, lease]}
+            if capsule.active_work_unit == lease.owner_work_unit:
+                changes["lifecycle_state"] = "ACTIVE"
+            return capsule.model_copy(update=changes)
 
         return self.compare_and_swap(task_id, expected_version, update)
 
