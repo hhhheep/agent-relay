@@ -283,6 +283,61 @@ def load_terminal_profile(solution_root: Path) -> TerminalProfile:
     )
 
 
+def _windows_process_identity(pid: int) -> dict[str, Any]:
+    """Query creation time without signalling a process or trusting PID alone."""
+    import ctypes
+    from ctypes import wintypes
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+    kernel.GetProcessTimes.restype = wintypes.BOOL
+    kernel.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+    kernel.GetExitCodeProcess.restype = wintypes.BOOL
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel.CloseHandle.restype = wintypes.BOOL
+    handle = kernel.OpenProcess(0x1000, False, pid)
+    if not handle:
+        return {"state": "exited" if ctypes.get_last_error() == 87 else "unknown"}
+    try:
+        created, exited, system, user = (wintypes.FILETIME() for _ in range(4))
+        code = wintypes.DWORD()
+        if not kernel.GetProcessTimes(handle, ctypes.byref(created), ctypes.byref(exited), ctypes.byref(system), ctypes.byref(user)) or not kernel.GetExitCodeProcess(handle, ctypes.byref(code)):
+            return {"state": "unknown"}
+        return {"state": "alive" if code.value == 259 else "exited",
+                "process_start_marker": str((created.dwHighDateTime << 32) | created.dwLowDateTime)}
+    finally:
+        kernel.CloseHandle(handle)
+
+
+def _lease_process_identity() -> dict[str, Any]:
+    from solution_agent.harness.terminal_commands import _boot_id, _process_marker
+
+    marker = (_windows_process_identity(os.getpid()).get("process_start_marker")
+              if os.name == "nt" else _process_marker(os.getpid()))
+    return {"pid": os.getpid(), "process_start_marker": marker,
+            "host_boot_id": _boot_id() if os.name != "nt" else None}
+
+
+def _lease_process_observation(record: dict[str, Any]) -> dict[str, Any]:
+    pid, marker = record.get("pid"), record.get("process_start_marker")
+    if type(pid) is not int or not 0 < pid <= 0xFFFFFFFF or not isinstance(marker, str) or not marker:
+        return {"state": "unknown", "reason": "process_identity_missing"}
+    if os.name != "nt":
+        from solution_agent.harness.terminal_commands import _process_snapshot
+
+        if not isinstance(record.get("host_boot_id"), str) or not record["host_boot_id"]:
+            return {"state": "unknown", "reason": "boot_identity_missing"}
+        return _process_snapshot(pid, marker, record.get("host_boot_id"))
+    observed = _windows_process_identity(pid)
+    if observed.get("state") != "alive":
+        return {"state": observed["state"], "reason": "process_absent_or_unreadable"}
+    if observed.get("process_start_marker") != marker:
+        return {"state": "exited", "reason": "pid_reused"}
+    return {"state": "alive", "reason": "identity_verified"}
+
+
 class _Lease:
     def __init__(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -353,6 +408,7 @@ class ProfileTerminalManager:
         self.base = profile.run_root / "terminal-sessions" / (profile.storage_profile_id or profile.profile_id)
         self.socket_path = self.base / "tmux.sock"
         self._leases: dict[str, _Lease] = {}
+        self.connection_id = uuid.uuid4().hex
 
     def _slot(self, terminal_id: str | None) -> TerminalSlot:
         selected = terminal_id or self.profile.default_terminal
@@ -425,7 +481,32 @@ class ProfileTerminalManager:
         if slot.terminal_id in self._leases:
             return
         lease = _Lease(self._slot_root(slot) / "writer.lock")
-        lease.acquire()
+        try:
+            lease.acquire()
+        except TerminalError as exc:
+            if exc.code == "terminal_busy":
+                # This record is advisory: even an exited PID cannot override
+                # a contended kernel lock. Legacy/malformed records stay unknown.
+                try:
+                    metadata = self._load_metadata(slot)
+                    raw = metadata.get("lease_owner")
+                    record = raw if isinstance(raw, dict) else {}
+                    limits = {"process_start_marker": 128, "host_boot_id": 64,
+                              "connection_id": 32, "task_id": 128, "lock_type": 24}
+                    owner = {key: value[:limit] for key, limit in limits.items()
+                             if isinstance((value := record.get(key)), str)}
+                    pid = record.get("pid")
+                    if type(pid) is int and 0 < pid <= 0xFFFFFFFF:
+                        owner["pid"] = pid
+                    observation = _lease_process_observation(owner)
+                except (OSError, ValueError, TypeError):
+                    owner, observation = {}, {"state": "unknown", "reason": "owner_record_unreadable"}
+                diagnostic = {"recorded_owner": owner, "liveness": observation, "ownership_verified": False}
+                raise TerminalError(
+                    exc.code, f"{exc}; diagnostics=" + json.dumps(diagnostic, separators=(",", ":")),
+                    next_action="Owner metadata is advisory. Do not delete/steal the lock or kill a presumed owner. Reattach the same terminal after its MCP owner normally exits; terminal_read remains available.",
+                ) from exc
+            raise
         self._leases[slot.terminal_id] = lease
 
     def _release(self, slot: TerminalSlot) -> None:
@@ -635,6 +716,11 @@ class ProfileTerminalManager:
             if task_id is not None:
                 metadata["owner_task_id"] = task_id
             metadata["owner_client_pid"] = os.getpid()
+            metadata["lease_owner"] = {
+                **_lease_process_identity(), "connection_id": self.connection_id,
+                "task_id": metadata.get("owner_task_id"),
+                "lock_type": "windows_byte_range" if os.name == "nt" else "posix_flock",
+            }
             self._write_metadata(slot, metadata)
             return {
                 "ok": True,

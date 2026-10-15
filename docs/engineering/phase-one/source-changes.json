@@ -22,7 +22,7 @@
     {
       "path": "solution_agent/harness/remote_terminal.py",
       "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
-      "current_sha256": "dcd542e80439d82e340dc03308d026ff1029e31c47639329b684c0e5484aff43"
+      "current_sha256": "ceb62c57c261f35124577df5014ee273faf0e9b134ce1f981c888f21b04891ea"
     },
     {
       "path": "solution_agent/harness/terminal_commands.py",
