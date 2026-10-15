@@ -27,7 +27,7 @@
     {
       "path": "solution_agent/harness/remote_terminal.py",
       "extraction_sha256": "577dfdeb3c52397843d4d3b681a875a443da3f54cbe864ba2d6c8c9674a1e276",
-      "current_sha256": "ceb62c57c261f35124577df5014ee273faf0e9b134ce1f981c888f21b04891ea"
+      "current_sha256": "5914906a8394516fda344ed706bfc49e86ec9a1afd7de33c8a6ae81b83da02ab"
     },
     {
       "path": "solution_agent/harness/task_capsule.py",
@@ -98,6 +98,11 @@
       "path": "tests/test_remote_status_worker_agnostic.py",
       "extraction_sha256": "03894493c7071493375fa9f4a0aad54673766bea332fd4d64b33e7483d615f31",
       "current_sha256": "b975c06491f846ca2acd8f69b4fd7848817aa4645a86fbf75099a04f487a87e9"
+    },
+    {
+      "path": "tests/test_remote_terminal.py",
+      "extraction_sha256": "5b46ce66d556ea708ca51ce8683156a033636a048feb96a866c6a7e410c6bd22",
+      "current_sha256": "8435233a62fbb2d9ea2d85106e207f6a57158cd6374e887b9c64396e9f0fc484"
     },
     {
       "path": "tests/test_routing_submission_recovery.py",
@@ -242,7 +247,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "94ce034330bf91ab859ad26738e415d1cc8400f110b31f0726f11a692e81f252"
+      "current_sha256": "d95b24d52b40b92325a7edf38fc0a68de41725d0609f4ab60036b695abc9fd67"
     }
   ]
 }

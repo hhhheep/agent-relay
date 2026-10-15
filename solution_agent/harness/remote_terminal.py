@@ -643,6 +643,14 @@ class ProfileTerminalManager:
         return metadata
 
     def _verify_existing(self, slot: TerminalSlot, metadata: dict[str, Any]) -> None:
+        configured_cwd = metadata.get("configured_cwd")
+        if not isinstance(configured_cwd, str) or not configured_cwd or Path(configured_cwd).resolve() != slot.cwd.resolve():
+            raise TerminalError(
+                "terminal_identity_mismatch",
+                "fixed terminal metadata mismatch: configured_cwd",
+                recoverable=False,
+                next_action="Restore the original workplace configuration or use a separately declared terminal/worktree; do not restart the existing terminal to rebind it.",
+            )
         expected = {
             "terminal_id": slot.terminal_id,
             "hub_name": self.profile.hub_name,

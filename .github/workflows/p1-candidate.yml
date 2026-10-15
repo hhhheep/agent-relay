@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: ["codex/phase-one-restructure"]
+    branches: ["codex/phase-one-restructure", "codex/hf*"]
 permissions:
   contents: read
 jobs:
