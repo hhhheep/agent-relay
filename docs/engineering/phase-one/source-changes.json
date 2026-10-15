@@ -60,6 +60,11 @@
       "current_sha256": "59f6c16208c529c62aa81213279842cffbf06ef6586dadc342353c079ba50c10"
     },
     {
+      "path": "tests/test_fsfm_s0_acquire.py",
+      "extraction_sha256": "3506145844d434394bc1044f3dbe4b616ec1827024995afe6c7408bdd127de52",
+      "current_sha256": "663df09945c2fa18b299e84ad6986c36e445de115bd7563f36bcadbba9c6b6ae"
+    },
+    {
       "path": "tests/test_fsfm_s0_boundary.py",
       "extraction_sha256": "881834fa2df907ae729e78215cbb1d0887459150afe61907f8235e5ceed501f1",
       "current_sha256": "d0eb2a69e9bd044688b291745a1dce22dee2c23b29d292d7b7add6f514ba4a38"
@@ -247,7 +252,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "889e0962c34aa97c6dc19065627f265025cde7572fac269a2ce03794d1657ea9"
+      "current_sha256": "b2b81d5eb4e421aa448fa229f87bc8837ed937db08b8381407b9ec44330f2953"
     }
   ]
 }

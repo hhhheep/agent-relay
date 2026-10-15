@@ -27,3 +27,9 @@ The existing reader's validation is factored into one integer/bounds check, call
 Related suites `test_remote_terminal`, `test_harness_four_fixes`, `test_terminal_commands`: 92 passed, two existing native POSIX skips. Synthetic tmux records prove rejected requests emit no paste or control keys; existing positive REPL/send tests remain active. Source publication and clean-host CI are required before engineering integration. Live terminal/network/Linux acceptance is NOT RUN.
 
 Expanded audit selection initially reported 86 passed and five failures: three acquisition tests referenced absent private specs; two skill-routing tests referenced the former parent workspace and an undistributed legacy skill. These failures are retained for separate repair; they are not treated as a passing audit or silently skipped.
+
+## HF-006: self-contained acquisition regression inputs
+
+The three absent-spec failures also reproduce on unchanged engineering baseline `5227660`. Only test inputs are repaired: a public synthetic allowlisted acquisition spec replaces private workplace specs. The original CPU/source-only/checkout/asset-count assertions remain, with three new rejections for each output argument outside the declared roots. Acquisition, inventory and boundary suites pass 17 tests with no network, model download or research input. The acquisition suite is now part of the existing candidate CI selection. No engine, allowlist, output preservation or research method changes. Historical remote repeat acceptance remains open.
+
+HF-018 candidate `3481329` passed clean-host CI [38745130905](https://github.com/hhhheep/agent-relay/actions/runs/38745130905); the earlier provenance failure remains visible in run 38744839276.
