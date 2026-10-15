@@ -33,3 +33,13 @@ Expanded audit selection initially reported 86 passed and five failures: three a
 The three absent-spec failures also reproduce on unchanged engineering baseline `5227660`. Only test inputs are repaired: a public synthetic allowlisted acquisition spec replaces private workplace specs. The original CPU/source-only/checkout/asset-count assertions remain, with three new rejections for each output argument outside the declared roots. Acquisition, inventory and boundary suites pass 17 tests with no network, model download or research input. The acquisition suite is now part of the existing candidate CI selection. No engine, allowlist, output preservation or research method changes. Historical remote repeat acceptance remains open.
 
 HF-018 candidate `3481329` passed clean-host CI [38745130905](https://github.com/hhhheep/agent-relay/actions/runs/38745130905); the earlier provenance failure remains visible in run 38744839276.
+
+## HF-022: routing tests use current source owners
+
+Two additional FileNotFoundError failures reproduced on unchanged `5227660`. Token Guard and Writer authority paths are now the maintained repo-local plugin sources. Negative activation boundaries and description bounds retain their original assertions. The historical `deploy/user-skills` legacy route is absent from this product and both overlay manifests; testing its nonexistent policy was obsolete. Its replacement asserts exclusion from the source path, both nonempty publication manifests, actual packaged skill names and routing evaluations. This tests current non-activation rather than fabricating a legacy installation or changing the current Harness policy. All four routing tests pass. No formal Skill, installed copy, deployment policy or global configuration was modified.
+
+Routing, actual synthetic MCP and preflight suites are now in candidate CI alongside the acquisition regression, so these supported checks run from clean repository inputs.
+
+## Combined local verification
+
+After the separate fixture repairs, the expanded audit selection passed 94 tests, replacing the original five failures without skips. The complete updated CI core selection passed 278 tests with two existing native POSIX skips. HF-021 candidate `c607909` passed clean-host CI [38745519944](https://github.com/hhhheep/agent-relay/actions/runs/38745519944). The final stacked candidate must independently pass its expanded clean-host workflow before engineering fast-forward; this record does not certify a future run or Linux/M1–M4 installation.

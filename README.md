@@ -44,7 +44,7 @@ Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在
 
 這批新 runtime 尚未重新執行 Linux 原生及 M1–M4 新舊版本安裝／更新矩陣驗收；先前 P1 的隔離驗收結果仍對應其記錄中的版本。本批尚未合併至 `main` 或部署至現用環境。
 
-未結回饋的後續核對與新修復範圍，見[逐項處置紀錄](docs/engineering/feedback-followup-20261015/README.md)。其中區分可重現的源碼缺陷、已有修復，以及仍需現場配置或安裝驗收的項目。
+後續未結回饋核對補上了終端工作目錄身分檢查、互動輸入前的讀取視窗驗證，以及 acquisition／路由測試的公開來源依賴。本地擴充核心選集為 278 項通過、2 項既有平台跳過；候選沿[既有 GitHub CI](https://github.com/hhhheep/agent-relay/actions/workflows/p1-candidate.yml)驗證後才整合工程分支。詳見[逐項處置紀錄](docs/engineering/feedback-followup-20261015/README.md)，其中區分可重現的源碼缺陷、已有修復，以及仍需現場配置或安裝驗收的項目。
 
 ## 開始使用
 

@@ -115,6 +115,11 @@
       "current_sha256": "6ce3a8ba16874e9005f5132ba3073fa34ad55298717c32cb8e837a513bee2f67"
     },
     {
+      "path": "tests/test_skill_routing_contract.py",
+      "extraction_sha256": "234e4689f5c1a1a7006d6aaaf3c20bc56260a9981dcc4c8d15cc6890c9569bfe",
+      "current_sha256": "fd41e9b189486f1ad9c2ceb2432ff3f53e21d81c0ce9edf8826bbe28943d3613"
+    },
+    {
       "path": "tests/test_terminal_commands.py",
       "extraction_sha256": "2c03631a06b30b62e206ba1984391b0931e1700d4d53e6fd91a2c8faf26bd841",
       "current_sha256": "76eb14db51ae8f126b6b776a76c54b8456fd3eb5daf9c162be8a8ada23c388e0"
@@ -252,7 +257,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "b2b81d5eb4e421aa448fa229f87bc8837ed937db08b8381407b9ec44330f2953"
+      "current_sha256": "f04b7c2cc0699fd229306a9d87a0b3f8aa94c7b837d5222142843112572b442d"
     }
   ]
 }
