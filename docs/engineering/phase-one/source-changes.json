@@ -5,6 +5,11 @@
   "decisions": "docs/engineering/phase-one/DECISIONS.md",
   "changes": [
     {
+      "path": "solution_agent/harness/artifact_apply.py",
+      "extraction_sha256": "172489764d3553bdb465322bb0cc412b5416216e9dea5d3b981dd9c520326ed9",
+      "current_sha256": "62e04510576fa00cce7ebe8e8860db2b7166d18d0848c12339f14d3efd5e1802"
+    },
+    {
       "path": "solution_agent/harness/codex_worker.py",
       "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
       "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
@@ -17,7 +22,7 @@
     {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "900a476de43ef0789523001cf7c80a6675c19b396285e6d9d8cf3ed6d4aecea0"
+      "current_sha256": "c98dd9c2d515510bc727b29d0e7abc54363ec109dfc6d298cd0a627bac85b09e"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
@@ -145,6 +150,11 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/managed-markdown.md",
+      "extraction_sha256": "115a7f0b8d9574dc7d176e47302233a3b2b6f6e98c1e7874456e1ba6157eac9b",
+      "current_sha256": "187af77d20387e52dcf08eb3f179bf47f75b0012de2b55f056b0480ce00a95f4"
+    },
+    {
       "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
       "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
       "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
@@ -262,7 +272,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "ad74c11973cd87531a516679bfaf1b3b81d74cf9db13c7662d68085b5382a6bd"
+      "current_sha256": "48290603fe899dd7f22e34826ebb5fa3a0071594ba7fd0459aa55f3add3982b1"
     }
   ]
 }

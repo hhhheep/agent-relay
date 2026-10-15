@@ -12,11 +12,12 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from solution_agent.harness.artifact_runtime import ArtifactStore, Selector
 from solution_agent.harness.contracts import StrictModel
-from solution_agent.harness.task_capsule import ArtifactRef, TaskCapsule, TaskCapsuleStore, atomic_write_json
+from solution_agent.harness.task_capsule import ArtifactRef, TaskCapsule, TaskCapsuleStore, WriterLeaseRef, atomic_write_json, _file_lock
+from solution_agent.harness.md_sync import safe_relative_path, resolve_under_root, parse_markdown_snapshot
 from solution_agent.tools.patch_tools import inspect_patch_files
 
 
@@ -28,6 +29,72 @@ class WriteConflict(ApplyError):
     code = "WRITE_CONFLICT"
 
 
+class PublicationDeclaration(StrictModel):
+    schema_version: Literal["managed-markdown/v1"]
+    task_id: str
+    direction: Literal["draft_to_authority"]
+    destination_kind: Literal["local_file"]
+    draft_path: str
+    destination_path: str
+    draft_owner: str = Field(min_length=1)
+    review_owner: str = Field(min_length=1)
+    publish_owner: str = Field(min_length=1)
+    scope: Literal["full_document", "sections"]
+    sections: list[str] = Field(default_factory=list)
+    accepted_destination_sha256: str | None = Field(pattern=r"^[0-9a-fA-F]{64}$")
+
+    @model_validator(mode="after")
+    def check_scope(self):
+        if self.accepted_destination_sha256 is not None:
+            self.accepted_destination_sha256 = self.accepted_destination_sha256.lower()
+        if any(not value.strip() for value in (self.draft_owner, self.review_owner, self.publish_owner)):
+            raise ValueError("publication owners must be explicit")
+        for value in (self.draft_path, self.destination_path):
+            if safe_relative_path(value) != value or any(c in value for c in "*?[]") or not value.endswith('.md'):
+                raise ValueError("publication requires exact relative Markdown paths")
+        if self.draft_path == self.destination_path:
+            raise ValueError("draft and authority must be separate")
+        if self.scope == 'sections':
+            if not self.sections or len(set(self.sections)) != len(self.sections) or any(not s.startswith('managed:') for s in self.sections):
+                raise ValueError("section scope requires unique managed: block IDs")
+        elif self.sections:
+            raise ValueError("full_document cannot declare sections")
+        return self
+
+
+class PublicationPacket(StrictModel):
+    # Existing run_research_report_writer.py v1 output, not another packet format.
+    schema_version: Literal["1.0"]
+    kind: Literal["local_file"]
+    commit_required: Literal[True]
+    commit_protocol: Literal["local_compare_and_swap"]
+    draft_path: str
+    draft_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    destination_path: str
+    destination_record_id: None
+    expected_destination_sha256: str | None = Field(pattern=r"^[0-9a-fA-F]{64}$")
+    reason: str = Field(min_length=1)
+    writer_must_not_commit: Literal[True]
+
+    @model_validator(mode="after")
+    def canonical_base(self):
+        if self.expected_destination_sha256 is not None:
+            self.expected_destination_sha256 = self.expected_destination_sha256.lower()
+        return self
+
+
+class PublicationReview(StrictModel):
+    schema_version: Literal["managed-markdown-review/v1"]
+    plan_id: str
+    diff_artifact_id: str
+    candidate_sha256: str
+    declaration_sha256: str
+    review_owner: str
+    publish_owner: str
+    decision: Literal["approved", "rejected"]
+    evidence_refs: list[str] = Field(min_length=1)
+
+
 _LITERAL_TEMPLATES = {
     "report-divider-v1": "\n\n---\n\n",
     "newline-v1": "\n",
@@ -37,7 +104,7 @@ _LITERAL_TEMPLATES = {
 class ApplyPlan(StrictModel):
     schema_version: Literal[1] = 1
     plan_id: str
-    mode: Literal["materialize", "compose", "patch"]
+    mode: Literal["materialize", "compose", "patch", "publication"]
     task_id: str
     capsule_version: int = Field(ge=0)
     target: str
@@ -121,7 +188,7 @@ class ArtifactApplyEngine:
     def _create_plan(
         self,
         task: TaskCapsule,
-        mode: Literal["materialize", "compose", "patch"],
+        mode: Literal["materialize", "compose", "patch", "publication"],
         target: Path,
         candidate: bytes,
         input_artifact_ids: list[str],
@@ -293,12 +360,191 @@ class ArtifactApplyEngine:
                 raise ValueError("patch deleted target; deletion is outside artifact_apply scope")
             return staged.read_bytes()
 
-    def commit(self, task: TaskCapsule, plan_id: str, writer_lease_id: str) -> ApplyReceipt:
+    def _json_artifact(self, task: TaskCapsule, artifact_id: str) -> dict:
+        with self.artifacts.open_content(task, artifact_id) as handle:
+            raw = handle.read(65537)
+        if len(raw) > 65536:
+            raise ValueError("publication metadata exceeds 65536 bytes")
+        return json.loads(raw)
+
+    def plan_publication(self, task: TaskCapsule, root: Path, declaration: dict, packet_artifact_id: str) -> ApplyPlan:
+        declared = PublicationDeclaration.model_validate(declaration)
+        if declared.task_id != task.task_id:
+            raise PermissionError("publication task mismatch")
+        packet = PublicationPacket.model_validate(self._json_artifact(task, packet_artifact_id))
+        draft = resolve_under_root(root, declared.draft_path)
+        target = self._target(task, str(resolve_under_root(root, declared.destination_path)))
+        if draft == target:
+            raise ValueError("draft and authority resolve to the same file")
+        def packet_path(value):
+            path = Path(value)
+            return (path if path.is_absolute() else root / path).resolve()
+        if (packet_path(packet.draft_path) != draft or packet_path(packet.destination_path) != target
+                or packet.expected_destination_sha256 != declared.accepted_destination_sha256):
+            raise ValueError("publication packet/declaration destination or base mismatch")
+        manifest = self.artifacts.put_path(task, draft, source_kind="generated")
+        if manifest.sha256 != packet.draft_sha256:
+            raise ValueError("publication draft hash mismatch")
+        with self.artifacts.open_content(task, manifest.artifact_id) as handle:
+            candidate = handle.read(524289)
+        if len(candidate) > 524288:
+            raise ValueError("managed Markdown exceeds 524288 bytes")
+        candidate.decode('utf-8', errors='strict')
+        if declared.scope == 'sections':
+            self._check_publication_sections(target, candidate, declared.sections)
+        declaration_manifest = self.artifacts.put_bytes(task,
+            io.BytesIO(declared.model_dump_json().encode()), media_type="application/json",
+            source_kind="generated", source_ref="managed_markdown declaration")
+        packet_id = self.artifacts.resolve(task, packet_artifact_id).artifact_id
+        return self._create_plan(task, "publication", target, candidate,
+            [packet_id, manifest.artifact_id, declaration_manifest.artifact_id],
+            declared.accepted_destination_sha256, ["UTF-8", "managed declaration", "review binding", "read-back SHA-256"])
+
+    @staticmethod
+    def _check_publication_sections(target: Path, candidate: bytes, sections: list[str]) -> None:
+        # Reuse the existing SYNC parser; do not create another Markdown parser.
+        with tempfile.TemporaryDirectory(prefix='harness-sections-') as temporary:
+            draft = Path(temporary) / 'draft.md'
+            draft.write_bytes(candidate)
+            def outside(path):
+                snapshot = parse_markdown_snapshot(path, entity_id='publication', endpoint='local', source_path=path.name)
+                blocks = sorted((snapshot.block(name) for name in sections), key=lambda b: b.start_line)
+                lines = path.read_bytes().splitlines(keepends=True)
+                result, cursor = [], 0
+                for block in blocks:
+                    if block.kind != 'managed' or block.start_line < cursor:
+                        raise ValueError("invalid managed section scope")
+                    result.extend(lines[cursor:block.start_line])  # Preserve START marker.
+                    result.append(('\x00' + block.block_id + '\x00').encode())
+                    cursor = block.end_line - 1  # Preserve END marker.
+                result.extend(lines[cursor:])
+                return b''.join(result)
+            if outside(target) != outside(draft):
+                raise PermissionError("publication changes bytes outside declared sections")
+
+    def _publication_context(self, task: TaskCapsule, plan: ApplyPlan):
+        if plan.mode != 'publication' or len(plan.input_artifact_ids) != 3:
+            raise ValueError("not a managed publication plan")
+        declaration_id = plan.input_artifact_ids[2]
+        declared = PublicationDeclaration.model_validate(self._json_artifact(task, declaration_id))
+        if declared.task_id != task.task_id:
+            raise PermissionError("publication task mismatch")
+        return declared, self.artifacts.resolve(task, declaration_id).sha256
+
+    def _check_publication_review(self, task: TaskCapsule, plan: ApplyPlan, review_artifact_id: str, publisher: str):
+        declared, declaration_sha = self._publication_context(task, plan)
+        review = PublicationReview.model_validate(self._json_artifact(task, review_artifact_id))
+        if (review.decision != 'approved' or review.plan_id != plan.plan_id
+                or review.diff_artifact_id != plan.diff_artifact_id or review.candidate_sha256 != plan.candidate_sha256
+                or review.declaration_sha256 != declaration_sha or review.review_owner != declared.review_owner
+                or review.publish_owner != declared.publish_owner or publisher != declared.publish_owner
+                or not all(isinstance(ref, str) and ref.strip() for ref in review.evidence_refs)):
+            raise PermissionError("publication review does not approve this exact plan/owner")
+        return review
+
+    def commit_publication(self, task: TaskCapsule, plan_id: str, review_artifact_id: str, publisher: str) -> dict:
+        directory = self._plan_dir(task.task_id, plan_id)
+        with _file_lock(directory / 'publication.lock'):
+            return self._commit_publication(task, plan_id, review_artifact_id, publisher)
+
+    def review_publication(self, task: TaskCapsule, plan_id: str, body: dict, publisher: str) -> dict:
+        directory = self._plan_dir(task.task_id, plan_id)
+        with _file_lock(directory / 'publication.lock'):
+            plan = ApplyPlan.model_validate_json((directory / 'plan.json').read_text(encoding='utf-8'))
+            review = PublicationReview.model_validate(body)
+            raw = review.model_dump_json().encode()
+            if len(raw) > 65536:
+                raise ValueError("publication metadata exceeds 65536 bytes")
+            manifest = self.artifacts.put_bytes(task, io.BytesIO(raw),
+                media_type='application/json', source_kind='generated', source_ref='managed Markdown review')
+            self._record_publication_review(task, plan, manifest.artifact_id, publisher)
+            return self.inspect_publication(task, plan_id)
+
+    def inspect_publication(self, task: TaskCapsule, plan_id: str) -> dict:
+        directory = self._plan_dir(task.task_id, plan_id)
+        plan = ApplyPlan.model_validate_json((directory / 'plan.json').read_text(encoding='utf-8'))
+        self._publication_context(task, plan)
+        current = self.capsules.load(task.task_id)
+        observed = _hash_path(self._target(current, plan.target))
+        result = {'status': 'draft_ready', 'plan_id': plan_id, 'observed_target_sha256': observed}
+        review_path, receipt_path = directory / 'publication_review.json', directory / 'receipt.json'
+        if review_path.is_file():
+            binding = json.loads(review_path.read_text(encoding='utf-8'))
+            self._check_publication_review(task, plan, binding['review_artifact_id'], binding['publish_owner'])
+            result.update(binding, status='reviewed')
+        if receipt_path.is_file():
+            if not review_path.is_file():
+                raise ApplyError("publication review evidence is missing; receipt retained")
+            receipt = ApplyReceipt.model_validate_json(receipt_path.read_text(encoding='utf-8'))
+            result.update(receipt=receipt.model_dump(mode='json'),
+                          status='verified' if observed == receipt.after_sha256 else 'conflict')
+        elif observed not in {plan.target_before_sha256, plan.candidate_sha256}:
+            result['status'] = 'conflict'
+        elif review_path.is_file() and any(lease.expires_at > datetime.now(timezone.utc)
+                and lease.lease_id != 'publication-' + plan_id[:24] for lease in current.writer_leases):
+            result['status'] = 'reviewed_waiting_for_writer'
+        return result
+
+    def _record_publication_review(self, task, plan, review_artifact_id, publisher):
+        directory = self._plan_dir(task.task_id, plan.plan_id)
+        self._check_publication_review(task, plan, review_artifact_id, publisher)
+        review_id = self.artifacts.resolve(task, review_artifact_id).artifact_id
+        binding = {'review_artifact_id': review_id, 'publish_owner': publisher}
+        review_path = directory / 'publication_review.json'
+        if review_path.exists():
+            if json.loads(review_path.read_text(encoding='utf-8')) != binding:
+                raise PermissionError("publication review rebinding is forbidden")
+        else:
+            # Same existing apply-plan directory; no publication queue or database.
+            _atomic_bytes(review_path, json.dumps(binding, sort_keys=True).encode())
+        return binding
+
+    def _commit_publication(self, task: TaskCapsule, plan_id: str, review_artifact_id: str, publisher: str) -> dict:
+        directory = self._plan_dir(task.task_id, plan_id)
+        plan = ApplyPlan.model_validate_json((directory / 'plan.json').read_text(encoding='utf-8'))
+        binding = self._record_publication_review(task, plan, review_artifact_id, publisher)
+        lease_id = 'publication-' + plan_id[:24]
+        current = self.capsules.load(task.task_id)
+        if not (directory / 'receipt.json').is_file():
+            if datetime.now(timezone.utc) >= plan.expires_at:
+                raise ApplyError("apply plan expired")
+            observed = _hash_path(self._target(current, plan.target))
+            if observed not in {plan.target_before_sha256, plan.candidate_sha256}:
+                raise WriteConflict("target changed after publication review; draft and review retained")
+            own = next((lease for lease in current.writer_leases if lease.lease_id == lease_id), None)
+            if own is None or own.expires_at <= datetime.now(timezone.utc):
+                current = self.capsules.acquire_writer_lease(task.task_id, WriterLeaseRef(
+                    lease_id=lease_id, target=plan.target, base_sha256=plan.target_before_sha256,
+                    owner_work_unit=current.active_work_unit or 'artifact_apply',
+                    expires_at=datetime.now(timezone.utc) + timedelta(hours=1)), expected_version=current.version)
+        try:
+            receipt = self.commit(current, plan_id, lease_id, _publication=True)
+        except (ApplyError, PermissionError):
+            latest = self.capsules.load(task.task_id)
+            if any(lease.lease_id == lease_id for lease in latest.writer_leases):
+                self.capsules.release_writer_lease(task.task_id, lease_id, expected_version=latest.version)
+            raise
+        # A crash after receipt persistence may have left only our own lease.
+        current = self.capsules.load(task.task_id)
+        if any(lease.lease_id == lease_id for lease in current.writer_leases):
+            self.capsules.release_writer_lease(task.task_id, lease_id, expected_version=current.version)
+        observed = _hash_path(self._target(current, receipt.target))
+        if observed != receipt.after_sha256:
+            raise WriteConflict("published target changed on read-back; original receipt retained, do not republish")
+        return {'status': 'verified', 'receipt': receipt.model_dump(mode='json'),
+                'read_back_sha256': observed, **binding}
+
+    def commit(self, task: TaskCapsule, plan_id: str, writer_lease_id: str, *, _publication: bool = False) -> ApplyReceipt:
         directory = self._plan_dir(task.task_id, plan_id)
         plan_path = directory / "plan.json"
         if not plan_path.is_file():
             raise FileNotFoundError(f"unknown apply plan: {plan_id}")
         plan = ApplyPlan.model_validate_json(plan_path.read_text(encoding="utf-8"))
+        if plan.mode == 'publication':
+            if not _publication:
+                raise PermissionError("managed plan requires publication commit and read-back")
+            binding = json.loads((directory / 'publication_review.json').read_text(encoding='utf-8'))
+            self._check_publication_review(task, plan, binding['review_artifact_id'], binding['publish_owner'])
         receipt_path = directory / "receipt.json"
         if receipt_path.exists():
             return ApplyReceipt.model_validate_json(receipt_path.read_text(encoding="utf-8"))

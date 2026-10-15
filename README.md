@@ -48,6 +48,8 @@ Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在
 
 14 項歷史未結回饋的[逐項卡點與責任分類](docs/engineering/feedback-classification-20261015/README.md)區分源碼缺陷、未完成的交接／整合需求，以及環境／驗收缺口；後續源碼修復包含空命令輸出的預覽判定與 pending MCP 連線競態，不代表原現場已完成驗收。
 
+文件發布現在可沿既有 `artifact_apply` 完成[宣告、草稿／packet、審閱、CAS 發布與讀回核對](docs/engineering/hf002-document-handoff-20261015/README.md)。支援本地 Markdown 全文或明確 SYNC 區塊，writer 忙碌時保留原 plan／審閱等待；ResearchFlow 仍交由原本的 record owner 發布，不能以本地回執冒充同步成功。
+
 ## 開始使用
 
 目前提供 **P1 工程候選版**，主要部署組合是 Windows 客戶端與 Linux Worker。使用前需要配置自己的遠端連線、workplace 和插件入口；報告撰寫另需配置 Provider。

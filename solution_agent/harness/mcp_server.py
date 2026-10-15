@@ -1273,14 +1273,42 @@ def artifact_apply(
         task = _ensure_capsule(task_id)
         engine = ArtifactApplyEngine(_solution_root() / "state", _artifact_store(), capsules)
         if commit:
+            if mode == "publication":
+                if not plan_id or not request:
+                    raise ValueError("publication commit requires plan_id and reviewed artifact")
+                if set(request) != {"review_artifact_id", "publish_owner"}:
+                    raise ValueError("publication commit requires only review_artifact_id and publish_owner")
+                publication = engine.commit_publication(task, plan_id,
+                    str(request.get("review_artifact_id") or ""), str(request.get("publish_owner") or ""))
+                return _with_server({"ok": True, "operation": "artifact_apply", "committed": True,
+                                     "receipt": publication['receipt'], "publication": publication})
             if not plan_id or not writer_lease_id:
                 raise ValueError("commit requires plan_id and writer_lease_id")
             receipt = engine.commit(task, plan_id, writer_lease_id)
             return _with_server(
                 {"ok": True, "operation": "artifact_apply", "committed": True, "receipt": receipt.model_dump(mode="json")}
             )
+        if mode == "publication" and plan_id and request is None:
+            publication = engine.inspect_publication(task, plan_id)
+            return _with_server({"ok": True, "operation": "artifact_apply",
+                "committed": "receipt" in publication, "publication": publication})
+        if mode == "publication" and plan_id and request is not None:
+            if set(request) != {"review", "publish_owner"}:
+                raise ValueError("publication review requires only review and publish_owner")
+            publication = engine.review_publication(task, plan_id, request['review'], request['publish_owner'])
+            return _with_server({"ok": True, "operation": "artifact_apply", "committed": False,
+                                 "publication": publication})
         if request is None:
             raise ValueError("plan request is required when commit=false")
+        if mode == "publication":
+            if set(request) != {"declaration", "packet_artifact_id"}:
+                raise ValueError("publication plan requires only declaration and packet_artifact_id")
+            plan = engine.plan_publication(task, _solution_root(), request.get("declaration") or {},
+                                           str(request.get("packet_artifact_id") or ""))
+            return _with_server({"ok": True, "operation": "artifact_apply", "committed": False,
+                "plan": plan.model_dump(mode="json"), "writer_lease_id": None,
+                "publication": {"status": "draft_ready", "declaration_artifact_id": plan.input_artifact_ids[2]},
+                "next_action": "Review the exact diff/candidate/declaration; store the review artifact, then commit this publication plan. An occupied writer lease requires retry of this same plan, not another task."})
         if mode not in {"materialize", "compose", "patch"}:
             raise ValueError("artifact_apply mode must be materialize, compose, or patch")
         if "expected_target_sha256" not in request:
@@ -1331,7 +1359,8 @@ def artifact_apply(
             }
         )
     except Exception as exc:
-        return _stage_error("artifact_apply", "commit" if commit else "plan", exc, task_id=task_id, mode=mode)
+        return _stage_error("artifact_apply", "commit" if commit else "plan", exc, task_id=task_id, mode=mode,
+                            **({"plan_id": plan_id} if mode == "publication" else {}))
 
 
 def main() -> None:
