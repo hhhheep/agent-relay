@@ -303,6 +303,7 @@ def test_plugin_skill_routes_to_read_only_markdown_reader_manager() -> None:
 
 
 def test_artifact_store_and_selective_read_update_the_same_task_capsule(tmp_path: Path, monkeypatch) -> None:
+    tmp_path = tmp_path.resolve()  # Match the production _solution_root contract.
     monkeypatch.setattr(server, "_solution_root", lambda: tmp_path)
     monkeypatch.setattr(
         server,
@@ -320,6 +321,7 @@ def test_artifact_store_and_selective_read_update_the_same_task_capsule(tmp_path
     source = tmp_path / "evidence.md"
     source.write_text("# Summary\nselected\n# Raw\nignored\n", encoding="utf-8")
     stored = server.artifact_store("focus-artifacts", str(source))
+    assert stored["ok"] is True, stored
     artifact_id = stored["manifest"]["artifact_id"]
     selected = server.artifact_inspect(
         "focus-artifacts",
@@ -336,6 +338,7 @@ def test_artifact_store_and_selective_read_update_the_same_task_capsule(tmp_path
 
 @pytest.mark.parametrize("source_release", ["harness-v2-focus-test", "previous-compatible-patch"])
 def test_mcp_runs_and_collects_real_no_api_smoke_stage(tmp_path: Path, monkeypatch, source_release) -> None:
+    tmp_path = tmp_path.resolve()  # Windows temporary roots may use 8.3 aliases.
     monkeypatch.setattr(server, "_solution_root", lambda: tmp_path)
     release_id = "harness-v2-focus-test"
     monkeypatch.setattr(
@@ -402,6 +405,7 @@ def test_mcp_runs_and_collects_real_no_api_smoke_stage(tmp_path: Path, monkeypat
                     "release_id": release_id,
                 },
             )
+            assert launched.structured_content["ok"] is True, launched.structured_content
             job_id = launched.structured_content["job_id"]
             deadline = time.monotonic() + 12
             while time.monotonic() < deadline:

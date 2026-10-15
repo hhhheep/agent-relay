@@ -43,3 +43,7 @@ Routing, actual synthetic MCP and preflight suites are now in candidate CI along
 ## Combined local verification
 
 After the separate fixture repairs, the expanded audit selection passed 94 tests, replacing the original five failures without skips. The complete updated CI core selection passed 278 tests with two existing native POSIX skips. HF-021 candidate `c607909` passed clean-host CI [38745519944](https://github.com/hhhheep/agent-relay/actions/runs/38745519944). The final stacked candidate must independently pass its expanded clean-host workflow before engineering fast-forward; this record does not certify a future run or Linux/M1–M4 installation.
+
+## First expanded clean-host MCP run
+
+Run [38746319348](https://github.com/hhhheep/agent-relay/actions/runs/38746319348) retained three MCP failures (275 passed, two existing POSIX skips). The production `_solution_root()` resolves the root; the synthetic MCP tests instead mocked an unresolved Windows 8.3 temporary root. Resolving only the affected test fixture paths restores the production contract, without changing runtime path confinement or permissions. Explicit success assertions now preserve error details before indexing returned IDs. The complete MCP suite passes 22 tests locally; the expanded candidate CI must pass again.

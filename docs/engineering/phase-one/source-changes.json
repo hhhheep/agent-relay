@@ -85,6 +85,11 @@
       "current_sha256": "47ae82d68075ebd66d16344f75d2d62158b89e9f72ae2fe928e82e8ef31fd073"
     },
     {
+      "path": "tests/test_harness_mcp.py",
+      "extraction_sha256": "458bc9c4c84498eb480923410777cf54d6a0a46a12cecf0c545c63c5535270f7",
+      "current_sha256": "85855fe125e5a2e22539dfdddf0443f30bf41148bd35eeda7a43ad097064b09e"
+    },
+    {
       "path": "tests/test_harness_remote_profile.py",
       "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
       "current_sha256": "408731e3f81113495f56b7ae07a37ec20e9db6fc8efc53642a63c5863a0b443e"
@@ -257,7 +262,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "f04b7c2cc0699fd229306a9d87a0b3f8aa94c7b837d5222142843112572b442d"
+      "current_sha256": "1791365220cc2d59c930b427116a446957cc62ac4edcc37eef2b770a972ac700"
     }
   ]
 }
