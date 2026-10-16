@@ -8,7 +8,7 @@ test('one problem Goal spans proposal and failed verification; completes only af
  try{
   const routes=new PublisherRoutes(store),binding=routes.publish('worker','task','unit','worker',{threadId:'chat'});
   const inbox={get:async()=>({messages:[],last_event_id:0}),send:async()=>({})};
-  const app={read:async(id:string)=>({thread:{id,status:{type:'idle'}},turns}),send:async(id:string)=>({threadId:id})};
+  const app={controllerChat:()=> 'chat',read:async(id:string)=>({thread:{id,status:{type:'idle'}},turns}),send:async(id:string)=>({threadId:id})};
   const service=new RoutingService(store,routes,inbox,app,join(root,'receipts'));
   const question=remoteDelivery(binding,'q');
   async function review(request:string,payload:any,decision:any,resolved:boolean){

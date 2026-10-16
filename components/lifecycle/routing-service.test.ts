@@ -5,6 +5,19 @@ import {PublisherRoutes,remoteDelivery} from './publisher-route.ts';
 import {RoutingService} from './routing-service.ts';
 import {ReviewedStore} from './reviewed-store.ts';
 
+for(const caller of [undefined,'other-direction'])test(`epoch zero blocks native dispatch from ${caller??'missing caller'}`,async()=>{
+ const root=mkdtempSync(join(tmpdir(),'routing-epoch-zero-')),store=new ReviewedStore(join(root,'queue.sqlite'));
+ try{
+  const routes=new PublisherRoutes(store),binding=routes.publish('remote','task','unit','worker',{threadId:'chat'});
+  const envelope={v:1,binding,request_id:'question',delivery_id:remoteDelivery(binding,'question'),payload:{kind:'question',problem:'problem',acceptance:'check'}};
+  let sends=0;
+  const inbox={get:async()=>({messages:[{event_id:1,from_agent_id:'remote',body:JSON.stringify(envelope)}],last_event_id:1}),send:async()=>({ok:true})};
+  const app={controllerChat:()=>caller,read:async(thread:string)=>({thread:{id:thread,status:{type:'idle'}},turns:[]}),send:async(thread:string)=>{sends++;return {threadId:thread};}};
+  const result=await new RoutingService(store,routes,inbox,app,join(root,'receipts')).tick();
+  assert.equal(result.threads[0].state,'attention');assert.equal(sends,0);
+ }finally{store.close();rmSync(root,{recursive:true,force:true});}
+});
+
 test('one controller performs ingress, native Goal receipt, durable reply after restart',async()=>{
  const root=mkdtempSync(join(tmpdir(),'routing-service-'));let store=new ReviewedStore(join(root,'queue.db'));
  try{
@@ -13,7 +26,7 @@ test('one controller performs ingress, native Goal receipt, durable reply after 
   const messages=[{event_id:1,from_agent_id:'remote',body:JSON.stringify(envelope)}],sent:any[]=[];
   let failReply=false,sendCount=0,turns:any[]=[],busy=true;
   const inbox={get:async(cursor:number)=>({messages:messages.filter(m=>m.event_id>cursor),last_event_id:1}),send:async(source:string,body:string)=>{if(failReply)throw Error('offline');sent.push({source,body:JSON.parse(body)});return {ok:true};}};
-  const app={read:async(thread:string)=>({thread:{id:thread,status:{type:busy?'active':'notLoaded'}},turns}),send:async(thread:string)=>{sendCount++;return {threadId:thread};}};
+  const app={controllerChat:()=> 'chat',read:async(thread:string)=>({thread:{id:thread,status:{type:busy?'active':'notLoaded'}},turns}),send:async(thread:string)=>{sendCount++;return {threadId:thread};}};
   let service=new RoutingService(store,routes,inbox,app,join(root,'receipts'));
   assert.equal((await service.tick()).threads[0].state,'waiting_chat_idle');assert.equal(sendCount,0);
   busy=false;assert.equal((await service.tick()).threads[0].state,'dispatched');assert.equal(sendCount,1);

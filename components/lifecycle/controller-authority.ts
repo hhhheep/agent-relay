@@ -39,7 +39,7 @@ export function transferController(db:DatabaseSync,grant:ControllerGrant,verifie
 }
 export function assertController(db:DatabaseSync,scope:string,caller:string|undefined,epoch:number){
  const current=currentController(db,scope);
- if(current.epoch!==epoch||current.transferred&&caller!==current.chat)throw Error('controller_authority_stale');
+ if(current.epoch!==epoch||caller!==current.chat)throw Error('controller_authority_stale');
  return current;
 }
 export function hasTransferredControllerGrant(path:string,caller:string){

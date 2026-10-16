@@ -195,6 +195,16 @@
       "current_sha256": "1aaaaca6b66ab3c9aa960eacf35e83975e916af943b079b79a8629090ac0980a"
     },
     {
+      "path": "components/lifecycle/controller-authority.test.ts",
+      "extraction_sha256": "9c262b866d8323048d46c2728d85d6a0673d319ee56f51e0653ebcf8bfeac77c",
+      "current_sha256": "eaaa1e6d83ebeab8888372fd04f241c876f53b8228a668b6008770685c759767"
+    },
+    {
+      "path": "components/lifecycle/controller-authority.ts",
+      "extraction_sha256": "dedeee2378c889073c85e7390e44066a88d89082338e5d43d33f7a0f49374735",
+      "current_sha256": "ae3462583d64b996a5ba0dede8da673635f02eac61b8d5afaeb6f8dc7b8a9713"
+    },
+    {
       "path": "components/lifecycle/harness-port.ts",
       "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
       "current_sha256": "213e608757bca251b54b1615a250c1338c213742182a817917c7a2abb313af3d"
@@ -230,6 +240,11 @@
       "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
     },
     {
+      "path": "components/lifecycle/problem-goal.test.ts",
+      "extraction_sha256": "5eb8288ca5cc313489145c653e00eff74e790e2a9494772f7bba3dd2fa053cae",
+      "current_sha256": "6f2b2a0e22e6a118ca188c91783ad2fe1ab1b3008a3873e83884e7302822802d"
+    },
+    {
       "path": "components/lifecycle/resume-controller.test.ts",
       "extraction_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
       "current_sha256": "657cf873513cd85d473416a00ca9033006da1831f52837355718242e955a33f2"
@@ -243,6 +258,11 @@
       "path": "components/lifecycle/router-api.ts",
       "extraction_sha256": "26568d3072439a87a7cdbfb40cd2dea0ede1961c9ff462a14a9bc2d59a7d156c",
       "current_sha256": "15d78e23049d06a34b26ca6c5ca01936858bcc2cf468cf92cdedb54fab81ad9e"
+    },
+    {
+      "path": "components/lifecycle/routing-service.test.ts",
+      "extraction_sha256": "5c75c001130dc2a2f9813c976b6394bfa9312181e897b6ab5f4dd8647c1c4917",
+      "current_sha256": "5686ec22f0c55dc31c40748667921df7713c6c01415afe7dc80d41712884a6e1"
     },
     {
       "path": "components/lifecycle/session-lifecycle.ts",

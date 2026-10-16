@@ -15,6 +15,18 @@ function fixture(){
  const inbox={get:async()=>({messages:[]}),send:async()=>({ok:true})};
  return {root,path,store,routes,binding,grant,submit,inbox,close:()=>{store.close();rmSync(root,{recursive:true,force:true});}};
 }
+
+test('initial controller epoch rejects foreign or absent caller without mutation',()=>{
+ const f=fixture();try{
+  const scope=controllerScope('TASK','UNIT'),before=currentController(f.store.db,scope);
+  assert.equal(before.epoch,0);assert.equal(before.chat,'old-chat');
+  assertController(f.store.db,scope,'old-chat',0);
+  assert.throws(()=>assertController(f.store.db,scope,'foreign-chat',0),/controller_authority_stale/);
+  assert.throws(()=>assertController(f.store.db,scope,undefined,0),/controller_authority_stale/);
+  assert.deepEqual(currentController(f.store.db,scope),before);
+  assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
+ }finally{f.close();}
+});
 test('new chat inspects pending while old OS manager owns lease; no reply or write needed',()=>{
  const f=fixture();try{
   f.submit();const before=f.store.rows(),owner=f.store.db.prepare("SELECT value FROM meta WHERE key='owner'").get();

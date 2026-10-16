@@ -129,3 +129,12 @@ bash tests skipped on Windows. Suites: worker session identity, Codex worker,
 worker job reattach, terminal commands, MCP, task capsule and help resume.
 The actual local CLI fixture also passed nine identity/history/recovery checks.
 Its raw local paths, session IDs and receipts are not publication inputs.
+
+The controller prerequisite is independently repaired: `assertController` now
+checks caller identity at epoch zero as well as after transfer. The new negative
+test failed on the prior code with a missing expected exception. Direct routing
+tests also require absent/foreign callers to be blocked before native dispatch.
+The normal routing fixture now supplies the same verified caller identity that
+the production manager supplies; the guard itself is not relaxed.
+Full Lifecycle validation after this change: 90 passed, no failures or skips.
+This does not implement bootstrap admission, session reuse or automatic rollover.
