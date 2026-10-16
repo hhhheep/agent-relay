@@ -59,7 +59,7 @@ def pool(packet, monkeypatch):
         script = jobs / request["command_id"] / "request.sh"
         return json.loads(base64.b64decode(shlex.split(script.read_text(encoding="utf-8"))[-1]))
 
-    def complete(p, request, *, codex_run=None):
+    def complete(p, request, *, codex_run=None, finish_unit=True):
         directory = jobs / request["command_id"]
         try:
             capsule = store.load(p["task_id"])
@@ -95,7 +95,8 @@ def pool(packet, monkeypatch):
         assert manifest["worker_session"]["state"] == "observed"
         capsule = store.load(p["task_id"])
         assert capsule.writer_leases == []
-        store.finish_work_unit(p["task_id"], p["work_unit_id"], expected_version=capsule.version)
+        if finish_unit:
+            store.finish_work_unit(p["task_id"], p["work_unit_id"], expected_version=capsule.version)
         return manifest
 
     return SimpleNamespace(make=make, prepare=prepare, complete=complete, assigned=assigned,
@@ -259,6 +260,39 @@ def test_wrong_pinned_pool_fails_before_capsule_or_command_creation(pool, monkey
     assert result["worker_admission"]["code"] == "worker_pool_fingerprint_mismatch"
     assert not list(pool.jobs.glob('*/request.json'))
     assert pool.calls == []
+
+
+def test_public_pool_completion_collects_original_artifacts_without_research_acceptance(pool, monkeypatch):
+    import solution_agent.harness.mcp_server as server
+    p = pool.make(); request = pool.prepare(p)
+    pool.complete(p, request, finish_unit=False)
+    def execute(*args, **kwargs):
+        kwargs.pop("runtime_release_id", None)
+        return pool.runner.execute(**kwargs)
+    manager = SimpleNamespace(base=pool.jobs.parent, profile=SimpleNamespace(
+        deployment_profile_name="FAN", default_terminal="main", run_root=Path(pool.profile.remote_run_root),
+        slots={"main": SimpleNamespace(cwd=pool.runner.cwd)}), exec=execute)
+    monkeypatch.setattr(server, "_require_activation", lambda: None)
+    monkeypatch.setattr(server, "_solution_root", lambda: Path(p["root"]))
+    monkeypatch.setattr(server, "_terminal_manager", lambda: manager)
+    monkeypatch.setattr(server, "_server_identity", lambda: {"release_id": "fixture-release"})
+    monkeypatch.setattr(server, "_with_server", lambda value: value)
+    result = server.terminal_exec("TASK", command_id=request["command_id"], work_unit_id=p["work_unit_id"], wait_ms=0)
+    assert result["state"] == "succeeded", result
+    assert result["command_id"] == request["command_id"]
+    assert result["work_unit"]["state"] == "finished"
+    assert result["work_unit"]["research_acceptance"] == "not_assessed"
+    assert result["writer_lease_released"] is True
+    assert {"worker_result", "worker_receipt", "worker_notes"} <= result["artifacts"].keys()
+    capsule = pool.store.load("TASK")
+    assert capsule.active_work_unit is None and capsule.writer_leases == []
+    assert capsule.authoritative_artifacts == []
+    assert any(a.role == "terminal_worker_result" for a in capsule.working_artifacts)
+    count = len(pool.calls)
+    recovered = server.terminal_exec("TASK", command_id=request["command_id"], work_unit_id=p["work_unit_id"], wait_ms=0)
+    assert recovered["artifacts"] == result["artifacts"]
+    assert recovered["capsule_version"] == result["capsule_version"]
+    assert len(pool.calls) == count
 
 
 @pytest.mark.parametrize("fault", ["arbitrary_field", "boolean_capacity", "duplicate_task", "missing_scope", "excess_capacity"])

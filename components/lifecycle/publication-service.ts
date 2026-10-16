@@ -2,6 +2,7 @@ import {TaskPublisher,TaskSubmission,MarkdownSnapshot,WorkerProfile} from './tas
 import {PublisherRoutes} from './publisher-route.ts';
 import {posix} from 'node:path';
 import {HarnessOperationError} from './harness-port.ts';
+import {initializeControllerAuthority,currentController,assertController,controllerScope} from './controller-authority.ts';
 
 // Independent publications keep their original scopes and journal IDs.
 // A failed item does not prevent later items; callers persist each result.
@@ -46,9 +47,23 @@ export async function publishTask(journal:TaskPublisher,routes:PublisherRoutes,i
   if(Object.keys(input).length!==Object.keys(original).length||Object.keys(original).some(k=>(input as any)[k]!==original[k])||JSON.stringify(body.markdown)!==JSON.stringify(snapshot))throw Error('publication_resume_input_mismatch');
   // Genuine caller stays the current executor; destination is the immutable
   // journal binding, not a fabricated caller or a new publication.
-  app.identity();if((await app.read(body.binding.origin_chat_id)).thread?.id!==body.binding.origin_chat_id)throw Error('publication_origin_unavailable');
+  app.identity();
   prepared={id:old.id,binding:body.binding};
  }else prepared=await journal.prepare(input,app,snapshot);
+ // Known commands only recover; neither an offline origin nor a new controller
+ // is grounds for relaunching them. Side effects below require current scope.
+ const known=journal.inspect(prepared.id);
+ if(known.command_id)return journal.reconcile(prepared.id,await harness.recover(input.task_id,known.command_id));
+ initializeControllerAuthority(routes.store.db);
+ const scope=controllerScope(prepared.binding.task_id,prepared.binding.work_unit_id);
+ const registered=routes.store.db.prepare('SELECT scope FROM publisher_routes WHERE scope=?').get(scope);
+ const epoch=registered?currentController(routes.store.db,scope).epoch:0;
+ const guard=()=>{
+  const caller=app.identity().threadId;
+  if(routes.store.db.prepare('SELECT scope FROM publisher_routes WHERE scope=?').get(scope))assertController(routes.store.db,scope,caller,epoch);
+  else if(caller!==prepared.binding.origin_chat_id)throw Error('controller_authority_stale');
+ };
+ guard();
  if(options.recoverUnstarted){
   if(!options.existingId||!options.deploymentProfile)throw Error('declared_legacy_recovery_required');
   await journal.recoverUnstarted(prepared.id,async body=>{
@@ -61,7 +76,7 @@ export async function publishTask(journal:TaskPublisher,routes:PublisherRoutes,i
  const operation=async(kind:string,command:string)=>{
   const unit='publish-'+prepared.id.slice(0,24)+'-'+kind;
   const request={task_id:input.task_id,work_unit_id:unit,command,access_mode:'writer',timeout_seconds:60,wait_ms:1000,max_preview_bytes:16384};
-  return journal.operation(prepared.id,kind,request,{start:r=>harness.maintenance(r),recover:id=>harness.recoverMaintenance(input.task_id,unit,id)});
+  return journal.operation(prepared.id,kind,request,{start:r=>{guard();return harness.maintenance(r);},recover:id=>harness.recoverMaintenance(input.task_id,unit,id)});
  };
  await journal.admit(prepared.id,routes,async binding=>{
   const result=await operation('registry',registryCommand(profile,binding,snapshot));
@@ -75,5 +90,5 @@ export async function publishTask(journal:TaskPublisher,routes:PublisherRoutes,i
  }:undefined);
  const row=journal.inspect(prepared.id);
  if(row.command_id){return journal.reconcile(prepared.id,await harness.recover(input.task_id,row.command_id));}
- return journal.submit(prepared.id,request=>harness.submit(request));
+ guard();return journal.submit(prepared.id,request=>{guard();return harness.submit(request);});
 }

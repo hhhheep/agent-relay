@@ -250,11 +250,30 @@ be declared complete.
 
 Result contract/hash validation and ownership release allow a worker to accept
 another independent eligible assignment. They do not attest scientific acceptance
-or close a direction. Complete controller handoff, independent result-review
+or close a direction. Complete controller handoff, integration with existing result-review
 receipts and the combined three-direction/ten-assignment fault scenario remain
 required work under the full goal.
 
 ## Current local verification
+
+Follow-up owner audit found that `publication-service.ts`, the existing manual
+publish CLI consumer, must enforce the same controller authority before remote
+maintenance or a new worker submission. The manager-loop guard alone leaves this
+entry point available to an old controller after transfer. Extend the existing
+scope/epoch checks to that consumer without changing journal IDs or requiring
+the old origin chat to be online. Read-only recovery of an already known command
+remains available. Verify stale/foreign callers and revocation during an awaited
+operation before another submission; no new authorization store is needed.
+
+This consumer repair is now implemented. Complete Lifecycle regression passed
+again: 100 tests, no skips, including old-caller refusal before side effects,
+revocation while awaiting registry ACK, successor submission with offline old
+origin and read-only original-command recovery. A follow-up Python selection
+passed 27 tests (pool, existing work-unit review and actual local CLI). The public
+pooled-command recovery test confirms original artifact references, idempotent
+recovery and `research_acceptance: not_assessed`; technical unit completion does
+not promote working artifacts into authoritative artifacts. No new research
+acceptance policy or receipt authority is introduced.
 
 On Windows, the affected Python selection (pool, profiles, MCP, protocol/release,
 builder, adapter, original-command reattachment, terminal commands and session
@@ -262,12 +281,13 @@ identity) passed: 151 tests, two existing POSIX skips. The explicitly supplied
 actual local CLI fixture passed separately: one test, no paid API or account
 credentials. The complete Lifecycle suite passed: 99 tests, no skips. Router
 packaging and publication privacy passed. These are local development results;
-CI for these changes is pending. The previous green CI applies only to the
-earlier observation increment, not this pool or controller batch implementation.
+Windows and Linux CI for pool/controller batch increment `d2ceb25` passed in
+[run 38907709804](https://github.com/hhhheep/agent-relay/actions/runs/38907709804).
+CI for the later manual publication authority repair is pending; the earlier
+green run does not cover that follow-up.
 
 Remaining acceptance: the combined three-direction/ten-assignment scenario with
-handoff, ACK loss, late result, restart and independent review; exact public
-review/finish contract coverage with pooled commands; current-change CI and
+handoff, ACK loss, late result, restart and independent review; current-change CI and
 engineering integration. Real Desktop successor creation/usage telemetry and
 automatic rollover are NOT AVAILABLE through the current NativeAppPort contract.
 Remote installed behavior and real Desktop cross-chat acceptance are NOT RUN.

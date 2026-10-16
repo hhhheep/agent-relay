@@ -250,6 +250,11 @@
       "current_sha256": "6f2b2a0e22e6a118ca188c91783ad2fe1ab1b3008a3873e83884e7302822802d"
     },
     {
+      "path": "components/lifecycle/publication-service.ts",
+      "extraction_sha256": "868a6305fa75c26b302d6f1ff9022824b9362bdf5b2d1283a458abce9b772a30",
+      "current_sha256": "b9e4000d5a57876add38ecdf050a4a21265658277bbae63c922740ae677a0fa0"
+    },
+    {
       "path": "components/lifecycle/resume-controller.test.ts",
       "extraction_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
       "current_sha256": "657cf873513cd85d473416a00ca9033006da1831f52837355718242e955a33f2"
@@ -332,7 +337,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "255bca481bb4c3dcbe7d17da8496880452b7cb35254ee0f03b4669c26706330a"
+      "current_sha256": "b7007032dc56fa649efb0128226c618c03e0652491cc14a4c435c1d9fc5ce659"
     }
   ]
 }

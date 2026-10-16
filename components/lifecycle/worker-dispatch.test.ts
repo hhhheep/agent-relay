@@ -5,6 +5,7 @@ import {ReviewedStore} from './reviewed-store.ts';import {PublisherRoutes} from 
 import {TaskPublisher} from './task-publisher.ts';import {HarnessPort,HarnessOperationError} from './harness-port.ts';
 import {assertController,currentController,controllerScope,initializeControllerAuthority,transferController} from './controller-authority.ts';
 import {runManager} from './manager-driver.ts';import {NativeAppPort} from './native-app-port.ts';
+import {publishTask} from './publication-service.ts';
 
 const sha=(value:string)=>createHash('sha256').update(value).digest('hex');
 async function fixture(count=4){
@@ -72,6 +73,31 @@ test('two dispatchers cannot submit the same admitted intent twice',async()=>{
   await f.journal.dispatchReady(1,f.authorize,submit);
   assert.equal(sends,1);release();await first;
  }finally{release();f.close();}
+});
+
+test('manual publication cannot bypass transferred epochs or revocation while awaiting registry ACK',async()=>{
+ const f=await fixture(2);let actor='chat-a',starts=0,maintenance=0;
+ const app={identity:()=>({threadId:actor}),read:async()=>{throw Error('old origin offline');}};
+ const profile={python:'/runtime/python',runtimeRoot:'/runtime',workplace:'/workplace'};
+ const input=(i:number)=>({task_id:'task-'+i,work_unit_id:'unit',worker_id:'route-worker',source:'source-'+i,worker_task:'approved-'+i,worker_phase:'prepare_code' as const,timeout_seconds:30});
+ const transfer=(i:number)=>transferController(f.store.db,{transferId:'manual-'+i,taskId:'task-'+i,workUnitId:'unit',fromChat:'chat-a',toChat:'chat-b',expectedEpoch:0,authorizationRef:'fixture-approved'},'chat-b',()=>true);
+ const harness={submit:async(request:any)=>{starts++;return {task_id:request.task_id,work_unit_id:request.work_unit_id,command_id:'original-'+request.task_id,state:'running'};},
+  maintenance:async(request:any)=>{
+   maintenance++;transfer(1);const binding=JSON.parse(f.journal.inspect(f.ids[1]).body).binding;
+   return {task_id:request.task_id,work_unit_id:request.work_unit_id,command_id:'registry-original',state:'succeeded',exit_code:0,maintenance:{finished:true},stdout:{preview:JSON.stringify({installed:true,binding})}};
+  },recover:async(task:string,command:string)=>({task_id:task,work_unit_id:'unit',command_id:command,state:'succeeded'})};
+ try{
+  transfer(0);
+  await assert.rejects(publishTask(f.journal,f.routes,input(0),app,profile,harness,{existingId:f.ids[0]}),/authority_stale/);
+  assert.equal(starts,0);assert.equal(maintenance,0);assert.equal(f.journal.inspect(f.ids[0]).state,'ready');
+  f.journal.db.prepare("UPDATE publications SET state='queued',binding_receipt=NULL WHERE id=?").run(f.ids[1]);
+  await assert.rejects(publishTask(f.journal,f.routes,input(1),app,profile,harness,{existingId:f.ids[1]}),/authority_stale/);
+  assert.equal(starts,0);assert.equal(maintenance,1);assert.equal(f.journal.inspect(f.ids[1]).state,'ready');
+  actor='chat-b';await publishTask(f.journal,f.routes,input(1),app,profile,harness,{existingId:f.ids[1]});
+  assert.equal(starts,1);assert.equal(maintenance,1);
+  actor='chat-a';const recovered=await publishTask(f.journal,f.routes,input(1),app,profile,harness,{existingId:f.ids[1]});
+  assert.equal(recovered.command_id,'original-task-1');assert.equal(starts,1);assert.equal(recovered.state,'finished');
+ }finally{f.close();}
 });
 
 test('pooled submission pins capability and fingerprint; old peer cannot silently start one-shot worker',async()=>{
