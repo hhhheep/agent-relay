@@ -102,7 +102,7 @@
     {
       "path": "tests/test_harness_managed_launch.py",
       "extraction_sha256": "80eebbd564a66c8b3edc40b66de89796f0494ef7cf762db68bba8ed611a456c4",
-      "current_sha256": "9880a043300f7d423dfca30b077255142bf027886bc71a1aea70ac604a0b6b1b"
+      "current_sha256": "0b81590a739d9918e10dae770f51cc796e70ffbe3775cd1917ddcae9f3373465"
     },
     {
       "path": "tests/test_harness_mcp.py",

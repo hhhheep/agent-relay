@@ -102,7 +102,8 @@ def test_profile_materializer_and_launcher_preserve_exact_remote_selector(tmp_pa
     assert "SOLUTION_AGENT_PROTOCOL_REQUIRED=1" in argv
     server = json.loads((output / ".mcp.json").read_text())["mcpServers"]["solution_agent_harness"]
     assert "profile_id" not in server
-    assert server["args"][0] == str(output / "scripts/remote_launcher.py")
+    # The builder emits resolved paths, including Windows short-name expansion.
+    assert server["args"][0] == str((output / "scripts/remote_launcher.py").resolve())
     assert built["release_id"] == build_runtime_identity(ROOT).release_id
     assert server['startup_timeout_sec'] == 90
     assert (output/'scripts/connection_admission.py').read_bytes() == (ROOT/'solution_agent/harness/ssh_admission.py').read_bytes()
