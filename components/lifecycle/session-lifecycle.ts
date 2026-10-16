@@ -4,7 +4,7 @@ import {sessionAppContext,connectHookApp} from './session-app-context.ts';
 import {NativeAppPort} from './native-app-port.ts';
 import {runManager,validateDriverConfiguration,type DriverConfig} from './manager-driver.ts';
 import {requestLifecycleHandoff} from './lifecycle-handoff.ts';
-import {hasTransferredControllerGrant} from './controller-authority.ts';
+import {hasTransferredControllerGrant,controllerRootAdmission} from './controller-authority.ts';
 
 export type SessionLifecycleConfig={workspace:string,authorizedExecutorChats:string[],manager:DriverConfig,ownerWaitMs?:number};
 export function validateSessionStart(config:SessionLifecycleConfig,event:any,env:NodeJS.ProcessEnv){
@@ -13,6 +13,8 @@ export function validateSessionStart(config:SessionLifecycleConfig,event:any,env
  const authorized=[...config.authorizedExecutorChats];
  if(typeof event?.session_id==='string'&&!authorized.includes(event.session_id)&&hasTransferredControllerGrant(resolve(config.manager.stateRoot,'queue.sqlite'),event.session_id))authorized.push(event.session_id);
  const context=sessionAppContext(config.workspace,authorized,event,env);if(context.state!=='ready')return context;
+ const ownership=controllerRootAdmission(resolve(config.manager.stateRoot,'queue.sqlite'),context.caller!);
+ if(!ownership.allowed)return {state:'awaiting_authority',reason:ownership.reason};
  if(!env.HARNESS_XATS_TOKEN)return {state:'awaiting_configuration',reason:'transport_token_not_provided'};
  validateDriverConfiguration(config.manager,env);
  if(!config.manager.appLifecycle?.exitWhenAwaitingApp)throw Error('lifecycle_owner_must_release');
@@ -29,6 +31,8 @@ export async function runSessionLifecycle(config:SessionLifecycleConfig,event:an
  let bootstrap;try{bootstrap=await connectHookApp(app,config.manager.appServerPath,admission.env!,signal);}finally{await app.close();}
  if(!bootstrap.pass)return {state:'awaiting_app',reason:bootstrap.reason,bootstrapAttempts:bootstrap.attempts};
  if(signal.aborted)return {state:'cancelled',attempts:0};
+ const ownership=controllerRootAdmission(resolve(config.manager.stateRoot,'queue.sqlite'),admission.caller!);
+ if(!ownership.allowed)return {state:'awaiting_authority',reason:ownership.reason};
  // Only a freshly verified context may ask the old manager to release. The old
  // manager checks exact PID+generation, stops normally and keeps durable queues.
  const handoff=requestLifecycleHandoff(config.manager.stateRoot,admission.caller!,Date.now(),Math.max(5000,(config.manager.intervalMs??2000)*3));

@@ -69,7 +69,7 @@ def _solution_root() -> Path:
 def _inside(path: Path, root: Path) -> Path:
     resolved = path.resolve()
     try:
-        resolved.relative_to(root)
+        resolved.relative_to(root.resolve())
     except ValueError as exc:
         raise ValueError(f"path is outside solution-agent root: {path}") from exc
     return resolved

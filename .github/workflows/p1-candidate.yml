@@ -71,6 +71,6 @@ jobs:
       - name: Isolated Linux worker dependencies
         run: python scripts/release/install_dependencies.py --role linux-worker --python-only
       - name: Worker identity, original command and ownership regression
-        run: .venv/bin/python -m pytest tests/test_worker_session_identity.py tests/test_worker_session_pool.py tests/test_worker_session_cli.py tests/test_harness_remote_profile.py tests/test_harness_codex_worker.py tests/test_worker_job_reattach.py tests/test_terminal_commands.py tests/test_harness_task_capsule.py tests/test_help_resume.py -q -ra
+        run: .venv/bin/python -m pytest tests/test_worker_session_identity.py tests/test_worker_session_pool.py tests/test_worker_session_cli.py tests/test_harness_remote_profile.py tests/test_harness_codex_worker.py tests/test_worker_job_reattach.py tests/test_terminal_commands.py tests/test_harness_task_capsule.py tests/test_help_resume.py tests/test_harness_mcp.py::test_containment_canonicalizes_declared_root_alias_without_accepting_foreign_path -q -ra
 # Windows candidate and bounded Linux worker validation; this is not a live
 # installation, real Desktop rollover or complete M1-M4 acceptance.

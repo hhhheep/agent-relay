@@ -78,6 +78,30 @@ test('busy owner, cancelled context and unauthorized grant cannot change epochs 
   assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
  }finally{f.close();}
 });
+
+test('quiescent CLI transfer refuses partial mixed-root takeover before asking a manager to stop',async()=>{
+ const f=fixture();try{
+  f.routes.publish('other-source','OTHER','UNIT','other-worker',{threadId:'other-direction'});
+  await assert.rejects(transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>true),/root_split_required/);
+  assertController(f.store.db,controllerScope('TASK','UNIT'),'old-chat',0);
+  assertController(f.store.db,controllerScope('OTHER','UNIT'),'other-direction',0);
+  assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
+ }finally{f.close();}
+});
+
+test('scope ownership is rechecked after waiting for queue owner release',async()=>{
+ const f=fixture();let released=false;try{
+  await assert.rejects(transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>true,{sleep:async()=>{
+   f.routes.publish('late-source','LATE','UNIT','other-worker',{threadId:'other-direction'});
+   f.store.close();released=true;
+  }}),/root_split_required/);
+  const db=new DatabaseSync(f.path,{readOnly:true});try{
+   assert.equal(currentController(db,controllerScope('TASK','UNIT')).epoch,0);
+   assert.equal(currentController(db,controllerScope('LATE','UNIT')).chat,'other-direction');
+   assert.equal(db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
+  }finally{db.close();}
+ }finally{if(!released)f.store.close();rmSync(f.root,{recursive:true,force:true});}
+});
 test('new chat inspects pending while old OS manager owns lease; no reply or write needed',()=>{
  const f=fixture();try{
   f.submit();const before=f.store.rows(),owner=f.store.db.prepare("SELECT value FROM meta WHERE key='owner'").get();

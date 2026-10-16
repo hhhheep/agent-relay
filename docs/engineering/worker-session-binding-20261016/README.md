@@ -290,6 +290,32 @@ retains the full envelope; no outcome assertion is relaxed. The same preceding
 Windows test order passed locally (215 passed, two platform skips). Its CI-only
 failure is not yet explained or waived; a new exact-commit run is required.
 
+Run 38910713999 repeated the Windows failure and exposed a path-boundary error;
+Linux passed. Owner inspection found `_inside` resolved the candidate but compared
+it to an unresolved declared root. A filesystem alias/junction can therefore
+reject a contained path. The fix resolves both sides at the existing boundary
+helper, matching ArtifactStore's existing containment behavior; it does not allow
+escaping the canonical root. Verify actual Windows junction containment plus a
+foreign-path refusal, affected MCP/artifact consumers and the exact CI candidate.
+Whether this explains the CI failure remains to be confirmed by that run.
+
+The lifecycle audit found that an allowlisted but unrelated chat could request
+another direction's manager release. An executor allowlist verifies who
+may bootstrap; it is not controller scope ownership. Before a SessionStart can
+request owner release, the implementation now reconciles the caller against the original queue's scope
+controllers. A root containing multiple controller directions cannot host their
+independent managers under its single owner lease: refuse that configuration
+instead of evicting another direction. The transfer CLI must check the projected
+root ownership before asking the current owner to stop. Use the existing queue
+and grants, not a new direction registry; separate declared direction roots are
+already exercised by the combined scenario. Fresh unbound roots retain current
+authorized bootstrap behavior. The check repeats after awaited App bootstrap and
+after queue-owner acquisition, so intervening authority changes refuse takeover.
+Targeted controller/SessionStart tests passed: 28, including read-only denial,
+partial-root takeover refusal and unchanged other-direction authority. A Windows
+junction, canonical containment and foreign-path regression passed with MCP,
+pool, artifact and MD consumers: 55 tests. Current-change CI is pending.
+
 ## Combined scenario and additional defects
 
 `components/lifecycle/worker-scenario.test.ts` starts three separate Node manager

@@ -22,7 +22,7 @@
     {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "bbe0cf687db3d6aebbb7eb347557a212314ff15164740467882c5c234e5b0aff"
+      "current_sha256": "167ffa60a0c796f3a414e900402a756748993c09bbf68757bd186c644f4b9b99"
     },
     {
       "path": "solution_agent/harness/profile_deploy.py",
@@ -107,7 +107,7 @@
     {
       "path": "tests/test_harness_mcp.py",
       "extraction_sha256": "458bc9c4c84498eb480923410777cf54d6a0a46a12cecf0c545c63c5535270f7",
-      "current_sha256": "85855fe125e5a2e22539dfdddf0443f30bf41148bd35eeda7a43ad097064b09e"
+      "current_sha256": "82013fccdd51e1657c3fb879ce4d07f75f8e3266ad1cd25c508963cf6ce22e19"
     },
     {
       "path": "tests/test_harness_remote_profile.py",
@@ -197,12 +197,12 @@
     {
       "path": "components/lifecycle/controller-authority.test.ts",
       "extraction_sha256": "9c262b866d8323048d46c2728d85d6a0673d319ee56f51e0653ebcf8bfeac77c",
-      "current_sha256": "a9e5d10cc1d2a6fe6de28158df4aae550b3b17c13caed5147a51139382718f05"
+      "current_sha256": "06c3ed6eacdebd6df83dbbc542a588b471ce31e424769c4dcb1c9349b909f6f1"
     },
     {
       "path": "components/lifecycle/controller-authority.ts",
       "extraction_sha256": "dedeee2378c889073c85e7390e44066a88d89082338e5d43d33f7a0f49374735",
-      "current_sha256": "5e0fe118f02908a2095e357c5ee5a755004a1700e5e05a2f572d2efbd78cf905"
+      "current_sha256": "de55bcde505f71b15baef2d83622b20d6134830f921e72542d2bb751e534ea9e"
     },
     {
       "path": "components/lifecycle/controller-cli.ts",
@@ -275,9 +275,14 @@
       "current_sha256": "5686ec22f0c55dc31c40748667921df7713c6c01415afe7dc80d41712884a6e1"
     },
     {
+      "path": "components/lifecycle/session-lifecycle.test.ts",
+      "extraction_sha256": "9181b4755ce1d859048cc1662be62c3cf4cb8112f762e923f11aa8e28d9fbacb",
+      "current_sha256": "b0ddf2118cef51413bd4110761eb8a9b0b8786a87f735a7d7de0f110eed82ba3"
+    },
+    {
       "path": "components/lifecycle/session-lifecycle.ts",
       "extraction_sha256": "a75e4ccbb42e4ef52ef7af3ff887a8bca706c50ec8987991c3000759dbb26954",
-      "current_sha256": "017371fa1c94ec719b7b5a5afbe3be4d17c0d7ed1112e82d3e1a935b9965f28b"
+      "current_sha256": "de26c151d2fdef661d78e046155f6f100cd646d7f073976b1e595a7d2e04f337"
     },
     {
       "path": "components/lifecycle/task-publisher.test.ts",
@@ -337,7 +342,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "c7ca06e4befaf9967d97e09e31c607fcac730300e058ab74b60b721246a48939"
+      "current_sha256": "bf4020aabe927ed2831e039a2b8ca79c527ca6df97535ca92147d6b54f2abea5"
     }
   ]
 }

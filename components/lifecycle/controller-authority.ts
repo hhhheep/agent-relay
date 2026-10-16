@@ -69,6 +69,7 @@ export async function transferControllersWhenQuiescent(root:string,grants:Contro
  if(!Number.isInteger(wait)||wait<1||wait>60000)throw Error('invalid_controller_owner_wait');
  const path=resolve(root,'queue.sqlite');if(!existsSync(path))throw Error('controller_store_not_found');
  if(options.signal?.aborted)throw Error('controller_transfer_cancelled');
+ assertRootTransfer(path,snapshots,verifiedCaller);
  requestLifecycleHandoff(root,verifiedCaller);
  const now=options.now??Date.now,start=now();
  const sleep=options.sleep??(ms=>delay(ms,undefined,{signal:options.signal}));
@@ -80,7 +81,7 @@ export async function transferControllersWhenQuiescent(root:string,grants:Contro
    const remaining=wait-(now()-start);if(remaining<=0)throw Error('controller_owner_not_quiescent');
    await sleep(Math.min(100,remaining));continue;
   }
-  try{initializeControllerAuthority(store.db);return transferControllers(store.db,snapshots,verifiedCaller,approve);}
+  try{initializeControllerAuthority(store.db);assertRootTransfer(path,snapshots,verifiedCaller);return transferControllers(store.db,snapshots,verifiedCaller,approve);}
   finally{store.close();}
  }
 }
@@ -88,6 +89,37 @@ export function assertController(db:DatabaseSync,scope:string,caller:string|unde
  const current=currentController(db,scope);
  if(current.epoch!==epoch||caller!==current.chat)throw Error('controller_authority_stale');
  return current;
+}
+function rootControllers(path:string){
+ if(!existsSync(path))return [];
+ const db=new DatabaseSync(path,{readOnly:true});
+ try{
+  const has=(name:string)=>!!db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").get(name);
+  if(!has('publisher_routes'))return [];
+  const rows=db.prepare(has('controller_authority')?
+   'SELECT r.scope,r.binding,a.chat,a.epoch FROM publisher_routes r LEFT JOIN controller_authority a ON a.scope=r.scope':
+   'SELECT scope,binding,NULL chat,0 epoch FROM publisher_routes').all() as any[];
+  return rows.map(row=>{const binding=JSON.parse(row.binding),chat=row.chat??binding.origin_chat_id,epoch=Number(row.epoch??0);
+   if(controllerScope(binding.task_id,binding.work_unit_id)!==row.scope||typeof chat!=='string'||!chat.trim()||!Number.isSafeInteger(epoch)||epoch<0)throw Error('controller_scope_unverified');
+   return {scope:row.scope,chat,epoch};
+  });
+ }finally{db.close();}
+}
+export function controllerRootAdmission(path:string,caller:string){
+ const owners=rootControllers(path),owned=owners.filter(owner=>owner.chat===caller).length;
+ if(!owners.length)return {allowed:true,reason:'unbound_controller_root'};
+ if(owned===owners.length)return {allowed:true,reason:'controller_root_owned'};
+ return {allowed:false,reason:owned?'mixed_controller_root':'controller_scope_not_owned'};
+}
+function assertRootTransfer(path:string,grants:ControllerGrant[],caller:string){
+ const owners=rootControllers(path),projected=new Map(owners.map(owner=>[owner.scope,owner.chat]));
+ for(const grant of grants){
+  const scope=controllerScope(grant.taskId,grant.workUnitId),old=owners.find(owner=>owner.scope===scope);
+  if(!old)throw Error('controller_scope_not_registered');
+  if(!(old.chat===grant.fromChat&&old.epoch===grant.expectedEpoch)&&!(old.chat===grant.toChat&&old.epoch===grant.expectedEpoch+1))throw Error('controller_epoch_conflict');
+  projected.set(scope,grant.toChat);
+ }
+ if([...projected.values()].some(chat=>chat!==caller))throw Error('controller_root_split_required');
 }
 export function hasTransferredControllerGrant(path:string,caller:string){
  if(!existsSync(path)||!caller)return false;

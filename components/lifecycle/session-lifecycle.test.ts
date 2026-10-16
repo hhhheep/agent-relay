@@ -4,7 +4,36 @@ import {validateSessionStart,runSessionLifecycle} from './session-lifecycle.ts';
 import {runManager} from './manager-driver.ts';import {NativeAppPort} from './native-app-port.ts';import {ReviewedStore} from './reviewed-store.ts';
 import {probeSessionContext} from './session-context-probe.ts';
 import {sessionAppContext,connectHookApp} from './session-app-context.ts';
+import {PublisherRoutes} from './publisher-route.ts';
+import {initializeControllerAuthority,transferController} from './controller-authority.ts';
 const verifiedApp=()=>({connect:async()=>{},close:async()=>{}} as unknown as NativeAppPort);
+
+test('allowlisted caller cannot release a foreign or mixed-direction root, including revocation during bootstrap',async()=>{
+ const f=fixture();mkdirSync(f.config.manager.stateRoot,{recursive:true});
+ const store=new ReviewedStore(join(f.config.manager.stateRoot,'queue.sqlite')),routes=new PublisherRoutes(store);initializeControllerAuthority(store.db);
+ let runs=0,connects=0;
+ try{
+  routes.publish('source-b','TASK-B','unit','worker-b',{threadId:'direction-b'});
+  const app=()=>({connect:async()=>{connects++;},close:async()=>{}} as unknown as NativeAppPort);
+  const deps={app,run:(async()=>{runs++;}) as any};
+  assert.deepEqual(await runSessionLifecycle(f.config,f.event,f.env,new AbortController().signal,deps),{state:'awaiting_authority',reason:'controller_scope_not_owned'});
+  assert.equal(connects,0);assert.equal(runs,0);assert.equal(existsSync(join(f.config.manager.stateRoot,'handoff.json')),false);
+  routes.publish('source-a','TASK-A','unit','worker-a',{threadId:f.event.session_id});
+  assert.equal(validateSessionStart(f.config,f.event,f.env).reason,'mixed_controller_root');
+  // A separate declared direction root admits the genuine caller, then checks
+  // authority again after an awaited App bootstrap before asking owner release.
+  const second=join(f.root,'separate-direction');mkdirSync(second);
+  const other=new ReviewedStore(join(second,'queue.sqlite'));try{
+   const localRoutes=new PublisherRoutes(other);initializeControllerAuthority(other.db);
+   localRoutes.publish('local','TASK-LOCAL','unit','worker',{threadId:f.event.session_id});
+   const config={...f.config,manager:{...f.config.manager,stateRoot:second}};
+   assert.equal(validateSessionStart(config,f.event,f.env).state,'ready');
+   const revoked=()=>({connect:async()=>{transferController(other.db,{transferId:'revoked-during-bootstrap',taskId:'TASK-LOCAL',workUnitId:'unit',fromChat:f.event.session_id,toChat:'successor',expectedEpoch:0,authorizationRef:'fixture-grant'},'successor',()=>true);},close:async()=>{}} as unknown as NativeAppPort);
+   const result=await runSessionLifecycle(config,f.event,f.env,new AbortController().signal,{app:revoked,run:deps.run});
+   assert.equal(result.state,'awaiting_authority');assert.equal(runs,0);assert.equal(existsSync(join(second,'handoff.json')),false);
+  }finally{other.close();}
+ }finally{store.close();rmSync(f.root,{recursive:true,force:true});}
+});
 
 test('hook context uses event caller, preserves pipe, and rejects invalid or conflicting identity',()=>{
  const f=fixture();try{

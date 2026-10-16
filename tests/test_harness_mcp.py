@@ -4,6 +4,9 @@ import ast
 import asyncio
 import json
 import time
+import os
+import shutil
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -15,6 +18,33 @@ import solution_agent.harness.mcp_server as server
 from solution_agent.harness.mcp_server import mcp
 from solution_agent.harness.usage_ledger import UsageLedger
 from solution_agent.harness.task_capsule import ScopeContract, TaskCapsule
+
+
+def test_containment_canonicalizes_declared_root_alias_without_accepting_foreign_path(tmp_path):
+    target, alias = tmp_path / "allowed", tmp_path / "declared-alias"
+    target.mkdir()
+    allowed, foreign = target / "result.json", tmp_path / "foreign.json"
+    allowed.write_text("{}", encoding="utf-8")
+    foreign.write_text("{}", encoding="utf-8")
+    if os.name == "nt":
+        powershell = shutil.which("pwsh") or shutil.which("powershell")
+        assert powershell, "Windows junction acceptance requires native PowerShell"
+        subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-Command",
+            "New-Item -ItemType Junction -Path $env:HARNESS_FIXTURE_LINK -Target $env:HARNESS_FIXTURE_TARGET -ErrorAction Stop | Out-Null"],
+            env={**os.environ, "HARNESS_FIXTURE_LINK": str(alias), "HARNESS_FIXTURE_TARGET": str(target)},
+            check=True, capture_output=True)
+    else:
+        alias.symlink_to(target, target_is_directory=True)
+    try:
+        assert server._inside(alias / allowed.name, alias) == allowed.resolve()
+        assert server._inside(allowed, alias) == allowed.resolve()
+        with pytest.raises(ValueError, match="outside"):
+            server._inside(foreign, alias)
+    finally:
+        if os.name == "nt":
+            alias.rmdir()  # Remove only the junction entry, never its target.
+        else:
+            alias.unlink()
 
 
 def test_mcp_server_source_parses_as_remote_python_310() -> None:
