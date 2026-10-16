@@ -2,6 +2,9 @@ import {DatabaseSync} from 'node:sqlite';
 import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {digest} from '../goal-routing-integration/store.ts';
+import {ReviewedStore} from './reviewed-store.ts';
+import {requestLifecycleHandoff} from './lifecycle-handoff.ts';
+import {setTimeout as delay} from 'node:timers/promises';
 
 export const controllerScope=(task:string,unit:string)=>digest(JSON.stringify([task,unit]));
 export type ControllerGrant={transferId:string,taskId:string,workUnitId:string,fromChat:string,toChat:string,expectedEpoch:number,authorizationRef:string};
@@ -20,22 +23,66 @@ export function currentController(db:DatabaseSync,scope:string){
 // Neither a remote envelope nor a string containing an approval reference grants
 // permission. The caller must verify the exact approved grant and App context.
 export function transferController(db:DatabaseSync,grant:ControllerGrant,verifiedCaller:string,approve:(grant:ControllerGrant)=>boolean,fault:()=>void=()=>{}){
+ return transferControllers(db,[grant],verifiedCaller,approve,fault)[0];
+}
+function approvedGrants(grants:ControllerGrant[],verifiedCaller:string,approve:(grant:ControllerGrant)=>boolean){
+ if(!Array.isArray(grants)||!grants.length||grants.length>128)throw Error('invalid_controller_grants');
+ // Snapshot caller data before authorization and mutation. Never allow duplicate
+ // scope transitions to turn one batch into an implicit multi-epoch transfer.
+ const snapshots=grants.map(grant=>({...grant}));
+ const scopes=new Set<string>(),ids=new Set<string>();
+ for(const grant of snapshots){
  if(!grant||[grant.transferId,grant.taskId,grant.workUnitId,grant.fromChat,grant.toChat,grant.authorizationRef].some(v=>typeof v!=='string'||!v.trim()||v.length>512)||
     !Number.isSafeInteger(grant.expectedEpoch)||grant.expectedEpoch<0||grant.fromChat===grant.toChat)throw Error('invalid_controller_grant');
  if(verifiedCaller!==grant.toChat||!approve(grant))throw Error('controller_transfer_not_authorized');
- const scope=controllerScope(grant.taskId,grant.workUnitId),encoded=JSON.stringify(Object.fromEntries(Object.entries(grant).sort(([a],[b])=>a.localeCompare(b))));
+ const scope=controllerScope(grant.taskId,grant.workUnitId);
+ if(scopes.has(scope)||ids.has(grant.transferId))throw Error('duplicate_controller_transfer');
+ scopes.add(scope);ids.add(grant.transferId);
+ }
+ return snapshots;
+}
+export function transferControllers(db:DatabaseSync,grants:ControllerGrant[],verifiedCaller:string,approve:(grant:ControllerGrant)=>boolean,fault:()=>void=()=>{}){
+ const snapshots=approvedGrants(grants,verifiedCaller,approve);
  db.exec('BEGIN IMMEDIATE');
  try{
+ const receipts=snapshots.map(grant=>{
+ const scope=controllerScope(grant.taskId,grant.workUnitId),encoded=JSON.stringify(Object.fromEntries(Object.entries(grant).sort(([a],[b])=>a.localeCompare(b))));
   const prior=db.prepare('SELECT grant_json,receipt FROM controller_transfers WHERE id=?').get(grant.transferId) as any;
-  if(prior){if(prior.grant_json!==encoded)throw Error('controller_transfer_id_conflict');db.exec('COMMIT');return JSON.parse(prior.receipt);}
+  if(prior){if(prior.grant_json!==encoded)throw Error('controller_transfer_id_conflict');return JSON.parse(prior.receipt);}
   const old=currentController(db,scope);
   if(old.chat!==grant.fromChat||old.epoch!==grant.expectedEpoch)throw Error('controller_epoch_conflict');
   if(old.epoch>=Number.MAX_SAFE_INTEGER)throw Error('controller_epoch_exhausted');
   const receipt={schema:'controller-transfer/v1',transferId:grant.transferId,scope,previousChat:old.chat,currentChat:grant.toChat,epoch:old.epoch+1,authorizationRef:grant.authorizationRef};
   db.prepare('INSERT INTO controller_authority VALUES (?,?,?) ON CONFLICT(scope) DO UPDATE SET chat=excluded.chat,epoch=excluded.epoch').run(scope,receipt.currentChat,receipt.epoch);
   db.prepare('INSERT INTO controller_transfers VALUES (?,?,?,?)').run(grant.transferId,scope,encoded,JSON.stringify(receipt));
-  fault();db.exec('COMMIT');return receipt;
+  fault();return receipt;
+ });
+ db.exec('COMMIT');return receipts;
  }catch(error){db.exec('ROLLBACK');throw error;}
+}
+// The CLI has already bootstrapped the successor App identity. It must also own
+// the existing queue lease before changing epochs: a pre-submit guard alone
+// cannot revoke a remote submission that is already awaiting its ACK.
+export async function transferControllersWhenQuiescent(root:string,grants:ControllerGrant[],verifiedCaller:string,approve:(grant:ControllerGrant)=>boolean,
+ options:{waitMs?:number,signal?:AbortSignal,now?:()=>number,sleep?:(ms:number)=>Promise<void>}={}){
+ const snapshots=approvedGrants(grants,verifiedCaller,approve),wait=options.waitMs??10000;
+ if(!Number.isInteger(wait)||wait<1||wait>60000)throw Error('invalid_controller_owner_wait');
+ const path=resolve(root,'queue.sqlite');if(!existsSync(path))throw Error('controller_store_not_found');
+ if(options.signal?.aborted)throw Error('controller_transfer_cancelled');
+ requestLifecycleHandoff(root,verifiedCaller);
+ const now=options.now??Date.now,start=now();
+ const sleep=options.sleep??(ms=>delay(ms,undefined,{signal:options.signal}));
+ while(true){
+  if(options.signal?.aborted)throw Error('controller_transfer_cancelled');
+  let store:ReviewedStore;
+  try{store=new ReviewedStore(path);}catch(error:any){
+   if(error?.message!=='controller_owner_alive')throw error;
+   const remaining=wait-(now()-start);if(remaining<=0)throw Error('controller_owner_not_quiescent');
+   await sleep(Math.min(100,remaining));continue;
+  }
+  try{initializeControllerAuthority(store.db);return transferControllers(store.db,snapshots,verifiedCaller,approve);}
+  finally{store.close();}
+ }
 }
 export function assertController(db:DatabaseSync,scope:string,caller:string|undefined,epoch:number){
  const current=currentController(db,scope);

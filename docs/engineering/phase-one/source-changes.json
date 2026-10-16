@@ -12,7 +12,7 @@
     {
       "path": "solution_agent/harness/codex_worker.py",
       "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
-      "current_sha256": "83f9b59dc9fc769a4e9d1be7c168fb73a8d0bb160b77109573b28529815aad8e"
+      "current_sha256": "f13b804e0e547b440c568ec78fa65a917f11869abd43b2ac8305aaf377fc8d69"
     },
     {
       "path": "solution_agent/harness/maintenance_completion.py",
@@ -22,7 +22,7 @@
     {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "7ba0e88869f0e05025349921bf30391a3d4de095808a91b46edf651e98bb2c70"
+      "current_sha256": "bbe0cf687db3d6aebbb7eb347557a212314ff15164740467882c5c234e5b0aff"
     },
     {
       "path": "solution_agent/harness/profile_deploy.py",
@@ -32,7 +32,7 @@
     {
       "path": "solution_agent/harness/remote_profile.py",
       "extraction_sha256": "f5132f2557481251ce60a0e8e2e12f47b4cd1586f9979204e59584eb3ea70330",
-      "current_sha256": "8fe3cfcbce03aa0f379da1c0bbf0706e8046bcb7c047d71a432e0728f7fa4c3e"
+      "current_sha256": "aecc70b737d0078dbcc03c62d4212b3e9fd45838e832111319bfd6f8092215ef"
     },
     {
       "path": "solution_agent/harness/remote_terminal.py",
@@ -52,7 +52,7 @@
     {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
-      "current_sha256": "6d0337c379ce8a40110b912abc6faa357e63b059348d08229dd40b6f6d3de201"
+      "current_sha256": "63faca771e14bb02bef4ab2f9b389da2b7c4e40f70d7785f1e5c9d57036d41eb"
     },
     {
       "path": "solution_agent/harness/worker_help.py",
@@ -112,7 +112,7 @@
     {
       "path": "tests/test_harness_remote_profile.py",
       "extraction_sha256": "e19b46c884f0264ec13c905dd96c4f7dd1a5fb731096e1b0f8ed61888519ac60",
-      "current_sha256": "408731e3f81113495f56b7ae07a37ec20e9db6fc8efc53642a63c5863a0b443e"
+      "current_sha256": "ebcc4ccae58a408998b1456d210afc94673943875fe5e9bfacf23d6e8b7b19c1"
     },
     {
       "path": "tests/test_md_sync.py",
@@ -197,17 +197,22 @@
     {
       "path": "components/lifecycle/controller-authority.test.ts",
       "extraction_sha256": "9c262b866d8323048d46c2728d85d6a0673d319ee56f51e0653ebcf8bfeac77c",
-      "current_sha256": "eaaa1e6d83ebeab8888372fd04f241c876f53b8228a668b6008770685c759767"
+      "current_sha256": "a9e5d10cc1d2a6fe6de28158df4aae550b3b17c13caed5147a51139382718f05"
     },
     {
       "path": "components/lifecycle/controller-authority.ts",
       "extraction_sha256": "dedeee2378c889073c85e7390e44066a88d89082338e5d43d33f7a0f49374735",
-      "current_sha256": "ae3462583d64b996a5ba0dede8da673635f02eac61b8d5afaeb6f8dc7b8a9713"
+      "current_sha256": "5e0fe118f02908a2095e357c5ee5a755004a1700e5e05a2f572d2efbd78cf905"
+    },
+    {
+      "path": "components/lifecycle/controller-cli.ts",
+      "extraction_sha256": "b334b16e31f1d1003e1fba2427221fd8c306bc2988e88be087c38cba1b916e6c",
+      "current_sha256": "775d61c4132d3f0088f10627c99eddd01e7e8e376b35853d36e5a250d8218d20"
     },
     {
       "path": "components/lifecycle/harness-port.ts",
       "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
-      "current_sha256": "213e608757bca251b54b1615a250c1338c213742182a817917c7a2abb313af3d"
+      "current_sha256": "0d9fb475bb824cd6d3a45629feff23e1104b24dcbf0facfd922f0c12ad439016"
     },
     {
       "path": "components/lifecycle/lifecycle-handoff.test.ts",
@@ -237,7 +242,7 @@
     {
       "path": "components/lifecycle/manager-driver.ts",
       "extraction_sha256": "03585d5e5ded3c991cb4a1fc0c9948e486ae02f870aed1ecbb4ed8e3fd8e11bf",
-      "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
+      "current_sha256": "2b7711a04403a68ffe080f807fe984f69b637af41fe755d349c54bf7792dcaae"
     },
     {
       "path": "components/lifecycle/problem-goal.test.ts",
@@ -277,7 +282,7 @@
     {
       "path": "components/lifecycle/task-publisher.ts",
       "extraction_sha256": "6486711f8c6ad10479a1928ac6482501a847963793c011e49849841edb29b1b0",
-      "current_sha256": "4cb71c2206dd8945981a0841b924005c3abbd8cad7f621665eb80bb356239c80"
+      "current_sha256": "001d3ff199c6851a0e86682b339c43663617782cc4832358d69b0cdb84c4c253"
     },
     {
       "path": "components/xats-routing-lab/upstream/pnpm-lock.yaml",
@@ -327,7 +332,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "fe0d669250784067bd4a15c677add254550a944d92ac8c1fa704703156a0f454"
+      "current_sha256": "255bca481bb4c3dcbe7d17da8496880452b7cb35254ee0f03b4669c26706330a"
     }
   ]
 }

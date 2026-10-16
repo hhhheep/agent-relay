@@ -802,6 +802,7 @@ def terminal_exec(
     worker_phase: Literal["prepare_code", "execute_run", "full"] = "prepare_code",
     finish_maintenance: bool = False,
     recover_worker: bool = False,
+    worker_pool_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     """Run/resume a supervised job. For remote Codex delegation pass worker_task Markdown,
     task_id, work_unit_id, access_mode=writer and timeout_seconds (no command).
@@ -824,6 +825,10 @@ def terminal_exec(
     packet = None
     try:
         validate_wait_ms(wait_ms)
+        if worker_pool_fingerprint is not None and (worker_task is None
+                or not isinstance(worker_pool_fingerprint, str) or len(worker_pool_fingerprint) != 64
+                or any(c not in '0123456789abcdef' for c in worker_pool_fingerprint)):
+            raise ValueError('worker_pool_fingerprint requires worker_task and a pinned SHA256')
         _require_activation()
         manager = _terminal_manager()
         if recover_worker and worker_task is None:
@@ -836,6 +841,10 @@ def terminal_exec(
             from solution_agent.harness.codex_worker import worker_packet, submission
             packet = worker_packet(_solution_root(), manager.profile.deployment_profile_name, task_id,
                                    work_unit_id, worker_task, worker_phase)
+            if worker_pool_fingerprint is not None:
+                from solution_agent.harness.worker_sessions import digest, WorkerAdmissionError
+                if "worker_pool" not in packet or digest(packet["worker_pool"]) != worker_pool_fingerprint:
+                    raise WorkerAdmissionError("worker_pool_fingerprint_mismatch")
             if Path(packet["cwd"]).resolve() != manager.profile.slots[manager.profile.default_terminal].cwd.resolve():
                 raise ValueError("worker workplace differs from supervised job cwd")
             command, command_id = (submission(packet, jobs_root=manager.base / 'jobs')
@@ -1033,6 +1042,11 @@ def terminal_exec(
     except Exception as exc:
         # An exception after entering the runner may follow a real launch.
         # Keep its lease/claim for same-command recovery, never infer absence.
+        from solution_agent.harness.worker_sessions import WorkerAdmissionError
+        if isinstance(exc, WorkerAdmissionError) and packet is not None and "worker_pool" in packet and not job_result_received:
+            # This typed refusal can only be raised by read-only pool admission
+            # before a new job directory is created. Other runner errors stay unknown.
+            executor_entered = False
         if not executor_entered and command is not None and writer_lease_id and capsules is not None:
             try:
                 current = capsules.load(task_id)
@@ -1051,6 +1065,8 @@ def terminal_exec(
             except Exception:
                 pass
         failure = _terminal_error("terminal_exec", None, exc)
+        if isinstance(exc, WorkerAdmissionError) and not executor_entered:
+            failure["worker_admission"] = {"code": exc.code, "no_command_prepared": True}
         if isinstance(exc, CommandObservationError):
             command_id = exc.command_id
             failure.update(task_id=task_id, work_unit_id=work_unit_id, command_id=command_id)

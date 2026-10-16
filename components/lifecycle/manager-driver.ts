@@ -12,12 +12,13 @@ import {ResumeScheduler} from './resume-scheduler.ts';
 import {TaskPublisher,WorkerProfile} from './task-publisher.ts';
 import {randomUUID} from 'node:crypto';
 import {lifecycleHandoffRequested} from './lifecycle-handoff.ts';
-import {currentController,assertController} from './controller-authority.ts';
+import {currentController,assertController,controllerScope} from './controller-authority.ts';
 
 export type DriverConfig={stateRoot:string,url:string,name:string,team:string,appServerPath:string,intervalMs?:number,
  appLifecycle?:{healthIntervalMs:number,exitWhenAwaitingApp:boolean},
  appReconnect?:{maxAttempts?:number,maxElapsedMs?:number,delayMs?:number,connectTimeoutMs?:number},
- resume?:{python:string,rpcScript:string,installedConfig:string,contexts?:Array<{binding:any,context:any}>,publicationJournal?:string,workerProfile?:WorkerProfile,captureVerification?:boolean}};
+ resume?:{python:string,rpcScript:string,installedConfig:string,contexts?:Array<{binding:any,context:any}>,publicationJournal?:string,workerProfile?:WorkerProfile,captureVerification?:boolean,
+ autoDispatch?:{poolFingerprint:string,releaseId:string,maxPerTick:number,intervalMs:number}}};
 export function validateDriverConfiguration(config:DriverConfig,env:NodeJS.ProcessEnv){
  if(!isAbsolute(config.stateRoot)||!isAbsolute(config.appServerPath)||!config.name?.trim()||!config.team?.trim())throw Error('invalid_driver_configuration');
  const interval=config.intervalMs??2000;if(!Number.isInteger(interval)||interval<250||interval>60000)throw Error('invalid_driver_interval');
@@ -33,10 +34,15 @@ export function validateDriverConfiguration(config:DriverConfig,env:NodeJS.Proce
   if([resume.python,resume.rpcScript,resume.installedConfig].some(p=>!isAbsolute(p)))throw Error('invalid_resume_config');
   if(!!resume.publicationJournal!==!!resume.workerProfile)throw Error('incomplete_publication_resume_config');
   if(resume.publicationJournal&&!isAbsolute(resume.publicationJournal))throw Error('invalid_publication_journal');
+  const auto=resume.autoDispatch;
+  if(auto&&(!resume.publicationJournal||!resume.workerProfile||Object.keys(auto).sort().join(',')!=='intervalMs,maxPerTick,poolFingerprint,releaseId'
+    ||!/^([0-9a-f]{64})$/.test(auto.poolFingerprint)||typeof auto.releaseId!=='string'||!auto.releaseId.trim()||auto.releaseId.length>256
+    ||!Number.isInteger(auto.maxPerTick)||auto.maxPerTick<1||auto.maxPerTick>64
+    ||!Number.isInteger(auto.intervalMs)||auto.intervalMs<1000||auto.intervalMs>60000))throw Error('invalid_worker_auto_dispatch');
  }
  return {interval,retry,lifecycle};
 }
-export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signal:AbortSignal,options:{once?:boolean,onStatus?:(s:any)=>void}={},dependencies:{connectInbox:typeof connectStableInbox,app:()=>NativeAppPort,now?:()=>number,sleep?:(ms:number,signal:AbortSignal)=>Promise<void>}={connectInbox:connectStableInbox,app:()=>new NativeAppPort()}){
+export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signal:AbortSignal,options:{once?:boolean,onStatus?:(s:any)=>void}={},dependencies:{connectInbox:typeof connectStableInbox,app:()=>NativeAppPort,harness?:(tasks:Set<string>,releaseId?:string)=>HarnessPort,now?:()=>number,sleep?:(ms:number,signal:AbortSignal)=>Promise<void>}={connectInbox:connectStableInbox,app:()=>new NativeAppPort()}){
  const {interval,retry,lifecycle}=validateDriverConfiguration(config,env);
  const now=dependencies.now??Date.now;
  const sleep=dependencies.sleep??(async(ms,s)=>{await delay(ms,undefined,{signal:s});});
@@ -49,6 +55,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
  let nextHealth=0;
  const allowedTasks=new Set<string>();
  let publicationRecovery:any[]=[];let nextPublicationRecovery=0;
+ let publicationDispatch:any[]=[];let nextPublicationDispatch=0;
  const status=(value:any)=>{
   const output={...value,ownerPid:process.pid,managerGeneration,at:new Date().toISOString()};lastStatus=output;
   writeFileSync(resolve(root,'status.tmp'),JSON.stringify(output,null,2));renameSync(resolve(root,'status.tmp'),resolve(root,'status.json'));options.onStatus?.(output);
@@ -64,14 +71,14 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
    const resume=config.resume;
    if(resume.publicationJournal)publisher=new TaskPublisher(resume.publicationJournal);
    for(const c of resume.contexts??[])allowedTasks.add(c.binding.task_id);
-   harness=new HarnessPort(allowedTasks);
+   harness=dependencies.harness?.(allowedTasks,resume.autoDispatch?.releaseId)??new HarnessPort(allowedTasks,undefined,resume.autoDispatch?.releaseId);
    const candidate=new ResumeScheduler(store,new ResumeController(resume.python,resume.rpcScript,resolve(root,'resume.sqlite'),harness),scope=>{
     const authority=currentController(store.db,scope);
     const guard=()=>{if(!appReady)throw Error('app_rebootstrap_required');assertController(store.db,scope,app.identity().threadId,authority.epoch);};
     guard();return guard;
    });
    for(const context of resume.contexts??[])candidate.register(context.binding,context.context);
-   try{await harness.connect(resume.installedConfig,env);scheduler=candidate;resumeState='ready';}catch{resumeState='harness_reconnect_required';}
+   try{await harness.connect(resume.installedConfig,env);if(resume.autoDispatch)harness.enableWorkerPool(resume.autoDispatch.poolFingerprint);scheduler=candidate;resumeState='ready';}catch{resumeState='harness_reconnect_required';}
   }
   do{
    if(signal.aborted)break;
@@ -105,9 +112,19 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
     try{
      if(publisher&&Date.now()>=nextPublicationRecovery){
       publicationRecovery=await publisher.recoverPending(request=>{allowedTasks.add(request.task_id);return harness!.recoverWorker(request);},(task,command)=>{allowedTasks.add(task);return harness!.recover(task,command);});
+      if(publicationRecovery.some(row=>row.state==='finished'))nextPublicationDispatch=0;
       nextPublicationRecovery=Date.now()+30000;
      }
      if(publisher)for(const item of publisher.resumeContexts(config.resume!.workerProfile!,config.resume!.captureVerification)){scheduler.register(item.binding,item.context);allowedTasks.add(item.binding.task_id);}
+     const auto=config.resume?.autoDispatch;
+     if(publisher&&auto&&appReady&&Date.now()>=nextPublicationDispatch){
+      publicationDispatch=await publisher.dispatchReady(auto.maxPerTick,binding=>{
+       const scope=controllerScope(binding.task_id,binding.work_unit_id),authority=currentController(store.db,scope);
+       const guard=()=>{if(signal.aborted||!appReady)throw Error('app_rebootstrap_required');assertController(store.db,scope,app.identity().threadId,authority.epoch);};
+       guard();allowedTasks.add(binding.task_id);return guard;
+      },request=>harness!.submit(request));
+      nextPublicationDispatch=Date.now()+auto.intervalMs;
+     }
      const resumes=await scheduler.tick();resumeState=resumes.some(r=>r.state==='requires_attention')?'resume_requires_attention':resumes.some(r=>r.state==='submission_uncertain')?'submission_uncertain':'ready';}
     catch{resumeState='resume_requires_attention';}
    }
@@ -117,7 +134,7 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
    status({lifecycle:'active',state:appReady?'running':'app_rebootstrap_required',transport:inbox?'connected':'offline',
     appAvailability:appReady?'online':app.canReconnect()&&appReason!=='same_context_retry_budget_exhausted'?'reconnect_pending':'awaiting_app',
     appReconnect:{attempts:appAttempts,reason:appReason,...app.diagnostics()},
-    agentId:inbox?.agentId??null,pending:store.rows().filter(r=>!['done','human'].includes(r.state)).length,
+    agentId:inbox?.agentId??null,pending:store.rows().filter(r=>!['done','human'].includes(r.state)).length,publicationDispatch,
     attention:tick.threads.filter((r:any)=>r.state==='attention').map((r:any)=>({thread:r.thread,state:r.state})),connectionFailures,resumeState,publicationRecovery});
    if(options.once)break;
    if(lifecycle?.exitWhenAwaitingApp&&lastStatus.appAvailability==='awaiting_app')break;

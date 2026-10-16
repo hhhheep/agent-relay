@@ -49,6 +49,9 @@ def worker_packet(root: Path, profile_id: str, task_id: str, work_unit_id: str,
             "phase": phase, "profile_id": profile_id, "root": str(root.resolve()),
             "cwd": str(cwd), "control": str(control), "output": str(output),
             "codex_path": profile.codex_path}
+    if getattr(profile, "worker_pool", None) is not None:
+        from solution_agent.harness.worker_sessions import pool_spec
+        packet["worker_pool"] = pool_spec(profile, root)
     from solution_agent.harness.worker_help import routing_config, markdown_config
     route = routing_config(root, task_id, work_unit_id, cwd, key)
     if route is not None:
@@ -131,10 +134,13 @@ def submission(packet: dict, *, jobs_root: Path | None = None) -> tuple[str | No
         command_id = prepared_submission(packet, jobs_root)
         if command_id is not None:
             return None, command_id
-    encoded = base64.b64encode(json.dumps(packet, ensure_ascii=False).encode()).decode()
+    return worker_command(packet), None
+
+
+def worker_command(packet: dict) -> str:
     # Only the packet is encoded; no task text is interpreted as shell syntax.
-    command = shlex.join([sys.executable, str(Path(__file__).resolve()), "--packet", encoded])
-    return command, None
+    encoded = base64.b64encode(json.dumps(packet, ensure_ascii=False).encode()).decode()
+    return shlex.join([sys.executable, str(Path(__file__).resolve()), "--packet", encoded])
 
 
 def _hash_file(path: Path) -> str:
@@ -191,6 +197,8 @@ def observe_session_identity(command_dir: Path, request: dict, manifest: dict) -
         if manifest.get("runtime_release_id") != request.get("runtime_release_id"):
             return reject("session_runtime_mismatch")
         worker = read_record(command_dir / "worker.json")
+        if "worker_pool" in request and request.get("worker_link_sha256") != _digest(worker):
+            return reject("session_worker_mismatch")
         if any(worker.get(key) != request[key] for key in ("task_id", "work_unit_id")):
             return reject("session_worker_mismatch")
         control = Path(worker["control"])
@@ -241,11 +249,22 @@ def observe_session_identity(command_dir: Path, request: dict, manifest: dict) -
             return reject("session_stream_changed")
         if observed is None:
             return reject("session_identity_missing")
-        return {"schema": "harness-worker-session-observation/v1", "state": "observed",
+        assignment = request.get("worker_assignment")
+        if assignment is not None:
+            from solution_agent.harness.worker_sessions import validate_assignment
+            validate_assignment(assignment)
+            if request.get("worker_assignment_sha256") != _digest(assignment):
+                return reject("session_assignment_changed")
+            if assignment["thread_id"] is not None and assignment["thread_id"] != observed:
+                return reject("session_identity_foreign")
+        result = {"schema": "harness-worker-session-observation/v1", "state": "observed",
                 "thread_id": observed, "command_id": command_id,
                 "task_id": request["task_id"], "work_unit_id": request["work_unit_id"],
                 "worker_request_sha256": fingerprint, "stdout_sha256": digest.hexdigest(),
                 "runtime_release_id": request.get("runtime_release_id"), "reuse_authorized": False}
+        if assignment is not None:
+            result["assignment"] = assignment
+        return result
     except (OSError, ValueError, KeyError, TypeError):
         return reject("session_evidence_invalid")
 
@@ -304,11 +323,19 @@ def run_worker(packet: dict) -> int:
     # Re-resolve profile on the executing host; a changed profile cannot redirect a queued job.
     expected = worker_packet(Path(packet["root"]), packet["profile_id"], packet["task_id"],
                              packet["work_unit_id"], packet["text"], packet["phase"])
-    if expected != packet:
+    base_packet = {key: value for key, value in packet.items() if key != "session_assignment"}
+    if expected != base_packet:
         raise ValueError("worker profile changed after dispatch")
     command_id = os.environ.get("SOLUTION_AGENT_COMMAND_ID")
     if not command_id:
         raise ValueError("Codex worker must run inside a Harness supervised terminal job")
+    command_dir = Path(os.environ["SOLUTION_AGENT_COMMAND_DIR"])
+    thread_id = None
+    if "worker_pool" in packet:
+        from solution_agent.harness.worker_sessions import validate_dispatch
+        thread_id = validate_dispatch(packet, command_dir, command_id)
+    elif "session_assignment" in packet:
+        raise ValueError("worker session assignment requires a declared pool")
     control, output = Path(packet["control"]), Path(packet["output"])
     control.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -316,9 +343,8 @@ def run_worker(packet: dict) -> int:
     except FileExistsError:
         raise ValueError("worker already claimed; recover original command_id, never relaunch")
     atomic_write_json(control / "claim.json", {"command_id": command_id,
-                      "request_sha256": _digest(packet), "task_id": packet["task_id"],
+                      "request_sha256": _digest(base_packet), "task_id": packet["task_id"],
                       "work_unit_id": packet["work_unit_id"]})
-    command_dir = Path(os.environ["SOLUTION_AGENT_COMMAND_DIR"])
     atomic_write_json(command_dir / "worker.json", {
         "task_id": packet["task_id"], "work_unit_id": packet["work_unit_id"],
         "control": str(control), "output": str(output)})
@@ -343,6 +369,8 @@ def run_worker(packet: dict) -> int:
     (control / "worker_prompt.md").write_text(prompt, encoding="utf-8")
     argv = [packet["codex_path"], "exec", "--skip-git-repo-check", "--sandbox", "workspace-write",
             "--cd", packet["cwd"], "--json", "--output-last-message", str(control / "last-message.txt"), "-"]
+    if thread_id is not None:
+        argv[-1:] = ["resume", thread_id, "-"]
     environment = dict(os.environ, SOLUTION_AGENT_TERMINAL_NESTING="1")
     # Inherit the supervisor's process group: timeout/cancel must also stop Codex descendants.
     if route:

@@ -39,9 +39,13 @@ class RemoteDeployProfile:
     bootstrap_mode: str
     bootstrap_source: str | None
     bootstrap_sha256: str | None
+    worker_pool: dict[str, Any] | None = None
 
     def public_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        result = asdict(self)
+        if self.worker_pool is None:
+            result.pop("worker_pool")
+        return result
 
 
 def _absolute_remote_path(value: Any, field: str, errors: list[str]) -> str:
@@ -124,6 +128,15 @@ def parse_remote_deploy_profile(name: str, value: dict[str, Any]) -> RemoteDeplo
         job_max_concurrent = 0
     if not 1 <= job_max_concurrent <= 64:
         errors.append("jobs.max_concurrent must be between 1 and 64")
+    worker_pool = None
+    if value.get("worker_pool") is not None:
+        from solution_agent.harness.worker_sessions import validate_policy
+        try:
+            worker_pool = validate_policy(value["worker_pool"])
+            if worker_pool["max_running"] > job_max_concurrent:
+                errors.append("worker_pool exceeds jobs.max_concurrent")
+        except ValueError as exc:
+            errors.append(str(exc))
 
     role_paths = {
         "solution_agent_root": solution_root,
@@ -179,6 +192,7 @@ def parse_remote_deploy_profile(name: str, value: dict[str, Any]) -> RemoteDeplo
         bootstrap_mode=bootstrap_mode,
         bootstrap_source=bootstrap_source,
         bootstrap_sha256=bootstrap_sha256,
+        worker_pool=worker_pool,
     )
 
 

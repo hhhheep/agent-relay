@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {mkdtempSync,rmSync,writeFileSync,readFileSync} from 'node:fs';import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {ReviewedStore} from './reviewed-store.ts';import {PublisherRoutes,remoteDelivery} from './publisher-route.ts';import {RoutingService} from './routing-service.ts';
-import {initializeControllerAuthority,transferController,currentController,controllerScope,inspectControllerProgress,assertController} from './controller-authority.ts';
+import {initializeControllerAuthority,transferController,transferControllers,transferControllersWhenQuiescent,currentController,controllerScope,inspectControllerProgress,assertController} from './controller-authority.ts';
 import {ResumeController} from './resume-controller.ts';
 import {validateSessionStart} from './session-lifecycle.ts';
 
@@ -16,6 +16,27 @@ function fixture(){
  return {root,path,store,routes,binding,grant,submit,inbox,close:()=>{store.close();rmSync(root,{recursive:true,force:true});}};
 }
 
+test('multi-scope handoff is atomic on stale epochs, faults and retry, leaving other directions intact',()=>{
+ const f=fixture();try{
+  f.routes.publish('worker','TASK-2','UNIT','remote-worker',{threadId:'old-chat'});
+  f.routes.publish('worker','OTHER','UNIT','remote-worker',{threadId:'other-chat'});
+  const second={...f.grant,transferId:'transfer-2',taskId:'TASK-2'},grants=[f.grant,second];
+  const scope=controllerScope('TASK','UNIT'),scope2=controllerScope('TASK-2','UNIT');
+  const assertUntouched=()=>{assert.equal(currentController(f.store.db,scope).epoch,0);assert.equal(currentController(f.store.db,scope2).epoch,0);assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);};
+  assert.throws(()=>transferControllers(f.store.db,[f.grant,{...second,expectedEpoch:1}],'new-chat',()=>true),/epoch_conflict/);assertUntouched();
+  let writes=0;
+  assert.throws(()=>transferControllers(f.store.db,grants,'new-chat',()=>true,()=>{if(++writes===2)throw Error('crash');}),/crash/);assertUntouched();
+  assert.throws(()=>transferControllers(f.store.db,grants,'new-chat',g=>g.taskId!=='TASK-2'),/not_authorized/);assertUntouched();
+  assert.throws(()=>transferControllers(f.store.db,[f.grant,{...second,taskId:'TASK'}],'new-chat',()=>true),/duplicate/);assertUntouched();
+  assert.throws(()=>transferControllers(f.store.db,[f.grant,{...second,transferId:f.grant.transferId}],'new-chat',()=>true),/duplicate/);assertUntouched();
+  const receipts=transferControllers(f.store.db,grants,'new-chat',()=>true);
+  assert.deepEqual(transferControllers(f.store.db,grants,'new-chat',()=>true),receipts);
+  for(const s of [scope,scope2]){assertController(f.store.db,s,'new-chat',1);assert.throws(()=>assertController(f.store.db,s,'old-chat',0),/stale/);}
+  assertController(f.store.db,controllerScope('OTHER','UNIT'),'other-chat',0);
+  assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,2);
+ }finally{f.close();}
+});
+
 test('initial controller epoch rejects foreign or absent caller without mutation',()=>{
  const f=fixture();try{
   const scope=controllerScope('TASK','UNIT'),before=currentController(f.store.db,scope);
@@ -24,6 +45,36 @@ test('initial controller epoch rejects foreign or absent caller without mutation
   assert.throws(()=>assertController(f.store.db,scope,'foreign-chat',0),/controller_authority_stale/);
   assert.throws(()=>assertController(f.store.db,scope,undefined,0),/controller_authority_stale/);
   assert.deepEqual(currentController(f.store.db,scope),before);
+  assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
+ }finally{f.close();}
+});
+
+test('CLI handoff waits for the active owner to finish, then preserves pending evidence under successor epochs',async()=>{
+ const f=fixture();let released=false;try{
+  f.submit();const original=f.store.rows();let ticks=0;
+  const receipts=await transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>true,{waitMs:500,now:()=>ticks*100,sleep:async()=>{
+   ticks++;assertController(f.store.db,controllerScope('TASK','UNIT'),'old-chat',0);
+   // Represents an in-flight command ACK being saved before normal shutdown.
+   f.store.db.prepare("INSERT INTO meta VALUES ('original_command','command-a')").run();
+   f.store.close();released=true;
+  }});
+  assert.equal(ticks,1);assert.equal(receipts[0].epoch,1);
+  const db=new DatabaseSync(f.path,{readOnly:true});try{
+   assert.deepEqual(db.prepare('SELECT * FROM events ORDER BY seq').all(),original);
+   assert.equal(db.prepare("SELECT value FROM meta WHERE key='original_command'").get()!.value,'command-a');
+   assert.equal(db.prepare("SELECT value FROM meta WHERE key='owner'").get(),undefined);
+  }finally{db.close();}
+ }finally{if(!released)f.store.close();rmSync(f.root,{recursive:true,force:true});}
+});
+
+test('busy owner, cancelled context and unauthorized grant cannot change epochs or evict owner',async()=>{
+ const f=fixture();try{
+  let clock=0;const options={waitMs:200,now:()=>clock,sleep:async(ms:number)=>{clock+=ms;}};
+  await assert.rejects(transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>true,options),/owner_not_quiescent/);
+  await assert.rejects(transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>false,options),/not_authorized/);
+  const signal=AbortSignal.abort();await assert.rejects(transferControllersWhenQuiescent(f.root,[f.grant],'new-chat',()=>true,{signal}),/cancelled/);
+  assertController(f.store.db,controllerScope('TASK','UNIT'),'old-chat',0);
+  assert.equal(f.store.db.prepare("SELECT value FROM meta WHERE key='owner'").get()!.value,String(process.pid));
   assert.equal(f.store.db.prepare('SELECT count(*) n FROM controller_transfers').get()!.n,0);
  }finally{f.close();}
 });

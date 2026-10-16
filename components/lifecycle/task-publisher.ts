@@ -22,6 +22,31 @@ export class TaskPublisher {
   this.db.exec('CREATE TABLE IF NOT EXISTS publication_operations(publication_id TEXT NOT NULL,kind TEXT NOT NULL,request TEXT NOT NULL,state TEXT NOT NULL,command_id TEXT,receipt TEXT,PRIMARY KEY(publication_id,kind));');
  }
  close(){this.db.close();}
+ async dispatchReady(limit:number,authorize:(binding:any)=>()=>void,submit:(request:any)=>Promise<any>){
+  if(!Number.isInteger(limit)||limit<1||limit>64)throw Error('invalid_publication_dispatch_limit');
+  const rows=this.db.prepare("SELECT id,body,state,result FROM publications WHERE state IN ('ready','rejected') ORDER BY (state='ready') DESC,rowid LIMIT 128").all() as any[];
+  const results:any[]=[];let attempts=0;
+  for(const row of rows){
+   try{
+    const body=JSON.parse(row.body);
+    if(row.state==='rejected'){
+     const response=JSON.parse(row.result??'null')?.response;
+     if(response?.worker_admission?.code!=='worker_pool_busy'||response.worker_admission.no_command_prepared!==true)continue;
+    }
+    if(attempts>=limit)break;
+    const guard=authorize(body.binding);guard();
+    if(row.state==='rejected')this.recoverRejected(row.id);
+    attempts++;
+    const result=await this.submit(row.id,request=>{guard();return submit(request);});
+    results.push({id:row.id,state:result.state,command_id:result.command_id});
+   }catch(error){
+    const saved=this.inspect(row.id),response=JSON.parse(saved.result??'null')?.response;
+    const waiting=saved.state==='rejected'&&response?.worker_admission?.code==='worker_pool_busy';
+    results.push({id:row.id,state:waiting?'waiting_worker':saved.state==='prepared'?'submission_uncertain':'dispatch_requires_attention'});
+   }
+  }
+  return results;
+ }
  async recoverPending(recover:(request:any)=>Promise<any>,recoverKnown?:(task:string,command:string)=>Promise<any>){
   const rows=this.db.prepare("SELECT id,body,command_id FROM publications WHERE state IN ('prepared','running') ORDER BY id LIMIT 128").all() as any[];
   const results=[];

@@ -121,8 +121,9 @@ claim or completion manifest is rewritten by reading.
 Local real-CLI/synthetic-loopback integration confirms the new terminal path
 recovers the same thread ID despite a truncated preview. This is a Windows
 fixture using Python as its command shell, not deployed Linux acceptance.
-The unsafe valid-but-foreign-ID case remains reproducible at the CLI layer;
-pre-request authoritative binding and reuse are still pending, not claimed fixed.
+The unsafe valid-but-foreign-ID case remains reproducible at the raw CLI layer.
+The next increment below adds Harness admission before invoking that CLI; raw CLI
+behavior must not be mistaken for a Harness authorization check.
 
 Validation for this increment: 117 Python tests passed, two existing native-POSIX
 bash tests skipped on Windows. Suites: worker session identity, Codex worker,
@@ -138,3 +139,135 @@ The normal routing fixture now supplies the same verified caller identity that
 the production manager supplies; the guard itself is not relaxed.
 Full Lifecycle validation after this change: 90 passed, no failures or skips.
 This does not implement bootstrap admission, session reuse or automatic rollover.
+
+## Assignment contract under implementation
+
+An optional declared `worker_pool` policy defines fixed worker handles, exact
+task-to-direction membership, total active capacity and per-direction limits.
+Absent policy preserves one-shot behavior. Invalid policy fails validation; it
+must not silently disable enforcement. Pool policy changes require reconciliation
+of existing job history, not automatic rebinding.
+
+There is no new editable pool/session registry. The existing jobs root and its
+`.launch.lock` own assignment. Each original `request.json` stores the selected
+worker, direction, monotonically increasing per-worker sequence, exact predecessor
+command and expected thread, with a digest also bound into the generated adapter
+packet. Original submission lookup continues to use the base request fingerprint.
+The ordered predecessor chain, not timestamps/names/free matching, establishes
+the worker's identity. A busy/unknown predecessor cannot become a free slot.
+
+Before Codex is invoked, the adapter revalidates the declared profile, original
+request, packet assignment and predecessor chain under that same lock. It derives
+the expected thread again from verified predecessor evidence. Modifying a request
+to another valid thread must fail before a model request. Each new assignment
+still has its own command, capsule unit, output directory and writer lease.
+
+Reuse requires a terminal predecessor with full command-bound identity, durable
+valid worker result files, successful Codex completion and an exact writer-lease
+release receipt. Result acceptance remains a separate controller operation.
+Interrupted, uncertain or unverifiable work is not automatically replaced.
+
+Capacity is shared by managers using the declared same existing jobs root. The
+pool packet pins that root, workplace, runtime root, Codex executable/home and
+policy. Another jobs root or changed runtime/policy cannot be adopted implicitly.
+This is not a claim to aggregate arbitrary independent deployments on a host.
+
+A typed capacity rejection before a job directory is created is a proven
+non-submission. Only that precise case may use the existing pre-executor rejection
+and capsule rollback path; unknown runner errors retain original recovery rules.
+No caller-facing arbitrary Codex thread parameter is added to `terminal_exec`.
+
+The existing `terminal_exec` gains an optional `worker_pool_fingerprint` SHA256.
+Automatic manager dispatch requires this field's schema capability, an expected
+release and a pinned fingerprint of `pool_spec(profile, runtime_root)`. The remote
+checks the pin again per request before capsule/job creation, avoiding a stale
+handshake followed by an unintended one-shot launch. Old caller/new receiver
+without a pool retains legacy behavior; new pooled caller/old receiver refuses
+before submission. Exact release pairing remains mandatory; optional does not
+mean arbitrary mixed-version compatibility.
+
+Only already admitted `ready` publications may be dispatched by the manager's
+existing loop. `resume.autoDispatch` is explicit and defaults off. It bounds
+attempts per tick, checks current controller scope/epoch immediately before each
+submission, and recovers original commands before assigning more work. A proven
+`worker_pool_busy` pre-executor refusal can return to this queue; an ACK-lost
+`prepared` entry cannot. Existing remote help/verification continuations use the
+same pinned HarnessPort submission path.
+
+## Opt-in configuration and current limits
+
+The deployment profile may declare this synthetic example:
+
+```yaml
+worker_pool:
+  version: 1
+  max_running: 3
+  workers:
+    worker-a: alpha
+    worker-b: beta
+    worker-c: gamma
+  scopes:
+    alpha: {task_ids: [TASK-A, TASK-A-NEXT], max_running: 1}
+    beta: {task_ids: [TASK-B], max_running: 1}
+    gamma: {task_ids: [TASK-C], max_running: 1}
+```
+
+Task membership is exact and unambiguous; worker handles are bound to their
+declared direction. The existing jobs ceiling must be at least the pool ceiling
+and also counts non-worker OS jobs. Do not configure each of three managers with
+its own independent three-worker deployment and call that a shared total of three.
+
+Compute the pool fingerprint in the declared remote execution environment with
+the existing read-only Harness command mechanism using
+`digest(pool_spec(load_remote_deploy_profile(profiles_path, profile_name), root))`
+from the owning modules. Pin that result and the actual verified release in the
+manager's external `resume.autoDispatch` config, together with `maxPerTick`
+(1..64) and `intervalMs` (1000..60000). Do not copy a thread ID from chat memory.
+No live profile or manager configuration is changed by these source commits.
+
+Local actual-CLI acceptance uses the explicitly supplied `HARNESS_TEST_CODEX`
+binary with `tests/test_worker_session_cli.py`. The test uses an isolated Codex
+home and a loopback synthetic Responses endpoint; it does not use account auth or
+a paid model. It creates A and B, refuses a real but foreign B ID before any model
+request for A, then resumes A with its prior history and excludes B's history.
+CI without an explicitly supplied CLI skips only this optional fixture; it must
+not claim that such a skip verifies real CLI or remote installed behavior.
+
+Controller transfer extends the existing authority owner with a bounded batch
+of exact, individually approved grants. The CLI accepts either the existing
+single grant or an array. One SQLite transaction covers every requested scope;
+invalid epochs, duplicate scopes/IDs or injected faults roll back the whole batch.
+Existing single-grant receipts and tables remain unchanged and retries reuse
+the original grant IDs. No wildcard direction transfer or new authority store is
+introduced. Before the CLI transfers authority it verifies the successor App
+context, requests the existing manager's normal release and acquires the original
+queue owner lease. Acquisition is bounded; a live owner is never killed or
+overwritten. Holding that same lease during the transfer prevents concurrent
+manager dispatch from crossing the authority change. An unresponsive owner
+blocks transfer. This does not restart remote commands. The successor bootstrap
+path and combined fault scenario still require verification before handoff can
+be declared complete.
+
+Result contract/hash validation and ownership release allow a worker to accept
+another independent eligible assignment. They do not attest scientific acceptance
+or close a direction. Complete controller handoff, independent result-review
+receipts and the combined three-direction/ten-assignment fault scenario remain
+required work under the full goal.
+
+## Current local verification
+
+On Windows, the affected Python selection (pool, profiles, MCP, protocol/release,
+builder, adapter, original-command reattachment, terminal commands and session
+identity) passed: 151 tests, two existing POSIX skips. The explicitly supplied
+actual local CLI fixture passed separately: one test, no paid API or account
+credentials. The complete Lifecycle suite passed: 99 tests, no skips. Router
+packaging and publication privacy passed. These are local development results;
+CI for these changes is pending. The previous green CI applies only to the
+earlier observation increment, not this pool or controller batch implementation.
+
+Remaining acceptance: the combined three-direction/ten-assignment scenario with
+handoff, ACK loss, late result, restart and independent review; exact public
+review/finish contract coverage with pooled commands; current-change CI and
+engineering integration. Real Desktop successor creation/usage telemetry and
+automatic rollover are NOT AVAILABLE through the current NativeAppPort contract.
+Remote installed behavior and real Desktop cross-chat acceptance are NOT RUN.

@@ -5,6 +5,19 @@ import pytest
 from solution_agent.harness.remote_profile import parse_remote_deploy_profile
 
 
+def test_pool_is_explicit_and_legacy_public_profile_stays_unchanged():
+    from tests.test_worker_session_pool import policy
+    value = _profile()
+    assert "worker_pool" not in parse_remote_deploy_profile("FAN", value).public_dict()
+    value["worker_pool"] = policy()
+    parsed = parse_remote_deploy_profile("FAN", value)
+    assert parsed.worker_pool["max_running"] == 3
+    assert parsed.public_dict()["worker_pool"] == parsed.worker_pool
+    value["worker_pool"]["max_running"] = True
+    with pytest.raises(ValueError, match="worker_pool"):
+        parse_remote_deploy_profile("FAN", value)
+
+
 def _profile() -> dict:
     return {
         "host": "EXAMPLE_WORKER_A",

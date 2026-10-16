@@ -19,6 +19,8 @@ export class HarnessPort {
  private pendingClient:any;
  private maintenanceSupported=false;
  private workerRecoverySupported=false;
+ private workerPoolSupported=false;
+ private workerPoolFingerprint?:string;
  lastFailure:any;
  get connected(){return this.client!==undefined;}
  constructor(readonly allowedTasks:ReadonlySet<string>,readonly factory=()=>new Client({name:'harness-routing-manager',version:'1'},{capabilities:{}}),readonly expectedReleaseId?:string){}
@@ -38,6 +40,7 @@ export class HarnessPort {
    if(!properties?.worker_task||!properties?.command_id)throw Error('CLIENT_UPDATE_REQUIRED');
    const maintenanceSupported=!!properties?.finish_maintenance;
    const workerRecoverySupported=!!properties?.recover_worker;
+   const workerPoolSupported=!!properties?.worker_pool_fingerprint;
    if(this.expectedReleaseId){
     const probe=await client.callTool({name:'terminal_read',arguments:{terminal_id:'main',max_output_bytes:1}});
     const identity=probe.structuredContent??JSON.parse(probe.content.find((c:any)=>c.type==='text').text);
@@ -46,9 +49,15 @@ export class HarnessPort {
    if(closed||this.pendingClient!==client)throw Error('harness_reconnect_required');
    this.maintenanceSupported=maintenanceSupported;
    this.workerRecoverySupported=workerRecoverySupported;
+   this.workerPoolSupported=workerPoolSupported;
    this.client=client;
   }catch(error){await client.close();throw error;}
   finally{if(this.pendingClient===client)this.pendingClient=undefined;}
+ }
+ enableWorkerPool(fingerprint:string){
+  if(!this.connected||!this.workerPoolSupported)throw Error('worker_pool_client_update_required');
+  if(!/^[0-9a-f]{64}$/.test(fingerprint))throw Error('invalid_worker_pool_fingerprint');
+  this.workerPoolFingerprint=fingerprint;
  }
  private async call(args:any,allowUnresolved=false){
   this.lastFailure=undefined;
@@ -84,6 +93,10 @@ export class HarnessPort {
  }
  submit(request:any){
   if(!request.worker_task||request.command||request.command_id||request.access_mode!=='writer')throw Error('invalid_worker_submission');
+  if(this.workerPoolFingerprint){
+   if(!this.workerPoolSupported)throw Error('worker_pool_client_update_required');
+   return this.call({...request,worker_pool_fingerprint:this.workerPoolFingerprint});
+  }
   return this.call(request);
  }
  async close(){const clients=new Set([this.client,this.pendingClient]);this.client=undefined;this.pendingClient=undefined;for(const client of clients)await client?.close();}
