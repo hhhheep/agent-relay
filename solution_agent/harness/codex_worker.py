@@ -9,6 +9,7 @@ import os
 import shlex
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 if __package__ in {None, ""}:
@@ -142,6 +143,111 @@ def _hash_file(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def observe_session_identity(command_dir: Path, request: dict, manifest: dict) -> dict:
+    """Bind machine-observed CLI identity to one completed original command.
+
+    Evidence only: it grants no assignment/session reuse permission. Never search
+    account history, parse assistant prose, or choose among multiple candidates.
+    """
+    def reject(reason: str) -> dict:
+        return {"schema": "harness-worker-session-observation/v1", "state": "unverified",
+                "reason": reason, "reuse_authorized": False}
+
+    def unique_fields(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("session_duplicate_field")
+            result[key] = value
+        return result
+
+    def read_record(path: Path) -> dict:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 256 * 1024:
+            raise ValueError("session_record_invalid")
+        value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_fields)
+        if not isinstance(value, dict):
+            raise ValueError("session_record_invalid")
+        return value
+
+    try:
+        if not isinstance(request, dict) or not isinstance(manifest, dict):
+            return reject("session_record_invalid")
+        if command_dir.is_symlink():
+            return reject("session_record_invalid")
+        command_id = request.get("command_id")
+        if (not isinstance(command_id, str) or len(command_id) != 32
+                or any(c not in "0123456789abcdef" for c in command_id)
+                or command_dir.name != command_id):
+            return reject("session_command_mismatch")
+        if read_record(command_dir / "request.json") != request:
+            return reject("session_request_mismatch")
+        for key in ("command_id", "command_sha256", "task_id", "work_unit_id"):
+            if not request.get(key) or manifest.get(key) != request[key]:
+                return reject("session_command_mismatch")
+        if manifest.get("state") not in {"succeeded", "failed", "cancelled", "lost"}:
+            return reject("session_execution_not_finished")
+        if manifest.get("runtime_release_id") != request.get("runtime_release_id"):
+            return reject("session_runtime_mismatch")
+        worker = read_record(command_dir / "worker.json")
+        if any(worker.get(key) != request[key] for key in ("task_id", "work_unit_id")):
+            return reject("session_worker_mismatch")
+        control = Path(worker["control"])
+        if control.is_symlink():
+            return reject("session_record_invalid")
+        claim = read_record(control / "claim.json")
+        fingerprint = request.get("worker_request_sha256")
+        if (not isinstance(fingerprint, str) or len(fingerprint) != 64
+                or any(c not in "0123456789abcdef" for c in fingerprint)
+                or claim.get("request_sha256") != fingerprint
+                or any(claim.get(key) != request[key]
+                       for key in ("command_id", "task_id", "work_unit_id"))):
+            return reject("session_claim_mismatch")
+        stream = command_dir / "stdout.bin"
+        if stream.is_symlink() or not stream.is_file():
+            return reject("session_stream_invalid")
+        # Bound parsing without substituting a truncated preview for full evidence.
+        if stream.stat().st_size > 64 * 1024 * 1024:
+            return reject("session_stream_limit")
+        digest = hashlib.sha256()
+        observed = None
+        count = 0
+        with stream.open("rb") as handle:
+            while line := handle.readline(2 * 1024 * 1024 + 1):
+                if len(line) > 2 * 1024 * 1024:
+                    return reject("session_stream_limit")
+                digest.update(line)
+                if not line.endswith(b"\n"):
+                    return reject("session_stream_incomplete")
+                if not line.strip():
+                    continue
+                event = json.loads(line.decode("utf-8"), object_pairs_hook=unique_fields)
+                if not isinstance(event, dict):
+                    return reject("session_stream_invalid")
+                if event.get("type") == "thread.started":
+                    count += 1
+                    if count > 1:
+                        return reject("session_identity_ambiguous")
+                    value = event.get("thread_id")
+                    if not isinstance(value, str) or str(uuid.UUID(value)) != value or not uuid.UUID(value).int:
+                        return reject("session_identity_invalid")
+                    observed = value
+        evidence = manifest.get("stdout", {})
+        if not isinstance(evidence, dict):
+            return reject("session_stream_invalid")
+        if (evidence.get("sha256") != digest.hexdigest()
+                or evidence.get("bytes") != stream.stat().st_size):
+            return reject("session_stream_changed")
+        if observed is None:
+            return reject("session_identity_missing")
+        return {"schema": "harness-worker-session-observation/v1", "state": "observed",
+                "thread_id": observed, "command_id": command_id,
+                "task_id": request["task_id"], "work_unit_id": request["work_unit_id"],
+                "worker_request_sha256": fingerprint, "stdout_sha256": digest.hexdigest(),
+                "runtime_release_id": request.get("runtime_release_id"), "reuse_authorized": False}
+    except (OSError, ValueError, KeyError, TypeError):
+        return reject("session_evidence_invalid")
 
 
 def verify_result(output: Path, task_id: str) -> dict:

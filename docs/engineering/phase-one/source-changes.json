@@ -12,7 +12,7 @@
     {
       "path": "solution_agent/harness/codex_worker.py",
       "extraction_sha256": "e29e1f5918a1f1d70c192a924279aef739f0f9bb6cec8dfd9c1581cacde35571",
-      "current_sha256": "34424e9a6f61a0d188c928f2f0439ce54581136ddfe26cff327389e98e43d900"
+      "current_sha256": "83f9b59dc9fc769a4e9d1be7c168fb73a8d0bb160b77109573b28529815aad8e"
     },
     {
       "path": "solution_agent/harness/maintenance_completion.py",
@@ -52,7 +52,7 @@
     {
       "path": "solution_agent/harness/terminal_commands.py",
       "extraction_sha256": "476a53a49f9e2c0dfbc944c42dde08d7a5cc19beb2fa29462f2e38b05c7f3784",
-      "current_sha256": "fa63285a2b17b06f6a3abca56441edd130896a8ade304d0c9d4ad206b0bdafc2"
+      "current_sha256": "6d0337c379ce8a40110b912abc6faa357e63b059348d08229dd40b6f6d3de201"
     },
     {
       "path": "solution_agent/harness/worker_help.py",
@@ -307,7 +307,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "b02df2e179a00042f32959df9092d7a4f56c451ec739c46b125c10c510eb970c"
+      "current_sha256": "fe0d669250784067bd4a15c677add254550a944d92ac8c1fa704703156a0f454"
     }
   ]
 }

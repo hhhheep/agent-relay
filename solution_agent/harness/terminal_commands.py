@@ -745,6 +745,16 @@ class TerminalCommandRunner:
                 "sha256": _hash_file(path),
             }
         result["result_manifest_path"] = str(directory / "result_manifest.json")
+        manifest_path = directory / "result_manifest.json"
+        if manifest_path.is_file():
+            manifest = _read_json(manifest_path)
+            if "worker_session" in manifest:
+                from solution_agent.harness.codex_worker import observe_session_identity
+                observed = observe_session_identity(directory, _read_json(directory / "request.json"), manifest)
+                if observed != manifest["worker_session"]:
+                    observed = {"schema": "harness-worker-session-observation/v1", "state": "unverified",
+                                "reason": "session_observation_changed", "reuse_authorized": False}
+                result["worker_session"] = observed
         result["completion_event_path"] = str(directory / "completion_event.json")
         event_path = directory / "completion_event.json"
         if event_path.is_file():
@@ -948,6 +958,9 @@ def finalize(
     }
     if "runtime_release_id" in request:
         manifest["runtime_release_id"] = request["runtime_release_id"]
+    if (directory / "worker.json").exists():
+        from solution_agent.harness.codex_worker import observe_session_identity
+        manifest["worker_session"] = observe_session_identity(directory, request, manifest)
     status_path = directory / "status.json"
     current = _read_json(status_path)
     terminal_status = {

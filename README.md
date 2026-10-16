@@ -16,6 +16,8 @@ Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在
 
 ## 可以怎麼用
 
+Worker session 重用正在隔離工程分支開發：原 command 的完成回執可保存並重新核對 CLI 實際輸出的 thread ID；這是身分證據，不授予續接權限。目前尚未啟用固定 worker 池、同 session 自動接單或 Desktop 自動換 chat。範圍、回退與驗收見[工程紀錄](docs/engineering/worker-session-binding-20261016/README.md)。
+
 例如，你在 Windows 上與 Codex 討論一項程式修改，而程式的 Linux 依賴和測試環境位於遠端主機。Agent Relay 可以把測試工作交給那台主機，讓你在本地查詢進度、取回日誌與產物，再根據結果修改程式。需要形成報告時，可以整理證據後交給 Report Writer。
 
 一次典型工作流程：
