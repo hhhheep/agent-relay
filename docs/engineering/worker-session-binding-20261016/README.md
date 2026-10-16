@@ -256,6 +256,21 @@ now has executable coverage as described below; it does not prove Desktop handof
 
 ## Current local verification
 
+The identity-conflict audit reproduced another missing guard: two independently
+completed workers could both contain the same canonical observed thread ID and
+still receive a subsequent assignment. Reconcile the first observed manifest per
+worker under the original launch lock and refuse cross-worker identity conflicts
+before reservation or dispatch. This is a read-only consistency check on existing
+authority, not a second registry or permission to repair/rebind conflicting IDs.
+Full request/claim/stream verification remains mandatory for the selected worker.
+The fault fixture supplies duplicate machine events; it does not claim that the
+normal Codex CLI was observed generating duplicate UUIDs. Both reservation and
+already-reserved dispatch refuse before a new claim/CLI request. Local pool
+regression passed 23 tests; the actual CLI/identity/pool selection passed 54 before
+the additional dispatch-only fault case. The combined three-manager scenario
+passed again with the conflict guard. Current candidate acceptance requires its
+own exact-commit CI; earlier green checks do not cover this guard.
+
 Follow-up owner audit found that `publication-service.ts`, the existing manual
 publish CLI consumer, must enforce the same controller authority before remote
 maintenance or a new worker submission. The manager-loop guard alone leaves this
@@ -298,6 +313,14 @@ helper, matching ArtifactStore's existing containment behavior; it does not allo
 escaping the canonical root. Verify actual Windows junction containment plus a
 foreign-path refusal, affected MCP/artifact consumers and the exact CI candidate.
 Whether this explains the CI failure remains to be confirmed by that run.
+
+Confirmation: `114df41` passed both jobs in
+[run 38912028489](https://github.com/hhhheep/agent-relay/actions/runs/38912028489).
+Windows core: 414 passed, three explicit skips; legacy: 58 passed; Token Guard:
+37 passed; Node: 23 consumer, 106 Lifecycle and eight goal-integration tests passed.
+Linux worker/containment checks passed. The genuine local CLI test is separate;
+CI's optional CLI skip is not actual CLI evidence. The later identity-conflict
+guard still requires its own checks.
 
 The lifecycle audit found that an allowlisted but unrelated chat could request
 another direction's manager release. An executor allowlist verifies who
@@ -357,6 +380,56 @@ this repair. Current-change CI remains required; this local race is not assumed
 to explain the separate CI error envelope.
 
 Remaining acceptance: final current-change CI, source/consumer delivery audit and
-engineering integration. Real Desktop successor creation/usage telemetry and
-automatic rollover are NOT AVAILABLE through the current NativeAppPort contract.
+engineering integration. Complete Desktop context telemetry and resolved threshold
+are NOT AVAILABLE through the current App tools contract; automatic rollover is
+disabled. The host does expose chat creation, as the re-audit below distinguishes.
 Remote installed behavior and real Desktop cross-chat acceptance are NOT RUN.
+
+## Read-only genuine host capability re-audit
+
+The actual current App tools server was queried using only `listTools` and a
+bounded `read_thread` of the caller. No new chat, message, manager, subscription,
+configuration or live state was created or changed. `create_thread`, `read_thread`
+and `wait_threads` exist. The returned thread fields were identity, kind, host,
+title/preview, status, cwd and timestamps; no active-context usage or resolved
+compaction threshold was returned. The actual existing NativeAppPort also
+successfully bootstrapped and read back the genuine caller on the local host.
+This establishes read/identity capability, not cross-chat handoff or automatic
+successor creation acceptance. Raw IDs, pipe paths and private previews are not
+published.
+
+The [official App Server contract](https://learn.chatgpt.com/docs/app-server)
+documents `thread/tokenUsage/updated` events and thread creation. This is a
+different transport from the current App tools bridge; it does not establish
+that the bridge exposes complete Desktop runtime usage. The
+[configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
+documents compaction limit and counting scope. A default or raw configuration
+value is not proof of the effective threshold of this running thread. A second
+app-server process would not be a substitute for the current Desktop channel.
+No new server, log poller, percentage trigger or guessed threshold is introduced.
+
+Automatic handoff remains blocked on a supported signal for complete active
+usage (including intervening tool growth), the resolved limit/counting scope and
+a measured handoff reserve. Creation capability alone does not supply these.
+The existing grant/epoch/journal path is the intended continuation owner when
+that prerequisite becomes available; no parallel handoff registry is proposed.
+
+## Delivery audit against the full goal
+
+| Requirement | Authority/evidence | Assessment |
+| --- | --- | --- |
+| Program-selected worker/session, no arbitrary ID or `--last` | Existing job request chain and launch lock; [pool owner](../../../solution_agent/harness/worker_sessions.py), [adapter](../../../solution_agent/harness/codex_worker.py), pool/CLI negative tests | Implemented; conflicting IDs refuse rather than rebind |
+| Exact command, scope, runtime, raw-stream and claim evidence | Original request/manifest/worker claim; `test_worker_session_identity.py`, `test_worker_session_pool.py` | Covered by negative tests and original-command recovery |
+| Fixed capacity and workplace/direction separation | Profile policy/pinned jobs root; original OS-job limit and scope capacities | Opt-in; separate jobs roots do not claim a shared total |
+| Lost ACK, busy capacity and continuous assignment | Existing TaskPublisher journal, typed proven pre-executor refusal, original lookup | No blind retry; eligible queue order and manual-rejection backlog tested |
+| Execution/result acceptance/closure separation | Existing ArtifactStore and ReviewedStore; public `research_acceptance: not_assessed` | Synthetic explicit review tested; no new research policy or acceptance authority |
+| Scoped successor transfer, quiescence and stale caller denial | Original queue owner/epoch/transfer rows; controller CLI and SessionStart guards | Atomic approved batch and direction-root isolation tested; genuine current-caller bootstrap/readback verified |
+| Three workers / ten tasks / three directions with faults | [Combined scenario](../../../components/lifecycle/worker-scenario.test.ts) uses actual manager OS processes and synthetic App/Codex/transport | Local synthetic acceptance; not installed remote supervision or real Desktop cross-chat proof |
+| Real CLI continuation with correct history and no paid model | [Explicit local CLI fixture](../../../tests/test_worker_session_cli.py) against isolated loopback Responses | Passed locally; CI without the CLI cannot replace this evidence |
+| Publication, provenance, builders and exact CI | Existing candidate/pre-push gates; exact-commit GitHub runs | Required per candidate; engineering integration follows green checks |
+| Automatic rollover at actual context threshold | Genuine host tool schema/readback and official contracts above | BLOCKED: complete runtime signal/resolved threshold and measured reserve unavailable; no automatic trigger enabled |
+| main, deployment, live state and school network | Authorized worktree/codex-only Git changes and synthetic fixtures | No main merge, deployment, live migration, school SSH or paid-model run |
+
+Engineering integration is a distinct gate from full Goal completion. A green
+candidate may fast-forward the authorized engineering branch without claiming
+that the blocked automatic rollover or unperformed real Desktop handoff is done.

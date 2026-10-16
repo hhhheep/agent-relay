@@ -64,7 +64,7 @@ def pool_environment(packet, monkeypatch):
         script = jobs / request["command_id"] / "request.sh"
         return json.loads(base64.b64decode(shlex.split(script.read_text(encoding="utf-8"))[-1]))
 
-    def complete(p, request, *, codex_run=None, finish_unit=True):
+    def complete(p, request, *, codex_run=None, finish_unit=True, observed_thread=None):
         directory = jobs / request["command_id"]
         try:
             capsule = store.load(p["task_id"])
@@ -86,7 +86,7 @@ def pool_environment(packet, monkeypatch):
 
         def fake_codex(argv, **kwargs):
             calls.append(argv)
-            identity = argv[argv.index("resume") + 1] if "resume" in argv else str(uuid.uuid4())
+            identity = observed_thread or (argv[argv.index("resume") + 1] if "resume" in argv else str(uuid.uuid4()))
             output = Path(p["output"])
             output.mkdir(parents=True, exist_ok=True)
             (output / "result.yaml").write_text(yaml.safe_dump({"task_id": p["task_id"], "worker": "codex",
@@ -135,6 +135,26 @@ def test_lost_ack_recovers_original_reservation_without_allocating_again(pool):
         pool.prepare(pool.make("TASK-A2", "other"))
     assert len(list(pool.jobs.glob('*/request.json'))) == 1
     assert pool.calls == []
+
+
+@pytest.mark.parametrize("stage", ["reserve", "dispatch"])
+def test_conflicting_machine_observed_thread_cannot_be_reused_by_two_workers(pool, monkeypatch, stage):
+    first = pool.make(unit="first"); a = pool.prepare(first); receipt = pool.complete(first, a)
+    other = pool.make("TASK-B", "first"); b = pool.prepare(other)
+    following = pool.make("TASK-A2", "next")
+    pending = pool.prepare(following) if stage == "dispatch" else None
+    pool.complete(other, b, observed_thread=receipt["worker_session"]["thread_id"])
+    count = len(pool.calls)
+    with pytest.raises(WorkerAdmissionError, match="thread_conflict"):
+        if pending is None:
+            pool.prepare(following)
+        else:
+            monkeypatch.setenv("SOLUTION_AGENT_COMMAND_ID", pending["command_id"])
+            monkeypatch.setenv("SOLUTION_AGENT_COMMAND_DIR", str(pool.jobs / pending["command_id"]))
+            worker.run_worker(pool.assigned(pending))
+    assert len(pool.calls) == count
+    assert not Path(following["control"]).exists()
+    assert len(list(pool.jobs.glob('*/request.json'))) == (2 if pending is None else 3)
 
 
 def test_concurrent_managers_cannot_reserve_one_worker_twice(pool):

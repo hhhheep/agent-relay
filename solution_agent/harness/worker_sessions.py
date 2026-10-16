@@ -175,6 +175,31 @@ def _history(jobs_root, pool):
             if (assignment["sequence"] != index + 1 or assignment.get("previous_command_id") != previous
                     or (index == 0 and assignment.get("thread_id") is not None)):
                 raise WorkerAdmissionError("worker_pool_chain_conflict")
+    # A single observed thread cannot be the anchor of two fixed workers. These
+    # manifests only reject collisions; they never grant reuse. The selected
+    # chain still requires full stream/claim/result verification below.
+    identities = {}
+    for worker, chain in chains.items():
+        if not chain:
+            continue
+        directory, request, _ = chain[0]
+        path = directory / "result_manifest.json"
+        if not path.exists():
+            continue
+        observation = read_record(path).get("worker_session", {})
+        if not isinstance(observation, dict) or observation.get("state") != "observed":
+            continue
+        identity = observation.get("thread_id")
+        try:
+            canonical = isinstance(identity, str) and str(uuid.UUID(identity)) == identity and uuid.UUID(identity).int != 0
+        except ValueError:
+            canonical = False
+        if (not canonical or observation.get("schema") != "harness-worker-session-observation/v1"
+                or observation.get("command_id") != request["command_id"]):
+            raise WorkerAdmissionError("worker_pool_observation_invalid")
+        if identity in identities and identities[identity] != worker:
+            raise WorkerAdmissionError("worker_pool_thread_conflict")
+        identities[identity] = worker
     return chains
 
 
