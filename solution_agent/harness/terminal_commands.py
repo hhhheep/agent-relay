@@ -52,14 +52,11 @@ class CommandReceiptError(RuntimeError):
 @contextmanager
 def _exclusive_job_lock(path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0o600)
-    except FileExistsError:
-        pass
-    else:
-        os.write(descriptor, b"0")
-        os.close(descriptor)
-    with path.open("r+b") as handle:
+    # Kernel range locks may cover an empty file. Initializing a byte BEFORE
+    # locking races a second opener on Windows, whose lock denies that write.
+    # No content is needed: every participant locks the same existing inode.
+    descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    with os.fdopen(descriptor, "r+b") as handle:
         if os.name == "nt":
             import msvcrt
 

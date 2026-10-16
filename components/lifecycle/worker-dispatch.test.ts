@@ -64,6 +64,29 @@ test('foreign controller is blocked before dispatch and successor continues only
  }finally{f.close();}
 });
 
+test('capacity refusal retains original queue position ahead of later ready tasks',async()=>{
+ const f=await fixture(2);const calls:string[]=[];let full=true;
+ try{
+  const submit=async(request:any)=>{calls.push(request.task_id);if(full)throw busy(request);return {task_id:request.task_id,work_unit_id:request.work_unit_id,command_id:'original-'+request.task_id,state:'running'};};
+  await f.journal.dispatchReady(1,f.authorize,submit);full=false;
+  await f.journal.dispatchReady(1,f.authorize,submit);
+  assert.deepEqual(calls,['task-0','task-0']);
+  assert.equal(f.journal.inspect(f.ids[0]).state,'running');assert.equal(f.journal.inspect(f.ids[1]).state,'ready');
+ }finally{f.close();}
+});
+
+test('manual rejection backlog cannot hide eligible work beyond the bounded scan',async()=>{
+ const f=await fixture(130);const calls:string[]=[];
+ try{
+  for(const id of f.ids.slice(0,129))await assert.rejects(f.journal.submit(id,async request=>{
+   const refusal=busy(request);refusal.evidence.response.worker_admission.code='worker_pool_context_changed';throw refusal;
+  }));
+  await f.journal.dispatchReady(1,f.authorize,async request=>{calls.push(request.task_id);return {task_id:request.task_id,work_unit_id:request.work_unit_id,command_id:'original',state:'running'};});
+  assert.deepEqual(calls,['task-129']);
+  assert.ok(f.ids.slice(0,129).every(id=>f.journal.inspect(id).state==='rejected'));
+ }finally{f.close();}
+});
+
 test('two dispatchers cannot submit the same admitted intent twice',async()=>{
  const f=await fixture(1);let sends=0;let release:()=>void=()=>{};
  const wait=new Promise<void>(resolve=>{release=resolve;});

@@ -37,6 +37,11 @@ def write(path, value):
 
 @pytest.fixture
 def pool(packet, monkeypatch):
+    return pool_environment(packet, monkeypatch)
+
+
+def pool_environment(packet, monkeypatch):
+    """Reusable isolated core fixture, also consumed by the combined scenario."""
     profile = worker.load_remote_deploy_profile(None, "FAN")
     profile.worker_pool = policy()
     profile.terminal_storage_profile_id = "FAN"
@@ -67,10 +72,15 @@ def pool(packet, monkeypatch):
             capsule = store.create(TaskCapsule(task_id=p["task_id"], objective="synthetic session acceptance",
                 approval_owner="fixture", source_release_id="fixture-release",
                 scope=ScopeContract(readable_paths=[str(cwd)], writable_paths=[str(cwd)])))
-        capsule = store.start_work_unit(p["task_id"], p["work_unit_id"], expected_version=capsule.version)
-        store.acquire_writer_lease(p["task_id"], WriterLeaseRef(lease_id=request["writer_lease_id"], target=str(cwd),
-            owner_work_unit=p["work_unit_id"], expires_at=datetime.now(timezone.utc) + timedelta(minutes=5)),
-            expected_version=capsule.version)
+        if capsule.active_work_unit is None:
+            capsule = store.start_work_unit(p["task_id"], p["work_unit_id"], expected_version=capsule.version)
+        assert capsule.active_work_unit == p["work_unit_id"]
+        if not capsule.writer_leases:
+            store.acquire_writer_lease(p["task_id"], WriterLeaseRef(lease_id=request["writer_lease_id"], target=str(cwd),
+                owner_work_unit=p["work_unit_id"], expires_at=datetime.now(timezone.utc) + timedelta(minutes=5)),
+                expected_version=capsule.version)
+        else:
+            assert [lease.lease_id for lease in capsule.writer_leases] == [request["writer_lease_id"]]
         monkeypatch.setenv("SOLUTION_AGENT_COMMAND_ID", request["command_id"])
         monkeypatch.setenv("SOLUTION_AGENT_COMMAND_DIR", str(directory))
 
@@ -278,7 +288,7 @@ def test_public_pool_completion_collects_original_artifacts_without_research_acc
     monkeypatch.setattr(server, "_server_identity", lambda: {"release_id": "fixture-release"})
     monkeypatch.setattr(server, "_with_server", lambda value: value)
     result = server.terminal_exec("TASK", command_id=request["command_id"], work_unit_id=p["work_unit_id"], wait_ms=0)
-    assert result["state"] == "succeeded", result
+    assert result.get("state") == "succeeded", result
     assert result["command_id"] == request["command_id"]
     assert result["work_unit"]["state"] == "finished"
     assert result["work_unit"]["research_acceptance"] == "not_assessed"

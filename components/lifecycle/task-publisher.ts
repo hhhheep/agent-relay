@@ -24,7 +24,13 @@ export class TaskPublisher {
  close(){this.db.close();}
  async dispatchReady(limit:number,authorize:(binding:any)=>()=>void,submit:(request:any)=>Promise<any>){
   if(!Number.isInteger(limit)||limit<1||limit>64)throw Error('invalid_publication_dispatch_limit');
-  const rows=this.db.prepare("SELECT id,body,state,result FROM publications WHERE state IN ('ready','rejected') ORDER BY (state='ready') DESC,rowid LIMIT 128").all() as any[];
+  // Keep retryable capacity refusals in their original position, while manual
+  // rejection rows cannot fill the bounded scan and hide eligible work.
+  const rows=this.db.prepare(`SELECT id,body,state,result FROM publications
+   WHERE state='ready' OR (state='rejected' AND CASE WHEN json_valid(result) THEN
+    json_extract(result,'$.response.worker_admission.code')='worker_pool_busy'
+    AND json_type(result,'$.response.worker_admission.no_command_prepared')='true' ELSE 0 END)
+   ORDER BY rowid LIMIT 128`).all() as any[];
   const results:any[]=[];let attempts=0;
   for(const row of rows){
    try{

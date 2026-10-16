@@ -251,8 +251,8 @@ be declared complete.
 Result contract/hash validation and ownership release allow a worker to accept
 another independent eligible assignment. They do not attest scientific acceptance
 or close a direction. Complete controller handoff, integration with existing result-review
-receipts and the combined three-direction/ten-assignment fault scenario remain
-required work under the full goal.
+receipts remain required work under the full goal. The combined synthetic scenario
+now has executable coverage as described below; it does not prove Desktop handoff.
 
 ## Current local verification
 
@@ -283,11 +283,54 @@ credentials. The complete Lifecycle suite passed: 99 tests, no skips. Router
 packaging and publication privacy passed. These are local development results;
 Windows and Linux CI for pool/controller batch increment `d2ceb25` passed in
 [run 38907709804](https://github.com/hhhheep/agent-relay/actions/runs/38907709804).
-CI for the later manual publication authority repair is pending; the earlier
-green run does not cover that follow-up.
+The later `2b2fab0` run 38908481753 passed Linux but failed Windows in the public
+pooled recovery test (411 passed, three skips, one failure). The original assertion
+indexed a missing `state` and hid the returned error envelope. The assertion now
+retains the full envelope; no outcome assertion is relaxed. The same preceding
+Windows test order passed locally (215 passed, two platform skips). Its CI-only
+failure is not yet explained or waived; a new exact-commit run is required.
 
-Remaining acceptance: the combined three-direction/ten-assignment scenario with
-handoff, ACK loss, late result, restart and independent review; current-change CI and
+## Combined scenario and additional defects
+
+`components/lifecycle/worker-scenario.test.ts` starts three separate Node manager
+processes with independent queue owners/journals, sharing one remote jobs root.
+Its test-only Python process bridge calls the existing public terminal tool,
+worker adapter, capsule/lease, original request/claim, finalizer and Artifact store.
+App/MCP transport and Codex outputs are synthetic; the execution launcher pauses
+prepared commands for controlled completion. It is not an installed API, actual
+worker supervision, authenticated Desktop handoff or remote installed acceptance.
+
+Ten exact approved synthetic assignments write only their distinct output
+directories. The test bounds active reservations to three, one per direction;
+drops an ACK after durable reservation; restarts actual manager OS processes;
+transfers alpha's exact scopes while beta/gamma authority remains unchanged;
+rejects the old alpha caller; disconnects one result recovery; processes the late
+result; and injects a real but foreign beta thread before alpha's next execution.
+It checks original command IDs, three stable worker/thread identities, ten unique
+commands/output directories, no duplicate submission after ACK loss, all results
+recovered, and all execution leases released. Existing ReviewedStore proposal and
+verification records explicitly accept each synthetic result afterward. Technical
+completion alone leaves zero review incidents and no authoritative artifacts.
+These explicit synthetic decisions do not claim scientific validation.
+
+The scenario exposed queue overtaking: a proven capacity refusal was placed after
+new ready rows. Eligible rows now retain original journal order, while rejection
+rows requiring manual action cannot fill the bounded scan and hide later work.
+Two direct regressions cover both fairness and a 129-row manual-rejection backlog.
+The complete Lifecycle suite, including this scenario, passed locally: 103 tests.
+
+A subsequent parallel regression reproduced a Windows launch-lock initialization
+race: the first creator wrote a byte before acquiring the lock, after another
+opener had already locked that byte. The existing lock owner now opens the same
+file without a pre-lock write; the kernel lock also covers an initially empty
+file. No lock file replacement, free matching, process kill or parallel lock
+authority is introduced; old lock files remain usable. A controlled first-creator
+versus contender schedule verifies mutual exclusion. Terminal/pool regression:
+53 passed, two POSIX skips. The actual local Codex CLI fixture passed again after
+this repair. Current-change CI remains required; this local race is not assumed
+to explain the separate CI error envelope.
+
+Remaining acceptance: final current-change CI, source/consumer delivery audit and
 engineering integration. Real Desktop successor creation/usage telemetry and
 automatic rollover are NOT AVAILABLE through the current NativeAppPort contract.
 Remote installed behavior and real Desktop cross-chat acceptance are NOT RUN.

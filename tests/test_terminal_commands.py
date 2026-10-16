@@ -7,6 +7,8 @@ import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeout
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -16,6 +18,43 @@ from solution_agent.harness.terminal_commands import TerminalCommandRunner, _pro
 from solution_agent.harness.task_capsule import ScopeContract, TaskCapsule, TaskCapsuleStore, WriterLeaseRef
 from solution_agent.orchestrator.core import _pid_alive as orchestrator_pid_alive
 from solution_agent.small_task_worker.background_runner import _pid_alive as worker_pid_alive
+
+
+def test_first_lock_creator_waits_if_a_contender_locks_the_new_empty_file(tmp_path, monkeypatch):
+    from solution_agent.harness.terminal_commands import _exclusive_job_lock
+    path = tmp_path / "jobs" / ".launch.lock"
+    created, held, release = threading.Event(), threading.Event(), threading.Event()
+    original_open = os.open
+    initializer = []
+    def open_then_pause(name, *args, **kwargs):
+        descriptor = original_open(name, *args, **kwargs)
+        if Path(name) == path and threading.get_ident() in initializer:
+            created.set()
+            assert held.wait(5), "contender did not acquire the initially empty file"
+        return descriptor
+    monkeypatch.setattr(os, "open", open_then_pause)
+    def first():
+        initializer.append(threading.get_ident())
+        with _exclusive_job_lock(path):
+            assert release.is_set()
+    def contender():
+        assert created.wait(5)
+        with _exclusive_job_lock(path):
+            held.set()
+            assert release.wait(5)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        a = executor.submit(first)
+        b = executor.submit(contender)
+        try:
+            assert held.wait(5)
+            # The first creator must block on ownership, not write an unlocked
+            # initialization byte (which raises PermissionError on Windows).
+            with pytest.raises(FutureTimeout):
+                a.result(timeout=0.2)
+        finally:
+            release.set()
+        a.result(timeout=5)
+        b.result(timeout=5)
 
 
 def runner(tmp_path: Path, *, shell: str | None = None) -> TerminalCommandRunner:
