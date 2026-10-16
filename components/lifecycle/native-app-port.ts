@@ -9,6 +9,7 @@ export class NativeAppPort {
  private context?:{serverPath:string,env:Record<string,string|undefined>};
  private connecting?:Promise<{threadId:string}>;
  private blocked=false;private generation=0;
+ private tools=new Set<string>();
  private lifetime=new AbortController();
  constructor(readonly factory=()=>new Client({name:'harness-help-router',version:'1'},{capabilities:{}})){}
  async connect(serverPath:string,env:Record<string,string|undefined>,options:{signal?:AbortSignal,timeoutMs?:number}={}){
@@ -40,6 +41,7 @@ export class NativeAppPort {
    const work=async()=>{
     await client.connect(new StdioClientTransport({command:process.execPath,args:[serverPath],env:env as any,stderr:'pipe'}),{signal,timeout});
     const listing=await client.listTools(undefined,{signal,timeout});
+    this.tools=new Set(listing.tools.map((t:any)=>t.name));
     if(!['read_thread','send_message_to_thread'].every(n=>listing.tools.some((t:any)=>t.name===n)))throw Error('native_app_tools_missing');
     const result=await client.callTool({name:'read_thread',arguments:{threadId:caller,turnLimit:1,includeOutputs:false,maxOutputCharsPerItem:100},_meta:{'openai/threadId':caller}},undefined,{signal,timeout});
     const data=this.decode(result);
@@ -66,6 +68,13 @@ export class NativeAppPort {
  }
  identity(){if(!this.client||!this.caller)throw Error('app_rebootstrap_required');return {threadId:this.caller};}
  async read(threadId:string,options:{signal?:AbortSignal,timeoutMs?:number}={}){return this.call('read_thread',{threadId,turnLimit:8,includeOutputs:false,maxOutputCharsPerItem:1000},options);}
+ canCreateSuccessor(){return !!this.client&&this.tools.has('create_thread');}
+ async createSuccessor(projectId:string,prompt:string){
+  if(!this.canCreateSuccessor())throw Error('native_app_create_unavailable');
+  const result=await this.call('create_thread',{target:{type:'project',projectId,environment:{type:'local'}},title:'Harness context continuation',prompt});
+  if(typeof result.threadId!=='string'||result.hostId!=='local')throw Error('native_app_create_receipt_unverified');
+  return {threadId:result.threadId};
+ }
  async send(threadId:string,prompt:string){
   const result=await this.call('send_message_to_thread',{threadId,hostId:'local',prompt});
   if(result.threadId!==threadId){this.blocked=true;await this.drop();throw Error('native_app_destination_mismatch');}

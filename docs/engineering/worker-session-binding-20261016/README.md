@@ -379,11 +379,11 @@ versus contender schedule verifies mutual exclusion. Terminal/pool regression:
 this repair. Current-change CI remains required; this local race is not assumed
 to explain the separate CI error envelope.
 
-Remaining acceptance: final current-change CI, source/consumer delivery audit and
-engineering integration. Complete Desktop context telemetry and resolved threshold
-are NOT AVAILABLE through the current App tools contract; automatic rollover is
-disabled. The host does expose chat creation, as the re-audit below distinguishes.
-Remote installed behavior and real Desktop cross-chat acceptance are NOT RUN.
+At that earlier delivery, remaining acceptance included current-change CI,
+source/consumer audit and engineering integration. Complete context telemetry was
+unavailable through the App tools contract and automatic rollover was disabled.
+The subsequent PreCompact audit below supersedes that trigger assessment;
+deployed remote supervision remains outside this isolated acceptance.
 
 ## Read-only genuine host capability re-audit
 
@@ -408,11 +408,11 @@ value is not proof of the effective threshold of this running thread. A second
 app-server process would not be a substitute for the current Desktop channel.
 No new server, log poller, percentage trigger or guessed threshold is introduced.
 
-Automatic handoff remains blocked on a supported signal for complete active
-usage (including intervening tool growth), the resolved limit/counting scope and
-a measured handoff reserve. Creation capability alone does not supply these.
-The existing grant/epoch/journal path is the intended continuation owner when
-that prerequisite becomes available; no parallel handoff registry is proposed.
+That audit did not examine the product's PreCompact hook and was insufficient
+to rule out automatic handoff. The later integration below uses Codex's actual
+compaction decision. Complete usage/resolved thresholds are still needed for a
+separate proactive numeric trigger; they are not prerequisites for consuming
+PreCompact. No percentage trigger or parallel handoff registry is proposed.
 
 ## Delivery audit against the full goal
 
@@ -427,9 +427,119 @@ that prerequisite becomes available; no parallel handoff registry is proposed.
 | Three workers / ten tasks / three directions with faults | [Combined scenario](../../../components/lifecycle/worker-scenario.test.ts) uses actual manager OS processes and synthetic App/Codex/transport | Local synthetic acceptance; not installed remote supervision or real Desktop cross-chat proof |
 | Real CLI continuation with correct history and no paid model | [Explicit local CLI fixture](../../../tests/test_worker_session_cli.py) against isolated loopback Responses | Passed locally; CI without the CLI cannot replace this evidence |
 | Publication, provenance, builders and exact CI | Existing candidate/pre-push gates; exact-commit GitHub runs | Required per candidate; engineering integration follows green checks |
-| Automatic rollover at actual context threshold | Genuine host tool schema/readback and official contracts above | BLOCKED: complete runtime signal/resolved threshold and measured reserve unavailable; no automatic trigger enabled |
+| Automatic rollover at actual context threshold | PreCompact integration below; original controller/epoch/journal | Opt-in hook path implemented; Desktop trigger-to-background-manager acceptance remains partial; proactive numeric trigger unavailable |
 | main, deployment, live state and school network | Authorized worktree/codex-only Git changes and synthetic fixtures | No main merge, deployment, live migration, school SSH or paid-model run |
 
 Engineering integration is a distinct gate from full Goal completion. A green
 candidate may fast-forward the authorized engineering branch without claiming
 that the blocked automatic rollover or unperformed real Desktop handoff is done.
+
+## PreCompact integration boundary (2026-10-16)
+
+The earlier telemetry-only blocker was too broad. The installed CLI's real
+`PreCompact(auto)` hook was exercised in an isolated home against a loopback
+Responses fixture. Its session ID matched `thread.started`; `continue:false`
+stopped before the compaction request. This is an actual compaction decision,
+not a configurable early token threshold or a Desktop handoff acceptance.
+
+Authorized compatible extension: the existing Lifecycle CLI consumes this hook,
+quiesces the original queue owner, and stores a bounded rollover checkpoint in
+that queue's existing `meta` table. No second scheduler/registry/transport is
+introduced. An explicitly configured creation policy uses NativeAppPort's App
+tool connection. A create attempt is durable before the RPC; uncertain creation
+never retries. Only its exact returned and read-back-verified successor may
+consume the checkpoint and apply the original scoped controller transfers.
+The original publication journal, worker sessions, commands, leases and artifact
+references remain authoritative. Pending rollover blocks old-controller new
+dispatch. Technical result collection does not grant research acceptance.
+
+Migration/rollback: opt-in configuration only; old configs ignore the new path.
+Do not remove a pending checkpoint or downgrade across a pending transfer. Recover
+the original attempt/command; after verified transfer the original epoch rejects
+the predecessor. No global hooks, installed plugin or remote deployment is part
+of the source change. Desktop test capability, actual hook ingress, genuine
+successor identity and result recovery must each be recorded independently.
+
+Configuration extends the existing Lifecycle config with this optional object
+(all paths and project identity come from trusted local configuration):
+
+```json
+{
+  "rollover": {
+    "authorizationRef": "approved-context-continuation",
+    "projectId": "configured-local-project-id",
+    "cliPath": "/configured/lifecycle/session-lifecycle-cli.mjs",
+    "configPath": "/configured/lifecycle.json"
+  }
+}
+```
+
+The target project must resolve to the configured workplace. Configure the
+existing Lifecycle CLI as a synchronous `PreCompact` command hook with an `auto`
+matcher, using that platform's normal command quoting and reviewed hook trust.
+The CLI reads the product event on stdin. Manual compaction is ignored; probe
+flags cannot accidentally start rollover. It verifies the actual App caller and
+workplace, quiesces the manager through its original handoff/queue lease, then
+commits the checkpoint before starting a hidden continuation child. It returns
+`continue:false` only after durable checkpoint and child launch. No model summary
+request is made from the nearly-full predecessor.
+
+`--rollover-create <request-digest>` consumes the original checkpoint. Its
+`requested -> creating` transition commits before App creation. No response at
+that boundary means uncertain creation and **no retry**. A canonical returned ID
+is saved as `verifying` before readback; a readback failure can only recheck that
+same ID. `--rollover-successor <request-digest>` derives caller identity from its
+genuine executor environment, bootstraps App readback, checks the exact created
+ID/policy/scopes/epochs, and uses the existing controller transfer receipts.
+Duplicate ACKs and successor retries cannot advance the epoch again. Pending
+rollover rejects old-controller dispatch and manager restart. Missing native
+context never falls back to a remembered ID or another pipe.
+
+Each fresh Desktop executor must independently have the configured transport
+credentials available through the existing environment mechanism. Credentials
+and App pipe paths are never serialized into a checkpoint or successor prompt.
+Successful controller transfer with missing `HARNESS_XATS_TOKEN` is explicitly
+`awaiting_configuration`; it is not background-manager readiness. Use the normal
+approved local execution context when a model executor sandbox blocks App IPC.
+Do not replace identities to work around a connection failure.
+
+Acceptance performed against the installed Desktop and CLI:
+
+- Real isolated CLI `PreCompact(auto)` fired with session ID equal to its own
+  `thread.started`; returning `continue:false` prevented the compaction request.
+- Genuine NativeAppPort created one real Desktop successor in the configured
+  local project. The successor bootstrapped its own App identity and transferred
+  the original scope to epoch 1. First sandbox IPC failure was retained; normal
+  approved local execution succeeded. No identity environment was substituted.
+- An actual installed Codex worker process was already waiting on a loopback
+  synthetic Responses endpoint before creation. It completed after takeover.
+  The real successor recovered its original publication command through Harness,
+  matched the worker session ID/artifact, observed one command and zero writer
+  leases. Research acceptance remained `not_assessed` with no authoritative
+  research publication. The worker/model endpoint was local and synthetic;
+  this is not deployed remote supervision or a paid-model validation.
+- This Desktop handoff used an explicitly simulated PreCompact event in the
+  genuine predecessor context. Actual Desktop hook ingress was **NOT RUN**.
+  The fixture had no XATS credential, so continuous background-manager startup
+  in that genuine successor was **NOT RUN**. No global/project hook was installed,
+  installed plugin changed, live research state migrated, or school SSH used.
+
+The real CLI parser exposed an additional defect before push: including custom
+`state`/`requestId` fields on hook stdout invalidated `continue:false`, and Codex
+continued to its compaction request. Hook stdout now contains only supported
+common fields; the checkpoint retains all IDs. The optional installed-CLI test
+in `tests/test_worker_session_cli.py` runs the production output helper against
+the actual parser, verifies event/session correlation and proves zero compaction
+requests after stop. Both real CLI tests passed with isolated loopback models;
+CI without an explicitly supplied CLI reports both skips rather than claiming
+this actual-runtime evidence.
+
+Regression covers original-command result recovery, wrong valid caller IDs,
+changed policies/workspaces/scopes, uncertain create ACK and process restart,
+same-ID readback recovery, concurrent creation, stale dispatch and malformed
+checkpoints. Local full Lifecycle initially exposed two missing PYTHONPATH test
+environment failures; rerunning with the documented CI environment passed 111
+tests. The final full Lifecycle suite passed 113 tests; direct-consumer regression
+passed 48, Goal integration passed 8, and worker identity/pool/adapter regression
+passed 66; exact final CI remains
+the delivery gate. No failing assertion was removed or weakened.

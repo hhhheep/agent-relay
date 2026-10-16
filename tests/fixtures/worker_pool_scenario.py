@@ -25,7 +25,7 @@ def run(root, action):
     runtime.mkdir(parents=True, exist_ok=True)
     workplace.mkdir(parents=True, exist_ok=True)
     profile = SimpleNamespace(solution_agent_root=str(runtime), project_workdir=str(workplace),
-        remote_run_root=str(root / "runs"), codex_path="/synthetic/codex")
+        remote_run_root=str(root / "runs"), codex_path=action.get("codex_binary", "/synthetic/codex"))
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(worker, "load_remote_deploy_profile", lambda *_: profile)
         packet = worker.worker_packet(runtime, "FAN", "TASK", "unit", "synthetic", "prepare_code")
@@ -58,11 +58,14 @@ def run(root, action):
             return {"fingerprint": digest(pool.make("TASK-0")["worker_pool"]), "release": "fixture-release"}
         if kind == "terminal_exec":
             return server.terminal_exec(**action["arguments"])
-        if kind in {"complete", "wrong_thread"}:
+        if kind in {"complete", "complete_actual_cli", "wrong_thread"}:
             directory = pool.jobs / action["command_id"]
             request = json.loads((directory / "request.json").read_text())
             assigned = pool.assigned(request)
             packet = {k: v for k, v in assigned.items() if k != "session_assignment"}
+            if kind == "complete_actual_cli":
+                from tests.fixtures.actual_cli_completion import complete
+                return complete(root, pool, packet, request, action)
             if kind == "complete":
                 manifest = pool.complete(packet, request, finish_unit=False)
                 assert len(pool.calls) == 1

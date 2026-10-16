@@ -100,3 +100,52 @@ def test_real_cli_worker_pool_resumes_exact_thread_with_prior_history(pool, monk
         assert "POOL_FIRST_B" not in final_request and "POOL_ANSWER_2" not in final_request
     finally:
         server.shutdown(); server.server_close()
+
+
+@pytest.mark.skipif(not os.environ.get("HARNESS_TEST_CODEX"), reason="requires explicitly supplied local Codex CLI; never calls paid provider")
+def test_real_cli_precompact_accepts_production_hook_output_and_stops_before_compaction(tmp_path):
+    """Extra stdout keys make Codex ignore continue:false; test its real parser."""
+    import shlex
+    import shutil
+    repo = Path(__file__).resolve().parents[1]
+    binary = Path(os.environ['HARNESS_TEST_CODEX']).resolve()
+    node = shutil.which('node')
+    assert binary.is_file() and node
+    home = tmp_path / 'isolated-home'; home.mkdir()
+    callback = repo / 'tests/fixtures/precompact_cli_callback.mts'
+    loader = repo / 'components/lifecycle/node_modules/tsx/dist/loader.mjs'
+    assert loader.is_file(), 'install frozen Lifecycle test dependencies first'
+    event_path = tmp_path / 'precompact-event.json'
+    argv = [node, '--import', loader.as_uri(), str(callback), str(event_path)]
+    command = ('& ' + ' '.join("'" + arg.replace("'", "''") + "'" for arg in argv)) if os.name == 'nt' else shlex.join(argv)
+    requests = []
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_): pass
+        def do_GET(self):
+            self.send_response(200); self.end_headers(); self.wfile.write(b'{"data":[]}')
+        def do_POST(self):
+            self.rfile.read(int(self.headers.get('Content-Length', 0))); requests.append(self.path)
+            events = [
+                {'type':'response.created','response':{'id':'fixture-response'}},
+                {'type':'response.output_item.done','item':{'type':'message','role':'assistant','id':'fixture-message','content':[{'type':'output_text','text':'OK'}]}},
+                {'type':'response.completed','response':{'id':'fixture-response','usage':{'input_tokens':20000,'output_tokens':5,'total_tokens':20005,'input_tokens_details':None,'output_tokens_details':None}}}]
+            data = ''.join('data: '+json.dumps(e)+'\n\n' for e in events).encode()
+            self.send_response(200); self.send_header('Content-Type','text/event-stream'); self.send_header('Content-Length',str(len(data))); self.end_headers(); self.wfile.write(data)
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    (home/'config.toml').write_text('model="gpt-6.1-sol"\nmodel_provider="fixture"\nmodel_auto_compact_token_limit=1\nmodel_auto_compact_token_limit_scope="total"\n[features]\nhooks=true\n[[hooks.PreCompact]]\nmatcher="auto"\n[[hooks.PreCompact.hooks]]\ntype="command"\ncommand='+json.dumps(command)+'\n[model_providers.fixture]\nname="Loopback only"\nwire_api="responses"\nrequires_openai_auth=false\nsupports_websockets=false\nrequest_max_retries=0\nstream_max_retries=0\nstream_idle_timeout_ms=3000\nbase_url="http://127.0.0.1:'+str(server.server_port)+'/v1"\n', encoding='utf8')
+    keep = {'SYSTEMROOT','WINDIR','PATH','PATHEXT','TEMP','TMP','COMSPEC','SYSTEMDRIVE','USERPROFILE','APPDATA','LOCALAPPDATA'}
+    env = {k:v for k,v in os.environ.items() if k.upper() in keep}; env['CODEX_HOME'] = str(home)
+    def run(args):
+        return subprocess.run([str(binary),'--dangerously-bypass-hook-trust','-a','never','exec',*args],input='Isolated hook contract fixture',text=True,capture_output=True,env=env,cwd=home,timeout=30)
+    try:
+        first = run(['-s','read-only','--skip-git-repo-check','--json','-'])
+        assert first.returncode == 0, first.stderr
+        thread = next(json.loads(line)['thread_id'] for line in first.stdout.splitlines() if json.loads(line).get('type')=='thread.started')
+        second = run(['resume','--skip-git-repo-check','--json',thread,'-'])
+        assert event_path.is_file(), second.stdout + second.stderr
+        event = json.loads(event_path.read_text())
+        assert event['session_id'] == thread and event['trigger'] == 'auto'
+        assert second.returncode == 1 and len(requests) == 1, 'production hook must stop before any compaction request'
+    finally:
+        server.shutdown(); server.server_close()

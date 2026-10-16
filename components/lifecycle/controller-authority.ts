@@ -6,6 +6,33 @@ import {ReviewedStore} from './reviewed-store.ts';
 import {requestLifecycleHandoff} from './lifecycle-handoff.ts';
 import {setTimeout as delay} from 'node:timers/promises';
 
+export const rolloverKey='context_rollover';
+export const rolloverChatId=(id:unknown):id is string=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)&&!/^0{8}-0{4}-0{4}-0{4}-0{12}$/.test(id);
+export type RolloverCheckpoint={schema:'context-rollover/v1',id:string,fromChat:string,turnId:string,authorizationRef:string,policySha256:string,
+ scopes:Array<{taskId:string,workUnitId:string,epoch:number}>,phase:'requested'|'creating'|'verifying'|'created'|'transferred',toChat?:string};
+export function readRollover(db:DatabaseSync):RolloverCheckpoint|undefined{
+ const row=db.prepare('SELECT value FROM meta WHERE key=?').get(rolloverKey) as any;
+ if(!row)return;
+ let c:RolloverCheckpoint;try{c=JSON.parse(row.value);}catch{throw Error('rollover_checkpoint_corrupt');}
+ if(!c||c.schema!=='context-rollover/v1'||!rolloverChatId(c.fromChat)||!rolloverChatId(c.turnId)||!/^([0-9a-f]{64})$/.test(c.id)||!/^([0-9a-f]{64})$/.test(c.policySha256)||
+  c.id!==digest(JSON.stringify([c.fromChat,c.turnId]))||typeof c.authorizationRef!=='string'||!c.authorizationRef.trim()||
+  !['requested','creating','verifying','created','transferred'].includes(c.phase)||!Array.isArray(c.scopes)||!c.scopes.length||c.scopes.length>128||
+  c.scopes.some(s=>!s||typeof s.taskId!=='string'||!s.taskId.trim()||typeof s.workUnitId!=='string'||!s.workUnitId.trim()||!Number.isSafeInteger(s.epoch)||s.epoch<0)||
+  new Set(c.scopes.map(s=>JSON.stringify([s.taskId,s.workUnitId]))).size!==c.scopes.length||
+  (['verifying','created','transferred'].includes(c.phase)?!rolloverChatId(c.toChat)||c.toChat===c.fromChat:c.toChat!==undefined))throw Error('rollover_checkpoint_corrupt');
+ return c;
+}
+export function pendingRollover(db:DatabaseSync,caller:string|undefined){
+ const c=readRollover(db);return !!c&&c.phase!=='transferred'&&c.fromChat===caller;
+}
+export function rolloverAdmission(path:string,caller:string|undefined){
+ if(!existsSync(path))return true;
+ const db=new DatabaseSync(path,{readOnly:true});try{
+  if(!db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='meta'").get())return true;
+  return !pendingRollover(db,caller);
+ }finally{db.close();}
+}
+
 export const controllerScope=(task:string,unit:string)=>digest(JSON.stringify([task,unit]));
 export type ControllerGrant={transferId:string,taskId:string,workUnitId:string,fromChat:string,toChat:string,expectedEpoch:number,authorizationRef:string};
 export function initializeControllerAuthority(db:DatabaseSync){db.exec(`
@@ -86,6 +113,7 @@ export async function transferControllersWhenQuiescent(root:string,grants:Contro
  }
 }
 export function assertController(db:DatabaseSync,scope:string,caller:string|undefined,epoch:number){
+ if(pendingRollover(db,caller))throw Error('context_rollover_pending');
  const current=currentController(db,scope);
  if(current.epoch!==epoch||caller!==current.chat)throw Error('controller_authority_stale');
  return current;

@@ -5,8 +5,9 @@ import {NativeAppPort} from './native-app-port.ts';
 import {runManager,validateDriverConfiguration,type DriverConfig} from './manager-driver.ts';
 import {requestLifecycleHandoff} from './lifecycle-handoff.ts';
 import {hasTransferredControllerGrant,controllerRootAdmission} from './controller-authority.ts';
+import {rolloverAdmission,type RolloverPolicy} from './context-rollover.ts';
 
-export type SessionLifecycleConfig={workspace:string,authorizedExecutorChats:string[],manager:DriverConfig,ownerWaitMs?:number};
+export type SessionLifecycleConfig={workspace:string,authorizedExecutorChats:string[],manager:DriverConfig,ownerWaitMs?:number,rollover?:RolloverPolicy};
 export function validateSessionStart(config:SessionLifecycleConfig,event:any,env:NodeJS.ProcessEnv){
  if(!isAbsolute(config.workspace)||!Array.isArray(config.authorizedExecutorChats)||!config.authorizedExecutorChats.length||config.authorizedExecutorChats.some(x=>typeof x!=='string'||!x.trim()))throw Error('invalid_lifecycle_configuration');
  if(!config.manager||!isAbsolute(config.manager.stateRoot)||!isAbsolute(config.manager.appServerPath))throw Error('invalid_lifecycle_manager_paths');
@@ -15,6 +16,7 @@ export function validateSessionStart(config:SessionLifecycleConfig,event:any,env
  const context=sessionAppContext(config.workspace,authorized,event,env);if(context.state!=='ready')return context;
  const ownership=controllerRootAdmission(resolve(config.manager.stateRoot,'queue.sqlite'),context.caller!);
  if(!ownership.allowed)return {state:'awaiting_authority',reason:ownership.reason};
+ if(!rolloverAdmission(resolve(config.manager.stateRoot,'queue.sqlite'),context.caller!))return {state:'awaiting_authority',reason:'context_rollover_pending'};
  if(!env.HARNESS_XATS_TOKEN)return {state:'awaiting_configuration',reason:'transport_token_not_provided'};
  validateDriverConfiguration(config.manager,env);
  if(!config.manager.appLifecycle?.exitWhenAwaitingApp)throw Error('lifecycle_owner_must_release');

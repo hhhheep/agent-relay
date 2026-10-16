@@ -13,6 +13,7 @@ import {TaskPublisher,WorkerProfile} from './task-publisher.ts';
 import {randomUUID} from 'node:crypto';
 import {lifecycleHandoffRequested} from './lifecycle-handoff.ts';
 import {currentController,assertController,controllerScope} from './controller-authority.ts';
+import {rolloverAdmission,pendingRollover} from './context-rollover.ts';
 
 export type DriverConfig={stateRoot:string,url:string,name:string,team:string,appServerPath:string,intervalMs?:number,
  appLifecycle?:{healthIntervalMs:number,exitWhenAwaitingApp:boolean},
@@ -47,8 +48,10 @@ export async function runManager(config:DriverConfig,env:NodeJS.ProcessEnv,signa
  const now=dependencies.now??Date.now;
  const sleep=dependencies.sleep??(async(ms,s)=>{await delay(ms,undefined,{signal:s});});
  const root=resolve(config.stateRoot);mkdirSync(root,{recursive:true});
+ if(!rolloverAdmission(resolve(root,'queue.sqlite'),env.CODEX_THREAD_ID))throw Error('context_rollover_pending');
  const managerGeneration=randomUUID();
  const store=new ReviewedStore(resolve(root,'queue.sqlite')),app=dependencies.app();
+ if(pendingRollover(store.db,env.CODEX_THREAD_ID)){store.close();throw Error('context_rollover_pending');}
  store.db.prepare("INSERT INTO meta VALUES ('manager_generation',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(managerGeneration);
  let inbox:any,appReady=false,connectionFailures=0,nextConnect=0,lastStatus:any,harness:HarnessPort|undefined,scheduler:ResumeScheduler|undefined,resumeState='disabled',publisher:TaskPublisher|undefined;
  let appAttempts=0,outageAttempts=0,outageStart:number|undefined,nextAppAttempt=0,appReason='initial_context_required';
