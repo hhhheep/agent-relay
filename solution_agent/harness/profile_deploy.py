@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from solution_agent.harness.ssh_admission import SSH_COMMON_OPTIONS, SSH_OPTIONS, guarded_run
 from solution_agent.harness.remote_profile import RemoteDeployProfile, load_remote_deploy_profile
 
 
@@ -37,10 +38,14 @@ def _run(command: list[str], *, timeout: int = 120) -> subprocess.CompletedProce
     return subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=timeout, check=False)
 
 
+def _guarded_run(host: str, command: list[str], *, timeout: int = 120):
+    return guarded_run(host, 'profile-lifecycle', lambda: _run(command, timeout=timeout))
+
+
 def _ssh_python(profile: RemoteDeployProfile, code: str, args: list[str], *, timeout: int = 120) -> dict[str, Any]:
     command = _remote_python_command(profile.python_bootstrap, code, args)
-    result = _run(
-        ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", profile.host, command],
+    result = _guarded_run(profile.host,
+        ["ssh", *SSH_OPTIONS, profile.host, command],
         timeout=timeout,
     )
     try:
@@ -358,7 +363,7 @@ def snapshot_profile_conflicts(
     scp = shutil.which("scp")
     if not scp:
         raise RuntimeError("scp is unavailable for the declared profile lifecycle")
-    transfer = _run([scp, "-p", str(bundle), f"{profile.host}:{remote_dir}/"], timeout=300)
+    transfer = _guarded_run(profile.host, [scp, *SSH_COMMON_OPTIONS, "-p", str(bundle), f"{profile.host}:{remote_dir}/"], timeout=300)
     if transfer.returncode != 0:
         raise RuntimeError(f"declared artifact transfer failed ({transfer.returncode}): {transfer.stderr.strip()[:1200]}")
     remote = _ssh_python(
@@ -370,7 +375,7 @@ def snapshot_profile_conflicts(
     if not remote.get("ok"):
         return {"ok": False, "profile": profile.name, "deployment_id": deployment_id, "identity": identity, "remote": remote}
     output.parent.mkdir(parents=True, exist_ok=True)
-    receive = _run([scp, "-p", f"{profile.host}:{remote_snapshot}", str(output)], timeout=300)
+    receive = _guarded_run(profile.host, [scp, *SSH_COMMON_OPTIONS, "-p", f"{profile.host}:{remote_snapshot}", str(output)], timeout=300)
     if receive.returncode != 0:
         raise RuntimeError(f"declared snapshot retrieval failed ({receive.returncode}): {receive.stderr.strip()[:1200]}")
     manifest = _verify_conflict_snapshot(output, str(remote["snapshot_sha256"]))
@@ -431,7 +436,7 @@ def deploy_profile_bundle(
     scp = shutil.which("scp")
     if not scp:
         raise RuntimeError("scp is unavailable for the declared profile lifecycle")
-    transfer = _run([scp, "-p", str(bundle), str(installer), f"{profile.host}:{remote_dir}/"], timeout=300)
+    transfer = _guarded_run(profile.host, [scp, *SSH_COMMON_OPTIONS, "-p", str(bundle), str(installer), f"{profile.host}:{remote_dir}/"], timeout=300)
     if transfer.returncode != 0:
         raise RuntimeError(f"declared artifact transfer failed ({transfer.returncode}): {transfer.stderr.strip()[:1200]}")
 

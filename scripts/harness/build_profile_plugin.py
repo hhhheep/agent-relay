@@ -62,6 +62,9 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
         raise ValueError("source plugin tools do not match the canonical ordered tool set")
 
     shutil.copytree(source, output, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
+    if (source / 'scripts/remote_launcher.py').is_file():
+        shutil.copyfile(source.parent.parent / 'solution_agent/harness/ssh_admission.py',
+                        output / 'scripts/connection_admission.py')
     materialized_server = dict(source_server)
     # Launcher identity is release-owned. Only the declared profile selector crosses
     # the build boundary; legacy command/args/env are deliberately ignored.
@@ -78,7 +81,7 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
         materialized_server.pop("env_vars", None)
         materialized_server.update(command=sys.executable, cwd=str(control_root.resolve()),
                                    args=[str(launcher), "--control-root", str(control_root.resolve()), "--profile", selector],
-                                   startup_timeout_sec=30)
+                                   startup_timeout_sec=90)
     (output / ".mcp.json").write_text(
         json.dumps({"mcpServers": {source_name: materialized_server}}, indent=2) + "\n",
         encoding="utf-8",

@@ -12,6 +12,7 @@ from typing import Any, Dict, Iterable
 import yaml
 
 from .schema import TaskBook, now_iso
+from ..harness.ssh_admission import SSH_COMMON_OPTIONS, guarded_run, guarded_start
 from ..utils.subprocess_utils import decode_output, hidden_subprocess_kwargs, run_subprocess, subprocess_env
 
 
@@ -331,7 +332,9 @@ def run_ssh(host: str, remote_command: str, timeout: float | None = None) -> Dic
         _log_remote_call("ssh", host, remote_command, returncode=127, error="ssh not found on PATH")
         return {"returncode": 127, "stdout": "", "stderr": "ssh not found on PATH", "command": remote_command}
     try:
-        completed = run_subprocess([*transport_command("ssh"), "-n", host, remote_command], timeout=timeout)
+        completed = guarded_run(host, remote_command,
+            lambda: run_subprocess([*transport_command("ssh"), *SSH_COMMON_OPTIONS, "-n", host, remote_command], timeout=timeout),
+            ssh_prefix=transport_command("ssh"), options=SSH_COMMON_OPTIONS)
     except subprocess.TimeoutExpired as exc:
         _log_remote_call("ssh", host, remote_command, returncode=124, error=f"ssh command timed out after {timeout} seconds")
         return {
@@ -357,14 +360,14 @@ def open_ssh_stream(host: str, remote_command: str) -> subprocess.Popen[bytes]:
     _log_remote_call("ssh_stream", host, remote_command)
     if not command_exists("ssh"):
         raise FileNotFoundError("ssh not found on PATH")
-    return subprocess.Popen(
-        [*transport_command("ssh"), "-n", host, remote_command],
+    return guarded_start(host, remote_command, lambda: subprocess.Popen(
+        [*transport_command("ssh"), *SSH_COMMON_OPTIONS, "-n", host, remote_command],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         bufsize=1,
         env=subprocess_env(),
         **hidden_subprocess_kwargs(),
-    )
+    ), ssh_prefix=transport_command("ssh"), options=SSH_COMMON_OPTIONS)
 
 
 def run_remote_materializer(
@@ -403,7 +406,9 @@ def scp_to_remote(local_path: Path, host: str, remote_path: str) -> Dict[str, ob
     if not command_exists("scp"):
         _log_remote_call("scp_to", host, detail, returncode=127, error="scp not found on PATH")
         return {"returncode": 127, "stdout": "", "stderr": "scp not found on PATH"}
-    completed = run_subprocess([*transport_command("scp"), str(local_path), f"{host}:{remote_path}"])
+    completed = guarded_run(host, 'scp_to',
+        lambda: run_subprocess([*transport_command("scp"), *SSH_COMMON_OPTIONS, str(local_path), f"{host}:{remote_path}"]),
+        ssh_prefix=transport_command("ssh"), options=SSH_COMMON_OPTIONS)
     _log_remote_call("scp_to", host, detail, returncode=completed.returncode, error=completed.stderr if completed.returncode else "")
     return {"returncode": completed.returncode, "stdout": completed.stdout, "stderr": completed.stderr}
 
@@ -414,6 +419,8 @@ def scp_from_remote(host: str, remote_path: str, local_path: Path) -> Dict[str, 
         _log_remote_call("scp_from", host, detail, returncode=127, error="scp not found on PATH")
         return {"returncode": 127, "stdout": "", "stderr": "scp not found on PATH"}
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    completed = run_subprocess([*transport_command("scp"), "-r", f"{host}:{remote_path}", str(local_path)])
+    completed = guarded_run(host, 'scp_from',
+        lambda: run_subprocess([*transport_command("scp"), *SSH_COMMON_OPTIONS, "-r", f"{host}:{remote_path}", str(local_path)]),
+        ssh_prefix=transport_command("ssh"), options=SSH_COMMON_OPTIONS)
     _log_remote_call("scp_from", host, detail, returncode=completed.returncode, error=completed.stderr if completed.returncode else "")
     return {"returncode": completed.returncode, "stdout": completed.stdout, "stderr": completed.stderr}

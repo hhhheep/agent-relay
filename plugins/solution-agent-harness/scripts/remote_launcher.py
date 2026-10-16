@@ -7,10 +7,18 @@ import json
 from pathlib import Path
 import re
 import shlex
-import subprocess
+import sqlite3
 import sys
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+if (Path(__file__).resolve().parent / 'connection_admission.py').is_file():
+    from connection_admission import Budget, SSH_OPTIONS, resolve_target, run_transport, state_path, classify
+else:
+    # Source checkout only; materialized plugins receive the exact core helper.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    from solution_agent.harness.ssh_admission import Budget, SSH_OPTIONS, resolve_target, run_transport, state_path, classify
 
 
 def route(control: Path, profile_id: str, plugin: Path) -> tuple[str, str]:
@@ -56,19 +64,27 @@ def main():
     if args.check:
         print(json.dumps({"ok": True, "profile": args.profile.casefold(), "protocol": "0.6"}))
         return 0
-    # Each App client owns only its SSH child and stdio streams. Legacy workplace
-    # lock/cooldown files are deliberately neither read nor changed, so an older
-    # live client cannot block a new chat. Task and terminal writer leases remain
-    # enforced by the remote runtime.
-    return subprocess.call(
-        ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", alias, command],
-        stdin=sys.stdin.buffer, stdout=sys.stdout.buffer, stderr=sys.stderr.buffer,
-    )
+    # Each App owns its independent SSH/stdio. Only admission is shared; no
+    # workplace owner lock is held during a connection. Legacy locks are ignored.
+    target = resolve_target(alias, command)
+    budget = Budget(state_path())
+    token, started = budget.admit(target, notify=lambda message: print(message, file=sys.stderr))
+    try:
+        code, diagnostic = run_transport(['ssh', *SSH_OPTIONS, alias, command],
+            stdin=sys.stdin.buffer, stdout=sys.stdout.buffer, stderr=sys.stderr.buffer)
+    except OSError:
+        budget.finish(target, token, started, 'spawn_error')
+        raise
+    kind = classify(code, diagnostic)
+    budget.finish(target, token, started, kind)
+    if code:
+        print(f'Harness transport ended: {kind}; no automatic retry; recover original command IDs after explicit reconnect.', file=sys.stderr)
+    return code
 
 
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (KeyError, ValueError, OSError, RuntimeError, yaml.YAMLError) as exc:
+    except (KeyError, ValueError, OSError, RuntimeError, sqlite3.Error, yaml.YAMLError) as exc:
         print(f"Harness launcher: {exc}", file=sys.stderr)
         raise SystemExit(2)

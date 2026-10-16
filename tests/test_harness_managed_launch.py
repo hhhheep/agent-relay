@@ -4,6 +4,8 @@ import importlib.util
 import json
 import os
 import shlex
+import subprocess
+import sys
 import threading
 from types import SimpleNamespace
 from pathlib import Path
@@ -102,6 +104,13 @@ def test_profile_materializer_and_launcher_preserve_exact_remote_selector(tmp_pa
     assert "profile_id" not in server
     assert server["args"][0] == str(output / "scripts/remote_launcher.py")
     assert built["release_id"] == build_runtime_identity(ROOT).release_id
+    assert server['startup_timeout_sec'] == 90
+    assert (output/'scripts/connection_admission.py').read_bytes() == (ROOT/'solution_agent/harness/ssh_admission.py').read_bytes()
+    isolated_env = {key: value for key, value in os.environ.items() if key != 'PYTHONPATH'}
+    help_result = subprocess.run([sys.executable, str(output/'scripts/remote_launcher.py'), '--help'],
+        cwd=tmp_path, env=isolated_env, capture_output=True, timeout=10)
+    assert help_result.returncode == 0, help_result.stderr
+    assert b'--control-root' in help_result.stdout
 
 
 def test_independent_clients_ignore_held_legacy_lock_and_shared_cooldown(tmp_path, monkeypatch):
@@ -123,26 +132,29 @@ def test_independent_clients_ignore_held_legacy_lock_and_shared_cooldown(tmp_pat
         fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     try:
         monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+        monkeypatch.setattr(launcher, "state_path", lambda: tmp_path / "new-admission.sqlite")
         monkeypatch.setattr(launcher.sys, "argv", ["launcher", "--control-root", str(tmp_path), "--profile", "TEST"])
         monkeypatch.setattr(launcher, "route", lambda *args: ("TEST-HOST", "remote-command"))
+        from solution_agent.harness.ssh_admission import Target
+        monkeypatch.setattr(launcher, 'resolve_target', lambda *args: Target(('synthetic-endpoint',), 'credential', 'trust', 'route'))
         streams = [object(), object(), object()]
         for name, stream in zip(("stdin", "stdout", "stderr"), streams):
-            monkeypatch.setattr(launcher.sys, name, SimpleNamespace(buffer=stream))
+            monkeypatch.setattr(launcher.sys, name, SimpleNamespace(buffer=stream,write=lambda _:None,flush=lambda:None))
         barrier = threading.Barrier(2)
         calls = []
 
         def ssh(argv, **kwargs):
             calls.append((argv, kwargs))
-            return 255 if barrier.wait(timeout=5) == 0 else 0
+            return (255 if barrier.wait(timeout=5) == 0 else 0), b''
 
-        monkeypatch.setattr(launcher.subprocess, "call", ssh)
+        monkeypatch.setattr(launcher, "run_transport", ssh)
         with ThreadPoolExecutor(max_workers=2) as pool:
             first = pool.submit(launcher.main)
             second = pool.submit(launcher.main)
             assert sorted([first.result(timeout=10), second.result(timeout=10)]) == [0, 255]
         assert len(calls) == 2  # Exactly one attempt per client, including failure.
         for argv, kwargs in calls:
-            assert argv == ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "TEST-HOST", "remote-command"]
+            assert argv == ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-o", "ConnectionAttempts=1", "TEST-HOST", "remote-command"]
             assert list(kwargs.values()) == streams
         assert state_path.read_bytes() == state_bytes
         assert sorted(p.name for p in state_root.iterdir()) == ["test.json", "test.lock"]
@@ -153,3 +165,20 @@ def test_independent_clients_ignore_held_legacy_lock_and_shared_cooldown(tmp_pat
         else:
             fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
         lock.close()
+
+
+def test_launcher_cooldown_never_starts_transport_or_retries(tmp_path, monkeypatch):
+    from solution_agent.harness.ssh_admission import AdmissionError
+    monkeypatch.setattr(launcher.sys, 'argv', ['launcher', '--control-root', str(tmp_path), '--profile', 'TEST'])
+    monkeypatch.setattr(launcher, 'route', lambda *args: ('ALIAS', 'original-runtime'))
+    monkeypatch.setattr(launcher, 'resolve_target', lambda *args: object())
+    calls = []
+    class Refused:
+        def admit(self, *args, **kwargs):
+            raise AdmissionError('network cooldown; stop without retry; retry-after=300s')
+    monkeypatch.setattr(launcher, 'Budget', lambda path: Refused())
+    monkeypatch.setattr(launcher, 'state_path', lambda: tmp_path/'isolated.db')
+    monkeypatch.setattr(launcher, 'run_transport', lambda *a, **k: calls.append(a))
+    with pytest.raises(AdmissionError, match='retry-after=300'):
+        launcher.main()
+    assert calls == []

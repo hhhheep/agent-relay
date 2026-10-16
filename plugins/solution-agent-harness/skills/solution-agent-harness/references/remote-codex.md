@@ -17,8 +17,8 @@ For an authorized client installation or repair, build the profile client with
 rebuilding before each worker submission. The build installs
 the release-owned `remote_launcher.py`. Each MCP client creates its own SSH
 connection to the same declared workplace. There is no workplace transport lock
-or shared cooldown; an old client or failed connection cannot block a new chat.
-Each launcher attempts SSH once, without an automatic reconnect loop. Task and
+held for a session. New starts share a bounded per-user endpoint budget and persisted failure cooldown; admitted chats retain independent stdio.
+Each launcher attempts SSH once, without an automatic reconnect loop. Throttling, timeout or unavailability must not trigger raw SSH/SCP, legacy run_remote, or rapid client reopening. Keep the original task/command IDs; use the existing MCP connection for status/collection/recovery when available. Explicit reconnect must respect retry-after and recover original IDs before deciding to resubmit. Task and
 interactive-terminal writer leases still apply. Its absolute launcher path belongs to the generated
 client artifact: retain that artifact while installed. Never copy the old
 external SSH/SCP launcher into the formal MCP entry. The maintenance wrapper
@@ -164,6 +164,6 @@ proof. Do not rerun completed S0 or start FSFM merely to test connectivity.
 ## Maintenance is separate
 
 Keep declared SSH/SCP maintenance paths for deployment, diagnosis and repair.
-They must not silently dispatch/repeat a worker when the formal path fails.
+They must not silently dispatch/repeat a worker when the formal path fails. The existing profile lifecycle and orchestrator SSH/SCP entrances share the same startup budget as the managed launcher. Explicit maintenance authorization does not bypass cooldown. Arbitrary shell commands are outside this library guard; do not use them to evade a refusal.
 Do not edit the Harness core registry for every research script. Stable reviewed
 execution specs may still use stage_execute → wait → stage_collect separately.

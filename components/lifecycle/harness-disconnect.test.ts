@@ -136,3 +136,24 @@ test('Manager stops reporting resume ready and stops scheduler calls after Harne
   assert.equal(states[1].pending,0);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('managed startup allowance reaches the existing SDK handshake without opening another client',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'harness-admission-timeout-')),path=join(root,'config.json');
+ let clients=0;const timeouts:any[]=[];
+ const port=new HarnessPort(new Set(['task']),()=>{
+  clients++;
+  return {connect:async(_transport:any,options:any)=>{timeouts.push(options?.timeout);},close:async()=>{},
+   listTools:async()=>({tools:[{name:'terminal_exec',inputSchema:{properties:{worker_task:{},command_id:{}}}}]})} as any;
+ });
+ try{
+  const config={command:'unused',args:[],cwd:root,startup_timeout_sec:90};
+  writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:config}}));
+  await port.connect(path,{});assert.deepEqual(timeouts,[90000]);assert.equal(clients,1);await port.close();
+  for(const value of [0,-1,'90',3000000]){
+   writeFileSync(path,JSON.stringify({mcpServers:{solution_agent_harness:{...config,startup_timeout_sec:value}}}));
+   await assert.rejects(port.connect(path,{}),/invalid_harness_startup_timeout/);
+  }
+  assert.equal(clients,1);
+ }finally{await port.close();rmSync(root,{recursive:true,force:true});}
+});

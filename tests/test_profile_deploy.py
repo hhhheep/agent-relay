@@ -97,7 +97,7 @@ def test_ssh_python_preserves_structured_safety_stop(monkeypatch: pytest.MonkeyP
         stdout = '{"ok": false, "error": {"code": "dry_run_gate_failed"}}'
         stderr = ""
 
-    monkeypatch.setattr("solution_agent.harness.profile_deploy._run", lambda *args, **kwargs: Result())
+    monkeypatch.setattr("solution_agent.harness.profile_deploy._guarded_run", lambda *args, **kwargs: Result())
     profile = type("Profile", (), {"python_bootstrap": "/usr/bin/python3", "host": "declared-host"})()
     result = _ssh_python(profile, "print('{}')", [])
     assert result["error"]["code"] == "dry_run_gate_failed"

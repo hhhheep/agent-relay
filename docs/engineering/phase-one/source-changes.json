@@ -25,6 +25,11 @@
       "current_sha256": "7ba0e88869f0e05025349921bf30391a3d4de095808a91b46edf651e98bb2c70"
     },
     {
+      "path": "solution_agent/harness/profile_deploy.py",
+      "extraction_sha256": "5c782a129de361f89580374014ec00ab6970bdefa0e54e8e21fac0eb368b0d75",
+      "current_sha256": "43ccf8caf657ff1dc4b9008a911c6a78e4094fad6d033e87c57e8ff8a07b7c0d"
+    },
+    {
       "path": "solution_agent/harness/remote_profile.py",
       "extraction_sha256": "f5132f2557481251ce60a0e8e2e12f47b4cd1586f9979204e59584eb3ea70330",
       "current_sha256": "8fe3cfcbce03aa0f379da1c0bbf0706e8046bcb7c047d71a432e0728f7fa4c3e"
@@ -53,6 +58,11 @@
       "path": "solution_agent/harness/worker_help.py",
       "extraction_sha256": "a4b356b307ddb7930e3d756a866b0ab6844bc5d7ed4f74e77c56a74998d8859b",
       "current_sha256": "c69dbe22dc93eec326c43a1ff39c83891f8d89b2ca94d3f4836978870bf5261f"
+    },
+    {
+      "path": "solution_agent/orchestrator/adapters.py",
+      "extraction_sha256": "57d22b657d864801ce03b61150bb8bfadba0d1b2a7cb4939d24694ee32aeb081",
+      "current_sha256": "7586bc3a8018e9d6919a44c6dff4e9f40f602f0072c2b16419ae0be0fcb20b1b"
     },
     {
       "path": "solution_agent/orchestrator/prompt.py",
@@ -90,6 +100,11 @@
       "current_sha256": "47ae82d68075ebd66d16344f75d2d62158b89e9f72ae2fe928e82e8ef31fd073"
     },
     {
+      "path": "tests/test_harness_managed_launch.py",
+      "extraction_sha256": "80eebbd564a66c8b3edc40b66de89796f0494ef7cf762db68bba8ed611a456c4",
+      "current_sha256": "9880a043300f7d423dfca30b077255142bf027886bc71a1aea70ac604a0b6b1b"
+    },
+    {
       "path": "tests/test_harness_mcp.py",
       "extraction_sha256": "458bc9c4c84498eb480923410777cf54d6a0a46a12cecf0c545c63c5535270f7",
       "current_sha256": "85855fe125e5a2e22539dfdddf0443f30bf41148bd35eeda7a43ad097064b09e"
@@ -103,6 +118,11 @@
       "path": "tests/test_md_sync.py",
       "extraction_sha256": "229bdf92a2aae3f89da2fba1ad62869f516ea77f77938e5bc5814bf210ddf5c7",
       "current_sha256": "68e5a5a91374bdef51877b583ff8e4dfa7e0add955ec0060d505c713b0a4493e"
+    },
+    {
+      "path": "tests/test_profile_deploy.py",
+      "extraction_sha256": "5e7d41277f9c88ffb6a8c777e5f44de12d31fac0a90d3a41ebc752c62bc615ad",
+      "current_sha256": "f70b7970b07bb7e757b46b624da9fb50dc4a03018ac411f2310cf2d3bbd2b5bc"
     },
     {
       "path": "tests/test_publication_registry.py",
@@ -140,6 +160,11 @@
       "current_sha256": "fd4be4c727440f59a363ba06564f4df5e792696d007ec19219cee05bd74ce9fe"
     },
     {
+      "path": "scripts/harness/build_profile_plugin.py",
+      "extraction_sha256": "b5db80516272f6ecdd8e6df0ab5e8234d7eccedd196b1481a9724b6d528b02d7",
+      "current_sha256": "3313864c4daa6870321924f1cca6747cc1977d461054b0f60da143543753ee1c"
+    },
+    {
       "path": "plugins/solution-agent-harness/.mcp.json",
       "extraction_sha256": "3f9c84ae22b60205128ed5aaa5f7b9246f786df963f51490dc72c829fcadb99f",
       "current_sha256": "96303f3282f18a2f0b698d830456f1b1e6ce2a2d15c495ef30fdffd9bca45edf"
@@ -150,6 +175,16 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "plugins/solution-agent-harness/scripts/remote_launcher.py",
+      "extraction_sha256": "b99866dc96b4e2adf1a6f2ea300443877127e2d8b55179cc072c03f8c1751314",
+      "current_sha256": "20abcee6df1fab47f975ce1bfbe82059e35bd0ac83238e7f1a3ea40ec6a425db"
+    },
+    {
+      "path": "plugins/solution-agent-harness/skills/solution-agent-harness/SKILL.md",
+      "extraction_sha256": "263cbc7e836d84fb62c61be3dbff9ee3591be8f338e9d179edfa1fc5c6d1e12d",
+      "current_sha256": "994d79df2945b6d0050029e4e21737ce8c23dfbe31408ea138d73946b795231c"
+    },
+    {
       "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/managed-markdown.md",
       "extraction_sha256": "115a7f0b8d9574dc7d176e47302233a3b2b6f6e98c1e7874456e1ba6157eac9b",
       "current_sha256": "187af77d20387e52dcf08eb3f179bf47f75b0012de2b55f056b0480ce00a95f4"
@@ -157,12 +192,12 @@
     {
       "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
       "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
-      "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
+      "current_sha256": "1aaaaca6b66ab3c9aa960eacf35e83975e916af943b079b79a8629090ac0980a"
     },
     {
       "path": "components/lifecycle/harness-port.ts",
       "extraction_sha256": "06f4e0fcf19360a2cb3fb9e681579d21fc97600c41956931b06a5f622d9204d9",
-      "current_sha256": "bae0fb780bc989d6b222ab64a6fda65685372425a0a1d388cc17e2b88581acca"
+      "current_sha256": "213e608757bca251b54b1615a250c1338c213742182a817917c7a2abb313af3d"
     },
     {
       "path": "components/lifecycle/lifecycle-handoff.test.ts",
@@ -272,7 +307,7 @@
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",
       "extraction_sha256": "7b2f607dec1d1c71acecf60eef232600bcd075e3fb24cfdee70471e59606a2cd",
-      "current_sha256": "7c0112646e14e96bd0afaa28ba45d30a515d6f17af55a25c5e7e22a7a17c63a6"
+      "current_sha256": "b02df2e179a00042f32959df9092d7a4f56c451ec739c46b125c10c510eb970c"
     }
   ]
 }

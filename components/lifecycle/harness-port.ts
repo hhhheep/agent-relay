@@ -26,12 +26,14 @@ export class HarnessPort {
   if(this.client||this.pendingClient)throw Error('harness_already_connected');
   const config=JSON.parse(readFileSync(installedConfig,'utf8')).mcpServers?.solution_agent_harness;
   if(!config?.command||!Array.isArray(config.args)||!config.cwd)throw Error('invalid_installed_harness_config');
+  const startup=config.startup_timeout_sec;
+  if(startup!==undefined&&(!Number.isSafeInteger(startup)||startup<=0||startup>2147483))throw Error('invalid_harness_startup_timeout');
   const client=this.factory();
   this.pendingClient=client;
   let closed=false;
   client.onclose=()=>{closed=true;if(this.client===client)this.client=undefined;if(this.pendingClient===client)this.pendingClient=undefined;};
   try{
-   await client.connect(new StdioClientTransport({command:config.command,args:config.args,cwd:config.cwd,env:env as any,stderr:'pipe'}));
+   await client.connect(new StdioClientTransport({command:config.command,args:config.args,cwd:config.cwd,env:env as any,stderr:'pipe'}),startup===undefined?undefined:{timeout:startup*1000});
    const listing=await client.listTools();const properties=listing.tools.find((t:any)=>t.name==='terminal_exec')?.inputSchema?.properties;
    if(!properties?.worker_task||!properties?.command_id)throw Error('CLIENT_UPDATE_REQUIRED');
    const maintenanceSupported=!!properties?.finish_maintenance;

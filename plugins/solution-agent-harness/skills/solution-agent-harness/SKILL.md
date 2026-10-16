@@ -38,7 +38,11 @@ user request and normal Codex approval boundary authoritative.
   supervised job and does not require `terminal_open`. Use `terminal_send` only for REPL input,
   prompts, or control keys; use `terminal_read` only for a bounded raw diagnostic
   snapshot. Each chat may establish its own MCP/SSH connection to the declared
-  workplace; there is no workplace transport owner lock or shared cooldown.
+  workplace; there is no session-long transport owner lock. New SSH starts share
+  a bounded endpoint budget and persisted failure cooldown. Reuse the MCP transport
+  for ordinary dispatch/status/collection and original-ID recovery. On throttling,
+  timeout or unavailability, respect retry-after; do not rapidly reopen clients
+  or automatically switch to raw SSH/SCP or legacy run_remote.
   One client connection may host several isolated interactive
   terminal windows under the same Harness tmux hub; each has its own lease,
   generation, and transcript. A failed terminal must not own or block ordinary

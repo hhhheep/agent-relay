@@ -50,6 +50,8 @@ Agent Relay 是一套連接本地助手與遠端 Worker 的工具。你可以在
 
 文件發布現在可沿既有 `artifact_apply` 完成[宣告、草稿／packet、審閱、CAS 發布與讀回核對](docs/engineering/hf002-document-handoff-20261015/README.md)。支援本地 Markdown 全文或明確 SYNC 區塊，writer 忙碌時保留原 plan／審閱等待；ResearchFlow 仍交由原本的 record owner 發布，不能以本地回執冒充同步成功。
 
+SSH 新連線現在沿用同一個[啟動限流與失敗冷卻來源](docs/engineering/hf019-start-budget-20261016/README.md)：多 chat 保持獨立 MCP stdio，既有維護 SSH／SCP 入口共用額度；不因限流或逾時自動改走其他通道。預設每 endpoint 十秒最多三次啟動，連續三次網路啟動失敗後停止新連線五分鐘。這是工程來源防護，尚未部署，也不代表已驗證學校封鎖政策或解除封鎖。
+
 ## 開始使用
 
 目前提供 **P1 工程候選版**，主要部署組合是 Windows 客戶端與 Linux Worker。使用前需要配置自己的遠端連線、workplace 和插件入口；報告撰寫另需配置 Provider。
