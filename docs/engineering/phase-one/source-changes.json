@@ -17,7 +17,7 @@
     {
       "path": "solution_agent/harness/mcp_server.py",
       "extraction_sha256": "42971c6ebcd71c32bfc8f529619bce3ff33976e5f92c5750d7f0c0d437137d46",
-      "current_sha256": "900a476de43ef0789523001cf7c80a6675c19b396285e6d9d8cf3ed6d4aecea0"
+      "current_sha256": "2cb0152cd3e2b738ed5e03c849143bbe0a587dffb7f7ac3c4a579897359dd9d1"
     },
     {
       "path": "solution_agent/harness/remote_profile.py",
@@ -53,6 +53,11 @@
       "path": "solution_agent/orchestrator/prompt.py",
       "extraction_sha256": "2f6b82f90dcb872e6a4e7fde261b91baa66d30f3a4ed35cdd42a61bf680d9ee0",
       "current_sha256": "1df487f0df7d7d75dbc8c49863ce04f9ddcb470c09654b6ab94066f9fa14060a"
+    },
+    {
+      "path": "tests/test_build_profile_plugin.py",
+      "extraction_sha256": "edcb76fe2516e4dbe718b65d63327cc7bb96e4256ddeebf74dde5ba3f0971a83",
+      "current_sha256": "cd48a45467abbf5237d3ea55134b148c936982d7ef92effce05543bdd6022ff2"
     },
     {
       "path": "tests/test_continuation_three_agent_flow.py",
@@ -135,6 +140,11 @@
       "current_sha256": "fd4be4c727440f59a363ba06564f4df5e792696d007ec19219cee05bd74ce9fe"
     },
     {
+      "path": "scripts/harness/build_profile_plugin.py",
+      "extraction_sha256": "b5db80516272f6ecdd8e6df0ab5e8234d7eccedd196b1481a9724b6d528b02d7",
+      "current_sha256": "ce0cd49cfc04efb76e70c9ef3206c801f4cb53f3763f279bbd61a99a4ef1e1cb"
+    },
+    {
       "path": "plugins/solution-agent-harness/.mcp.json",
       "extraction_sha256": "3f9c84ae22b60205128ed5aaa5f7b9246f786df963f51490dc72c829fcadb99f",
       "current_sha256": "96303f3282f18a2f0b698d830456f1b1e6ce2a2d15c495ef30fdffd9bca45edf"
@@ -145,9 +155,24 @@
       "current_sha256": "cc242908fb876472f72f9a4c3522fc63fc5f2cbe5b0f5de5c84d8b653fc248ea"
     },
     {
+      "path": "plugins/solution-agent-harness/scripts/remote_launcher.py",
+      "extraction_sha256": "b99866dc96b4e2adf1a6f2ea300443877127e2d8b55179cc072c03f8c1751314",
+      "current_sha256": "7422a57f9750ccce86fca708f28cc0957a22f6ee1044c74d8c5c5d54df90cb84"
+    },
+    {
       "path": "plugins/solution-agent-harness/skills/solution-agent-harness/references/remote-codex.md",
       "extraction_sha256": "ff6d4dd8000aaf02a0cbb1686b21df7119b4e525e3070c37f506e59ec88e0ab0",
       "current_sha256": "1a61d3a31599141dc85ad109dfd345d9bf2190389df9c8328dab7fc78b18b2dd"
+    },
+    {
+      "path": "components/lifecycle/build-router-package.mjs",
+      "extraction_sha256": "cb4b816c8177ea41c8d14e292e871eaf8243330da8125594208771180e418c28",
+      "current_sha256": "10f625d701e55441790da5666289c4820d4cf4b7320a9c847c1e804f443766df"
+    },
+    {
+      "path": "components/lifecycle/controller-cli.ts",
+      "extraction_sha256": "b334b16e31f1d1003e1fba2427221fd8c306bc2988e88be087c38cba1b916e6c",
+      "current_sha256": "a1ff9fc1384448b60ccb7f5d3938e0ffa2eed57f70f5d6f992dbdc95af7c3bb2"
     },
     {
       "path": "components/lifecycle/harness-port.ts",
@@ -185,6 +210,16 @@
       "current_sha256": "08e0128a8ea4af552c02bd708beccfa226fa6a421e17501fc89e71ac6d21622a"
     },
     {
+      "path": "components/lifecycle/native-app-port.test.ts",
+      "extraction_sha256": "eaa8e76c28bc1489c3aacaa3be7e4df41cf600f88e041eaa1adf698b65087bef",
+      "current_sha256": "b5d839970d122e3cc58746ddd486e8bd52b33bd256d9ce77cf6395749f4af2aa"
+    },
+    {
+      "path": "components/lifecycle/native-app-port.ts",
+      "extraction_sha256": "c36dc4fd8b5772a7c4c192b62fccc97b52404ed1efabbbbd44eb5ddc95193ef6",
+      "current_sha256": "d0ea745bf1dff4c6c119b527ccecc656124979cd97c8c72bd0f158c1b2da52d5"
+    },
+    {
       "path": "components/lifecycle/resume-controller.test.ts",
       "extraction_sha256": "20fa76978d7bcbc98d8e0051ee6b6ac33b5677b33eb218d08b0680c6b807fabe",
       "current_sha256": "657cf873513cd85d473416a00ca9033006da1831f52837355718242e955a33f2"
@@ -197,7 +232,7 @@
     {
       "path": "components/lifecycle/router-api.ts",
       "extraction_sha256": "26568d3072439a87a7cdbfb40cd2dea0ede1961c9ff462a14a9bc2d59a7d156c",
-      "current_sha256": "15d78e23049d06a34b26ca6c5ca01936858bcc2cf468cf92cdedb54fab81ad9e"
+      "current_sha256": "ca5e3f8928f95dd018b2c7ed940cfd98b55580b9f5b7c7c0626d151a6aee8103"
     },
     {
       "path": "components/lifecycle/session-lifecycle.ts",
@@ -258,6 +293,11 @@
       "path": "docs/HARNESS_V3_PERSISTENT_TRANSPORT_MULTIPLEXED_EXECUTION_TASKBOOK.md",
       "extraction_sha256": "840f1685113bfc99d5a555e1e2911e3c9cd4225a2ff465c588d1eb9fdd1b1768",
       "current_sha256": "9e7f6cc7d218ec5b67e05c00f7929722a2f982b4b66b2ba6e059c63c5fd9e6c9"
+    },
+    {
+      "path": "deploy/overlay-files.txt",
+      "extraction_sha256": "764e834f6bcff7afdc12f450d0bc021208250f053c67be6225d51cefc515ae4e",
+      "current_sha256": "39f81512528fd46bd7329c3e506886df30d239cdea3a00058b23641995a150d2"
     },
     {
       "path": "docs/HARNESS_V2_FIELD_FEEDBACK.md",

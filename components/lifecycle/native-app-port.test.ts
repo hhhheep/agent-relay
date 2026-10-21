@@ -1,5 +1,21 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {NativeAppPort} from './native-app-port.ts';
+import {mkdtempSync,mkdirSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';import {join} from 'node:path';
+
+test('controller workspace proof reads actual App cwd and rejects drift before authority writes',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'controller-app-cwd-')),other=join(root,'other');mkdirSync(other);
+ let thread:any={id:'target',hostId:'local',cwd:root};const reads:any[]=[];
+ const port=new NativeAppPort((()=>({connect:async()=>{},close:async()=>{},listTools:async()=>({tools:[{name:'read_thread'},{name:'send_message_to_thread'}]}),callTool:async request=>{reads.push(request);return {structuredContent:{thread:{...thread}}};}})) as any);
+ try{
+  await port.connect('/declared/app.mjs',{CODEX_THREAD_ID:'target',CODEX_APP_TOOLS_PIPE_PATH:'synthetic'});
+  assert.equal(await port.assertWorkspace(root),'target');
+  for(const drift of [{...thread,cwd:other},{...thread,hostId:'remote'},{...thread,id:'different'},{...thread,cwd:undefined}]){
+   thread=drift;await assert.rejects(port.assertWorkspace(root),/workspace_mismatch/);thread={id:'target',hostId:'local',cwd:root};
+  }
+  assert.ok(reads.every(r=>r.arguments.threadId==='target'&&r._meta['openai/threadId']==='target'));
+ }finally{await port.close();rmSync(root,{recursive:true,force:true});}
+});
 
 test('closing during handshake cancels it and prevents late connection adoption',async()=>{
  let release!:()=>void,closed=0;const gate=new Promise<void>(r=>{release=r;});

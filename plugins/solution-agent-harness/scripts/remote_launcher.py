@@ -10,10 +10,13 @@ import shlex
 import subprocess
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from workplace_owner import guarded_run
+
 import yaml
 
 
-def route(control: Path, profile_id: str, plugin: Path) -> tuple[str, str]:
+def route_details(control: Path, profile_id: str, plugin: Path) -> tuple[str, str, Path]:
     selector = profile_id.casefold()
     if not re.fullmatch(r"[a-z0-9_-]+", selector):
         raise ValueError("invalid profile selector")
@@ -29,7 +32,8 @@ def route(control: Path, profile_id: str, plugin: Path) -> tuple[str, str]:
     transport = profile["transport"]
     if transport["mode"] != "single_process_stdio_ssh" or transport["automatic_reconnect"] is not False:
         raise RuntimeError("unsupported transport mode or reconnect policy")
-    identity = (Path(profile["local_workdir"]) / ".solution-agent/workplace.id").read_bytes()
+    identity_path = Path(profile["local_workdir"]) / ".solution-agent/workplace.id"
+    identity = identity_path.read_bytes()
     if not re.fullmatch(rb"solution-agent-workplace-v1:[0-9a-f]{32}\n", identity):
         raise RuntimeError("invalid local workplace.id")
     manifest = json.loads((plugin / "release_manifest.json").read_text(encoding="utf-8"))
@@ -43,7 +47,12 @@ def route(control: Path, profile_id: str, plugin: Path) -> tuple[str, str]:
                "SOLUTION_AGENT_EXPECTED_IDENTITY_B64=" + base64.b64encode(json.dumps(expected).encode()).decode(),
                "SOLUTION_AGENT_WORKPLACE_IDENTITY_B64=" + base64.b64encode(identity).decode(),
                f"{root}/.venv/bin/python", "-m", "solution_agent.harness.mcp_server"]
-    return profile["ssh_alias"], shlex.join(command)
+    return profile["ssh_alias"], shlex.join(command), identity_path
+
+
+def route(control: Path, profile_id: str, plugin: Path) -> tuple[str, str]:
+    alias, command, _ = route_details(control, profile_id, plugin)
+    return alias, command
 
 
 def main():
@@ -52,15 +61,13 @@ def main():
     parser.add_argument("--profile", required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    alias, command = route(args.control_root.resolve(), args.profile, Path(__file__).resolve().parents[1])
+    alias, command, identity_path = route_details(args.control_root.resolve(), args.profile, Path(__file__).resolve().parents[1])
     if args.check:
         print(json.dumps({"ok": True, "profile": args.profile.casefold(), "protocol": "0.6"}))
         return 0
-    # Each App client owns only its SSH child and stdio streams. Legacy workplace
-    # lock/cooldown files are deliberately neither read nor changed, so an older
-    # live client cannot block a new chat. Task and terminal writer leases remain
-    # enforced by the remote runtime.
-    return subprocess.call(
+    # Direct and persistent entries share one workplace lease. A verified child
+    # of the persistent guardian joins that lease; it never opens a second owner.
+    return guarded_run(identity_path,
         ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", alias, command],
         stdin=sys.stdin.buffer, stdout=sys.stdout.buffer, stderr=sys.stderr.buffer,
     )

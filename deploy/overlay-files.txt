@@ -38,6 +38,7 @@ requirements-harness.txt
 config/research_md_sync.example.yaml
 scripts/harness/build_deployment_bundle.py
 scripts/harness/build_profile_plugin.py
+scripts/harness/persistent-skill.md
 scripts/harness/deploy_profile_bundle.py
 scripts/harness/snapshot_profile_conflicts.py
 scripts/harness/build_bootstrap_release.py
@@ -47,6 +48,7 @@ scripts/harness/build_release_manifest.py
 scripts/harness/verify_integrated_runtime.py
 scripts/harness/install_overlay.py
 plugins/solution-agent-harness/scripts/remote_launcher.py
+plugins/solution-agent-harness/scripts/workplace_owner.py
 solution_agent/harness/protocol.py
 scripts/harness/audit_profile_upgrade.py
 tests/test_harness_managed_launch.py

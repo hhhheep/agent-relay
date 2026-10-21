@@ -1,6 +1,7 @@
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
 import {executorCaller} from './publisher-route.ts';
+import {realpathSync} from 'node:fs';
 
 // Bootstrap only from a genuine App executor context. No pipe discovery or
 // impersonation. A restarted App must provide a new context before reconnecting.
@@ -65,6 +66,11 @@ export class NativeAppPort {
   return data;
  }
  identity(){if(!this.client||!this.caller)throw Error('app_rebootstrap_required');return {threadId:this.caller};}
+ async assertWorkspace(workspace:string){
+  const caller=this.identity().threadId,data=await this.read(caller);
+  if(data.thread?.id!==caller||data.thread.hostId!=='local'||typeof data.thread.cwd!=='string'||realpathSync.native(data.thread.cwd)!==realpathSync.native(workspace))throw Error('native_app_workspace_mismatch');
+  return caller;
+ }
  async read(threadId:string,options:{signal?:AbortSignal,timeoutMs?:number}={}){return this.call('read_thread',{threadId,turnLimit:8,includeOutputs:false,maxOutputCharsPerItem:1000},options);}
  async send(threadId:string,prompt:string){
   const result=await this.call('send_message_to_thread',{threadId,hostId:'local',prompt});
