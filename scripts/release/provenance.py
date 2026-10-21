@@ -26,7 +26,7 @@ def main():
         raise SystemExit('Historical source map changed')
     if args.write:
         OUTPUT.parent.mkdir(parents=True,exist_ok=True)
-        OUTPUT.write_text(json.dumps(expected,indent=2)+'\n',encoding='utf-8')
+        OUTPUT.write_text(json.dumps(expected,indent=2)+'\n',encoding='utf-8',newline='\n')
     actual=json.loads(OUTPUT.read_text(encoding='utf-8'))
     if actual != expected: raise SystemExit('Engineering provenance is stale; review changes and regenerate')
     print(json.dumps({'historical_map_unchanged':True,'changed_extraction_files':len(expected['changes'])}))

@@ -23,6 +23,9 @@ else{
   const app=new NativeAppPort();
   try{
    await app.connect(config.appServerPath,context.env!);
+   // The event/configuration cwd is a declaration, not proof of the actual App
+   // thread's workspace. Check it before opening or initializing authority.
+   await app.assertWorkspace(config.workspace);
    const target=resolve(config.stateRoot,'queue.sqlite');if(!existsSync(target))throw Error('controller_store_not_found');
    const db=new DatabaseSync(target);db.exec('PRAGMA busy_timeout=5000;PRAGMA synchronous=FULL;');
    try{initializeControllerAuthority(db);console.log(JSON.stringify(transferController(db,grant,app.identity().threadId,()=>approved)));}

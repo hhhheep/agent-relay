@@ -199,6 +199,7 @@ mcp = MCPServer(
 
 _terminal_manager_instance: ProfileTerminalManager | None = None
 _activation_gate = ActivationGate()
+_managed_peer_attestation: dict[str, str] | None = None
 
 
 def _require_activation() -> None:
@@ -263,7 +264,10 @@ def _server_identity() -> dict[str, Any]:
             profile_id = load_terminal_profile(root).profile_id
         except (OSError, RuntimeError, ValueError, yaml.YAMLError):
             profile_id = os.environ.get("SOLUTION_AGENT_PROFILE_ID") or None
-    return _cached_server_identity(str(root), profile_id)
+    identity = _cached_server_identity(str(root), profile_id)
+    if _managed_peer_attestation is not None:
+        return {**identity, **_managed_peer_attestation}
+    return identity
 
 
 def _with_server(payload: dict[str, Any]) -> dict[str, Any]:
@@ -1335,6 +1339,8 @@ def artifact_apply(
 
 
 def main() -> None:
+    global _managed_peer_attestation
+    _managed_peer_attestation = None
     if os.environ.get("SOLUTION_AGENT_PROTOCOL_REQUIRED") == "1":
         import base64
         from solution_agent.harness.release_identity import build_runtime_identity
@@ -1345,7 +1351,13 @@ def main() -> None:
         remote = build_runtime_identity(_solution_root()).compact()
         remote["protocol_version"] = PROTOCOL_VERSION
         activate_protocol(local, remote, int(os.environ.get("SOLUTION_AGENT_ACTIVATION_GENERATION", "1")))
-    verify_workplace_identity(load_terminal_profile(_solution_root()))
+    workplace = verify_workplace_identity(load_terminal_profile(_solution_root()))
+    if os.environ.get("SOLUTION_AGENT_PROTOCOL_REQUIRED") == "1":
+        _activation_gate.require()
+        _managed_peer_attestation = {
+            "protocol_version": PROTOCOL_VERSION,
+            "workplace_sha256": workplace["sha256"],
+        }
     mcp.run(transport="stdio")
 
 

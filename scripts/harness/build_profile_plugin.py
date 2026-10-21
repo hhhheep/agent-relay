@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import shutil
+import subprocess
 import sys
 from dataclasses import asdict
 from pathlib import Path
@@ -17,9 +18,42 @@ if str(ROOT) not in sys.path:
 
 from solution_agent.harness.release_identity import (
     CANONICAL_TOOL_NAMES,
+    RuntimeIdentity,
     build_runtime_identity,
     canonical_json_sha256,
 )
+
+
+def _source_runtime_identity(root: Path) -> RuntimeIdentity:
+    root = root.resolve()
+    if root == ROOT:
+        # Production materialization requires the actual runtime contract, even
+        # when building this checkout. Source-only identity fallback is not a
+        # deployable schema when optional MCP dependencies are unavailable.
+        try:
+            from solution_agent.harness.mcp_server import mcp
+        except ModuleNotFoundError as exc:
+            raise ValueError('selected source runtime identity failed: runtime dependencies required') from exc
+        return build_runtime_identity(root)
+    if not (root / 'deploy/overlay-files.txt').is_file():
+        return build_runtime_identity(root)
+    # Runtime schema introspection must import the selected source's MCP, not
+    # this builder checkout's MCP or the declaration-only fallback.
+    code = (
+        'import json,sys;from dataclasses import asdict;from pathlib import Path;'
+        'sys.path.insert(0,sys.argv[1]);'
+        'from solution_agent.harness.mcp_server import mcp;'
+        'from solution_agent.harness.release_identity import build_runtime_identity;'
+        'print(json.dumps(asdict(build_runtime_identity(Path(sys.argv[1])))))'
+    )
+    env = {**os.environ, 'PYTHONPATH': str(root), 'SOLUTION_AGENT_ROOT': str(root), 'PYTHONNOUSERSITE': '1'}
+    result = subprocess.run([sys.executable, '-c', code, str(root)], cwd=root, env=env,
+                            capture_output=True, text=True, timeout=30)
+    if result.returncode:
+        raise ValueError('selected source runtime identity failed')
+    value = json.loads(result.stdout)
+    value['capabilities'] = tuple(value['capabilities'])
+    return RuntimeIdentity(**value)
 
 
 def _object(path: Path) -> dict:
@@ -40,9 +74,31 @@ def _payload_hash(root: Path) -> str:
     return digest.hexdigest()
 
 
-def build(source: Path, installed: Path, output: Path, *, profile_id: str | None = None, control_root: Path | None = None) -> dict:
+def build(source: Path, installed: Path, output: Path, *, profile_id: str | None = None, control_root: Path | None = None,
+          persistent_frontend: Path | None = None, persistent_client_config: Path | None = None,
+          node_executable: Path | None = None, install_version: str | None = None) -> dict:
+    persistent = any(value is not None for value in (persistent_frontend, persistent_client_config, node_executable))
+    if persistent:
+        if not all(value is not None and value.is_file() for value in (persistent_frontend, persistent_client_config, node_executable)):
+            raise ValueError('persistent transport requires existing frontend, private client config and Node executable')
+        client = _object(persistent_client_config)
+        if client.get('host') != '127.0.0.1' or not isinstance(client.get('port'), int) or not 1024 <= client['port'] <= 65535:
+            raise ValueError('persistent client must use a declared local endpoint')
+        import re
+        if not re.fullmatch(r'[a-f0-9]{64}', str(client.get('clientToken', ''))) or 'adminToken' in client:
+            raise ValueError('persistent client needs only its client token, never the admin token')
+        import hashlib
+        if not all(re.fullmatch(r'[a-f0-9]{64}', str(client.get(k, ''))) for k in ('configurationSha256', 'runtimeSha256')):
+            raise ValueError('persistent client requires configuration and runtime pins')
+        for key, path in (('frontendSha256', persistent_frontend), ('nodeSha256', node_executable)):
+            if client.get(key) != hashlib.sha256(path.read_bytes()).hexdigest():
+                raise ValueError(f'persistent client {key} differs from the supplied runtime')
     if output.exists():
         raise ValueError(f"output already exists: {output}")
+    if install_version is not None:
+        import re
+        if not re.fullmatch(r'[0-9][A-Za-z0-9.+_-]{0,127}', install_version):
+            raise ValueError('invalid installation version')
     source_mcp = _object(source / ".mcp.json")
     installed_mcp = _object(installed / ".mcp.json")
     source_servers = source_mcp.get("mcpServers")
@@ -61,7 +117,20 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
     if not isinstance(tools, dict) or tuple(tools) != CANONICAL_TOOL_NAMES:
         raise ValueError("source plugin tools do not match the canonical ordered tool set")
 
+    source_root = source.parent.parent
+    source_identity = None
+    try:
+        source_identity = _source_runtime_identity(source_root)
+    except (OSError, ValueError, json.JSONDecodeError):
+        if persistent or control_root is not None or (source_root / 'deploy/overlay-files.txt').is_file():
+            raise
+
     shutil.copytree(source, output, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
+    if install_version is not None:
+        manifest_path = output / '.codex-plugin/plugin.json'
+        manifest = _object(manifest_path)
+        manifest['version'] = install_version
+        manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     materialized_server = dict(source_server)
     # Launcher identity is release-owned. Only the declared profile selector crosses
     # the build boundary; legacy command/args/env are deliberately ignored.
@@ -79,6 +148,24 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
         materialized_server.update(command=sys.executable, cwd=str(control_root.resolve()),
                                    args=[str(launcher), "--control-root", str(control_root.resolve()), "--profile", selector],
                                    startup_timeout_sec=30)
+    if persistent:
+        # The persistent flavor has its own source-owned instructions. Never ship
+        # the direct flavor's per-client SSH guidance with a connection-only MCP.
+        skill = output / 'skills/solution-agent-harness/SKILL.md'
+        skill.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / 'scripts/harness/persistent-skill.md', skill)
+        materialized_server.pop('env', None)
+        materialized_server.pop('profile_id', None)
+        packaged_frontend = output.resolve() / 'scripts' / 'persistent_frontend.mjs'
+        packaged_frontend.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(persistent_frontend, packaged_frontend)
+        licenses = persistent_frontend.parent / 'licenses'
+        if licenses.is_dir():
+            shutil.copytree(licenses, output / 'licenses' / 'persistent-frontend', dirs_exist_ok=True)
+        materialized_server.update(command=str(node_executable.resolve()),
+                                   cwd=str(output.resolve()),
+                                   args=[str(packaged_frontend), str(persistent_client_config.resolve())],
+                                   env_vars=['CODEX_THREAD_ID', 'CODEX_APP_TOOLS_PIPE_PATH'], startup_timeout_sec=30)
     (output / ".mcp.json").write_text(
         json.dumps({"mcpServers": {source_name: materialized_server}}, indent=2) + "\n",
         encoding="utf-8",
@@ -90,17 +177,8 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
     }
     schema_hash = canonical_json_sha256(tool_contract)
     payload_hash = _payload_hash(output)
-    source_root = source.parent.parent
-    source_identity = None
-    try:
-        source_identity = build_runtime_identity(source_root)
-        release_id = source_identity.release_id
-        source_root_sha256 = source_identity.source_root_sha256
-    except (OSError, ValueError, json.JSONDecodeError):
-        if control_root is not None:
-            raise
-        release_id = f"harness-plugin-{payload_hash[:16]}"
-        source_root_sha256 = None
+    release_id = source_identity.release_id if source_identity is not None else f"harness-plugin-{payload_hash[:16]}"
+    source_root_sha256 = source_identity.source_root_sha256 if source_identity is not None else None
     identity_fields = asdict(source_identity) if source_identity is not None else {}
     if source_identity is not None:
         identity_fields["capabilities"] = list(source_identity.capabilities)
@@ -118,6 +196,7 @@ def build(source: Path, installed: Path, output: Path, *, profile_id: str | None
         "deprecated_aliases": [],
         "launcher_preserved": True,
         "launcher_source": "release-owned",
+        "transport_mode": "manual-persistent/v1" if persistent else "direct",
     }
     (output / "release_manifest.json").write_text(
         json.dumps(release_manifest, indent=2, sort_keys=True) + "\n",
@@ -138,7 +217,7 @@ def refresh_release_manifest(plugin: Path, source_root: Path) -> dict:
     """Refresh identity after the required Codex cachebuster changes plugin bytes."""
 
     plugin = plugin.resolve()
-    identity = build_runtime_identity(source_root.resolve())
+    identity = _source_runtime_identity(source_root.resolve())
     tool_contract = _object(plugin / ".mcp.json")["mcpServers"]
     name, server = next(iter(tool_contract.items()))
     schema_hash = canonical_json_sha256(
@@ -170,6 +249,10 @@ def main() -> int:
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--profile")
     parser.add_argument("--control-root", type=Path)
+    parser.add_argument('--persistent-frontend', type=Path)
+    parser.add_argument('--persistent-client-config', type=Path)
+    parser.add_argument('--node-executable', type=Path)
+    parser.add_argument('--install-version')
     args = parser.parse_args()
     if args.refresh:
         if args.source_root is None:
@@ -179,7 +262,9 @@ def main() -> int:
         if args.source is None or args.installed is None or args.output is None:
             parser.error("build mode requires --source, --installed, and --output")
         result = build(args.source.resolve(), args.installed.resolve(), args.output.resolve(),
-                       profile_id=args.profile, control_root=args.control_root)
+                       profile_id=args.profile, control_root=args.control_root,
+                       persistent_frontend=args.persistent_frontend, persistent_client_config=args.persistent_client_config,
+                       node_executable=args.node_executable, install_version=args.install_version)
     print(json.dumps(result, indent=2))
     return 0
 
